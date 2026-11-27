@@ -191,3 +191,21 @@ def test_builds_can_be_switched_off(runs_dir: Path) -> None:
 
 def test_home_answers_head_for_uptime_checks(client: TestClient) -> None:
     assert client.head("/").status_code == 200
+
+
+def test_warm_start_builds_chat_runtimes(runs_dir: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr(web, "build_llm", lambda *_a, **_k: _Stack())
+    app = create_app(Settings(runs_dir=runs_dir, embedder="hash", warm_chat=True))
+    with TestClient(app) as warm:
+        assert warm.get("/healthz").status_code == 200
+        response = warm.post(
+            "/runs/hr-demo/chat", data={"question": "How many days of annual leave?"}
+        )
+        assert response.status_code == 200
+
+
+def test_model_failure_messages_name_the_cause() -> None:
+    assert "API key" in web._model_failure("model endpoint answered 401: bad key")
+    assert "model" in web._model_failure("model endpoint answered 404: no such model")
+    assert "HTTP 400" in web._model_failure("model endpoint answered 400: x")
+    assert "did not answer" in web._model_failure("model endpoint failed after retries: x")

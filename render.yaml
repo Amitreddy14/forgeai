@@ -23,3 +23,5 @@ services:
         value: "150000"
       - key: FORGE_MAX_CONCURRENCY
         value: "1"
+      - key: FORGE_WARM_CHAT
+        value: "true"           # embed both demo corpora at startup, off the event loop

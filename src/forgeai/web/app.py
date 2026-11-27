@@ -9,7 +9,8 @@ import re
 import shutil
 import time
 from collections import defaultdict, deque
-from collections.abc import Awaitable, Callable
+from collections.abc import AsyncIterator, Awaitable, Callable, Coroutine
+from contextlib import asynccontextmanager
 from pathlib import Path
 from typing import Any
 
@@ -70,6 +71,18 @@ def _client(request: Request) -> str:
     return forwarded.split(",")[0].strip() or (request.client.host if request.client else "?")
 
 
+def _model_failure(message: str) -> str:
+    """A user-facing line for a failed model call, specific enough to act on."""
+    status = re.search(r"answered (\d{3})", message)
+    if status and status.group(1) in {"401", "403"}:
+        return "The model server rejected this site's API key."
+    if status and status.group(1) == "404":
+        return "The model server does not offer the configured model."
+    if status:
+        return f"The model server refused the request (HTTP {status.group(1)})."
+    return "The model server did not answer. Try again shortly."
+
+
 def _pct(value: float | None) -> str:
     return "n/a" if value is None else f"{value:.0%}"
 
@@ -77,7 +90,19 @@ def _pct(value: float | None) -> str:
 def create_app(settings: Settings | None = None) -> FastAPI:
     settings = settings or get_settings()
     is_prod = settings.env == "prod"
+    hooks: dict[str, Callable[[], Coroutine[Any, Any, None]]] = {}
+
+    @asynccontextmanager
+    async def lifespan(_app: FastAPI) -> AsyncIterator[None]:
+        task: asyncio.Task[None] | None = None
+        if settings.warm_chat and "startup" in hooks:
+            task = asyncio.create_task(hooks["startup"]())
+        yield
+        if task is not None and not task.done():
+            task.cancel()
+
     app = FastAPI(
+        lifespan=lifespan,
         title="ForgeAI",
         version=__version__,
         debug=False,
@@ -167,16 +192,45 @@ def create_app(settings: Settings | None = None) -> FastAPI:
 
     # ---------- Chat ---------------------------------------------------------------
 
-    def runtime_for(run_id: str) -> AgentRuntime:
+    runtime_lock = asyncio.Lock()
+
+    async def runtime_for(run_id: str) -> AgentRuntime:
+        """Build (once) and cache the runtime for a run.
+
+        Building embeds every chunk: seconds on a laptop, a minute on a 0.1-CPU host. It
+        runs in a worker thread so the event loop keeps answering health checks; on the
+        free tier a blocked loop gets the instance killed mid-build.
+        """
         cached = state["runtimes"].get(run_id)
         if cached is not None:
             return cached  # type: ignore[no-any-return]
         view = run_or_404(run_id)
         if view.agent is None:
             raise HTTPException(status_code=409, detail="This build has no agent yet.")
-        runtime = load_runtime(view.agent, llm_stack().llm, settings.generator_model, embedder())
-        state["runtimes"][run_id] = runtime
-        return runtime
+        async with runtime_lock:
+            cached = state["runtimes"].get(run_id)
+            if cached is not None:
+                return cached  # type: ignore[no-any-return]
+            started = time.perf_counter()
+            runtime = await asyncio.to_thread(
+                lambda: load_runtime(
+                    view.agent, llm_stack().llm, settings.generator_model, embedder()
+                )
+            )
+            log.warning("chat runtime %s ready in %.1fs", run_id, time.perf_counter() - started)
+            state["runtimes"][run_id] = runtime
+            return runtime
+
+    async def warm_runtimes() -> None:
+        for view in list_run_views(runs_dir):
+            if view.agent is None:
+                continue
+            try:
+                await runtime_for(view.run_id)
+            except Exception:  # warming is best effort; the first chat retries
+                log.exception("warming chat runtime %s failed", view.run_id)
+
+    hooks["startup"] = warm_runtimes
 
     @app.get("/runs/{run_id}/chat", response_class=HTMLResponse)
     async def chat_page(request: Request, run_id: str) -> HTMLResponse:
@@ -195,7 +249,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
                 status_code=429, detail="Too many questions. Wait a minute and try again."
             )
         try:
-            runtime = runtime_for(run_id)
+            runtime = await runtime_for(run_id)
             turn: AgentTurn = await runtime.answer(question)
         except FileNotFoundError as exc:
             raise HTTPException(
@@ -209,9 +263,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             ) from exc
         except ForgeError as exc:
             log.warning("chat %s: model call failed: %s", run_id, exc)
-            raise HTTPException(
-                status_code=503, detail="The model server did not answer. Try again shortly."
-            ) from exc
+            raise HTTPException(status_code=503, detail=_model_failure(str(exc))) from exc
         return templates.TemplateResponse(request, "_turn.html", {"turn": turn})
 
     # ---------- New build ----------------------------------------------------------

@@ -4,6 +4,7 @@ chat, so what is tested is exactly what ships."""
 
 from __future__ import annotations
 
+import asyncio
 import json
 import time
 from typing import Any, Literal
@@ -227,7 +228,7 @@ class AgentRuntime:
     async def answer(self, question: str) -> AgentTurn:
         started = time.perf_counter()
         defn = self.definition
-        hits = self.index.search(question, defn.retrieval)
+        hits = await asyncio.to_thread(self.index.search, question, defn.retrieval)
         retrieved = [
             RetrievedRef(chunk_id=h.chunk.chunk_id, score=h.score, bm25=h.bm25, dense=h.dense)
             for h in hits
