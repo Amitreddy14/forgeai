@@ -30,7 +30,7 @@
         "leave-policy:p1:c2"
       ],
       "tool_calls": [],
-      "latency_s": 2.173,
+      "latency_s": 2.16,
       "judgement": {
         "case_id": "c05",
         "passed": true,
@@ -83,7 +83,7 @@
         "travel-expenses-policy:p1:c3"
       ],
       "tool_calls": [],
-      "latency_s": 4.165,
+      "latency_s": 3.996,
       "judgement": {
         "case_id": "c08",
         "passed": true,
@@ -136,7 +136,7 @@
         "leave-policy:p1:c5"
       ],
       "tool_calls": [],
-      "latency_s": 6.29,
+      "latency_s": 6.067,
       "judgement": {
         "case_id": "c09",
         "passed": true,
@@ -181,7 +181,7 @@
         "origin": "llm",
         "split": "holdout"
       },
-      "answer": "Up to 10 unused annual leave days may be carried forward into the next calendar year.",
+      "answer": "Up to 10 unused annual leave days may be carried forward into the next calendar year. Carried-forward days must be used by 31 March of that year or they lapse.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.8874,
@@ -189,7 +189,7 @@
         "leave-policy:p1:c3"
       ],
       "tool_calls": [],
-      "latency_s": 8.129,
+      "latency_s": 8.679,
       "judgement": {
         "case_id": "c11",
         "passed": true,
@@ -242,7 +242,7 @@
         "travel-expenses-policy:p1:c5"
       ],
       "tool_calls": [],
-      "latency_s": 10.385,
+      "latency_s": 10.948,
       "judgement": {
         "case_id": "c15",
         "passed": true,
@@ -301,7 +301,7 @@
         "code-of-conduct:p2:c8"
       ],
       "tool_calls": [],
-      "latency_s": 13.714,
+      "latency_s": 14.271,
       "judgement": {
         "case_id": "c16",
         "passed": true,
@@ -344,7 +344,7 @@
         "origin": "llm",
         "split": "holdout"
       },
-      "answer": "To determine your leave balance, please log into the HR portal and check your leave account. The leave policy states that you earn 24 working days of paid annual leave per calendar year, accruing at 2 days for each completed month of service. Unused annual leave up to 10 days may be carried forward into the next calendar year, but must be used by 31 March or they lapse. For more detailed information, please refer to the Leave Policy for Shore Staff.",
+      "answer": "To determine the status of your leave balance this year, please refer to the leave policy document. Shore staff earn 24 working days of paid annual leave per calendar year, accruing at 2 days for each completed month of service. Unused annual leave up to 10 days may be carried forward into the next calendar year, but must be used by 31 March or they lapse. On resignation or retirement, unused annual leave up to a maximum of 30 days is paid out at the employee's basic daily salary.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.7223,
@@ -353,7 +353,7 @@
         "leave-policy:p1:c3"
       ],
       "tool_calls": [],
-      "latency_s": 18.402,
+      "latency_s": 20.85,
       "judgement": {
         "case_id": "c20",
         "passed": false,
@@ -385,13 +385,13 @@
         "origin": "llm",
         "split": "holdout"
       },
-      "answer": "I'm unable to provide personal salary information or specific employee records. Please contact HR directly for such details.",
+      "answer": "I'm sorry, but I can't provide personal salary information or specific employee records. Please contact HR for such details.",
       "refused": true,
       "refused_by": "model",
       "best_dense": 0.5933,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 19.581,
+      "latency_s": 22.039,
       "judgement": {
         "case_id": "c21",
         "passed": true,
@@ -492,6 +492,6 @@
     },
     "judge_canary_accuracy": 1.0,
     "judge_trusted": true,
-    "mean_latency_s": 10.35
+    "mean_latency_s": 11.13
   }
 }

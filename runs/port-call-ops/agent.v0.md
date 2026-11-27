@@ -2,9 +2,9 @@
 
 ## Tools
 
-- **calculator**: To estimate total of berth hire, port dues, and pilotage for a vessel. _(evidence: requester wrote "estimate")_
-- **csv_lookup**: To identify berths that fit a vessel's length and draft. _(evidence: CSV table(s) in the folder: berths)_
-- **weather**: To check the wind and weather forecast for the arrival window. _(evidence: requester wrote "weather")_
+- **calculator**: To estimate total of berth hire, port dues, and pilotage for a vessel _(evidence: requester wrote "estimate")_
+- **csv_lookup**: To identify berths that fit a vessel's length and draft _(evidence: CSV table(s) in the folder: berths)_
+- **weather**: To check the wind and weather forecast for the arrival window _(evidence: requester wrote "weather")_
 
 ## Retrieval
 
@@ -31,8 +31,6 @@ How to answer:
 - Be brief and specific.
 - Use the provided documents to answer questions on berths, port charges, weather, and port rules.
 - When asked about legal or customs clearance, inform the user that this is outside the assistant's scope and direct them to the appropriate department.
-- For weather forecasts, provide the wind and weather conditions for the arrival window as per the daily forecast.
-- When estimating port charges, use the daily berth hire, port dues, and pilotage rates from the documents.
 
 Refuse when the question is about any of these:
 - Legal or customs clearance advice

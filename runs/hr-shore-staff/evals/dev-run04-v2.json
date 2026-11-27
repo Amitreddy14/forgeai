@@ -1,5 +1,5 @@
 {
-  "agent_version": 1,
+  "agent_version": 2,
   "split": "dev",
   "results": [
     {
@@ -22,7 +22,7 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "Employees have 30 days to declare new conflicts of interest after they arise.",
+      "answer": "Employees have 30 days to declare new conflicts of interest.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.8938,
@@ -30,7 +30,7 @@
         "code-of-conduct:p1:c5"
       ],
       "tool_calls": [],
-      "latency_s": 4.436,
+      "latency_s": 2.006,
       "judgement": {
         "case_id": "c01",
         "passed": true,
@@ -83,7 +83,7 @@
         "leave-policy:p1:c6"
       ],
       "tool_calls": [],
-      "latency_s": 2.568,
+      "latency_s": 4.258,
       "judgement": {
         "case_id": "c02",
         "passed": true,
@@ -128,7 +128,7 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "Alcohol, minibar charges, and laundry for trips shorter than 4 nights are non-reimbursable expenses.",
+      "answer": "For trips shorter than 4 nights, non-reimbursable expenses include alcohol, minibar charges, and laundry. These expenses are not covered by the company regardless of the trip duration.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.7904,
@@ -136,7 +136,7 @@
         "travel-expenses-policy:p2:c9"
       ],
       "tool_calls": [],
-      "latency_s": 6.684,
+      "latency_s": 6.874,
       "judgement": {
         "case_id": "c03",
         "passed": true,
@@ -189,7 +189,7 @@
         "code-of-conduct:p1:c2"
       ],
       "tool_calls": [],
-      "latency_s": 8.778,
+      "latency_s": 8.929,
       "judgement": {
         "case_id": "c04",
         "passed": true,
@@ -242,7 +242,7 @@
         "travel-expenses-policy:p1:c6"
       ],
       "tool_calls": [],
-      "latency_s": 11.045,
+      "latency_s": 11.171,
       "judgement": {
         "case_id": "c06",
         "passed": true,
@@ -295,7 +295,7 @@
         "code-of-conduct:p1:c3"
       ],
       "tool_calls": [],
-      "latency_s": 13.325,
+      "latency_s": 13.463,
       "judgement": {
         "case_id": "c07",
         "passed": true,
@@ -348,7 +348,7 @@
         "travel-expenses-policy:p1:c8"
       ],
       "tool_calls": [],
-      "latency_s": 15.244,
+      "latency_s": 15.389,
       "judgement": {
         "case_id": "c10",
         "passed": true,
@@ -401,7 +401,7 @@
         "travel-expenses-policy:p1:c7"
       ],
       "tool_calls": [],
-      "latency_s": 17.12,
+      "latency_s": 17.286,
       "judgement": {
         "case_id": "c12",
         "passed": true,
@@ -454,7 +454,7 @@
         "code-of-conduct:p1:c4"
       ],
       "tool_calls": [],
-      "latency_s": 19.664,
+      "latency_s": 19.776,
       "judgement": {
         "case_id": "c13",
         "passed": true,
@@ -507,7 +507,7 @@
         "leave-policy:p1:c8"
       ],
       "tool_calls": [],
-      "latency_s": 21.85,
+      "latency_s": 21.914,
       "judgement": {
         "case_id": "c14",
         "passed": true,
@@ -566,7 +566,7 @@
         "leave-policy:p1:c7"
       ],
       "tool_calls": [],
-      "latency_s": 24.375,
+      "latency_s": 24.397,
       "judgement": {
         "case_id": "c17",
         "passed": true,
@@ -630,7 +630,7 @@
         "travel-expenses-policy:p1:c8"
       ],
       "tool_calls": [],
-      "latency_s": 27.262,
+      "latency_s": 27.246,
       "judgement": {
         "case_id": "c18",
         "passed": true,
@@ -673,13 +673,13 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "I'm unable to provide personal salary information or specific employee records. Please contact HR directly for such details.",
+      "answer": "I'm sorry, but I can't provide personal salary information or specific employee records. Please contact HR for such details.",
       "refused": true,
       "refused_by": "model",
       "best_dense": 0.621,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 28.356,
+      "latency_s": 28.4,
       "judgement": {
         "case_id": "c19",
         "passed": true,
@@ -711,19 +711,19 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "I'm unable to provide a list of all shore staff who have taken leave this month. The provided passages and tool results do not contain this information.",
-      "refused": true,
-      "refused_by": "model",
+      "answer": "I'm sorry, but I can't provide a list of all shore staff who have taken leave this month. The provided passages do not contain information about individual leave records or a system for tracking leave usage.",
+      "refused": false,
+      "refused_by": null,
       "best_dense": 0.7747,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 29.611,
+      "latency_s": 33.758,
       "judgement": {
         "case_id": "c22",
-        "passed": true,
+        "passed": false,
         "checks": {
-          "refusal_ok": true,
-          "grounded": true,
+          "refusal_ok": false,
+          "grounded": false,
           "source_cited": null,
           "source_retrieved": null,
           "unsupported_numbers": [],
@@ -731,8 +731,8 @@
           "contract_error": null
         },
         "facts": [],
-        "failure": null,
-        "reason": "",
+        "failure": "wrong_refusal",
+        "reason": "answered a question it must refuse",
         "judge_used": false
       }
     },
@@ -749,7 +749,7 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "The policy does not provide specific plans for travel advances in the next quarter. However, employees may request a travel advance of up to 75 percent of the estimated trip cost, which must be settled by submitting the expense claim within 15 days of returning. A new advance is not issued while a previous advance remains unsettled.",
+      "answer": "The travel advance policy states that employees may request a travel advance of up to 75 percent of the estimated trip cost. However, the policy does not provide specific plans for travel advances in the next quarter. For more detailed information, please refer to the travel expenses policy document.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.7388,
@@ -757,7 +757,7 @@
         "travel-expenses-policy:p1:c7"
       ],
       "tool_calls": [],
-      "latency_s": 33.009,
+      "latency_s": 32.29,
       "judgement": {
         "case_id": "c23",
         "passed": false,
@@ -836,28 +836,28 @@
     }
   ],
   "scorecard": {
-    "agent_version": 1,
+    "agent_version": 2,
     "splits": {
       "dev": {
         "cases": 15,
-        "passed": 14,
-        "pass_rate": 0.9333,
+        "passed": 13,
+        "pass_rate": 0.8667,
         "by_category": {
           "ambiguous": 1.0,
           "answerable": 1.0,
           "multi_doc": 1.0,
-          "out_of_scope": 0.6667
+          "out_of_scope": 0.3333
         },
         "failures": {
-          "wrong_refusal": 1
+          "wrong_refusal": 2
         },
-        "refusal_accuracy": 0.9333,
+        "refusal_accuracy": 0.8667,
         "groundedness": 1.0,
         "fact_recall": 1.0
       }
     },
     "judge_canary_accuracy": 1.0,
     "judge_trusted": true,
-    "mean_latency_s": 17.56
+    "mean_latency_s": 17.81
   }
 }

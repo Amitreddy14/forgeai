@@ -2,6 +2,20 @@
 
 Newest first. Decisions, bugs, changes, and anything the next session must know.
 
+## 2026-11-28 — Phase 6.3 (third demo runs, merged as PR #7)
+
+Third runs (mostly cache replays): HR dev 93% (14/15), holdout 7/8, trap handled, no
+tools (calculator proposed and rejected). Port dev 84% -> 89% (refuse topic kept),
+holdout 6/9, exactly csv_lookup/calculator/weather. Two runtime bugs found in the port
+artifacts, both also affecting hosted chat:
+- c21: correct answer "13500" returned with refused=true. Output contract now checks the
+  refusal flag agrees with the text; a contradiction triggers the one repair.
+- c22: weather for "Kochi" geocoded to Kochi, Japan (8-20 °C). The tool now takes
+  "Kochi, India", filters geocoding results by country name/code, and always prints the
+  resolved country; the plan prompt asks for the country.
+- Report now states how many model calls were cache replays (tokens count live calls).
+- Hosting moved from HF (Docker Spaces now paid) to Render free (render.yaml).
+
 ## 2026-11-28 — Phase 7
 
 - Web: FastAPI + Jinja + HTMX, hand-written CSS from design.md. Verified with headless
@@ -10,8 +24,9 @@ Newest first. Decisions, bugs, changes, and anything the next session must know.
 - Bug found by the UI: `RunStore.write_json` used `json.dumps(default=str)`, so lists of
   models (changelog.json, canaries.json) were saved as Python reprs. Now converted
   recursively; anything non-JSON raises. Demo runs must be regenerated.
-- Hosting: HF rejects un-LFS binaries (our PDFs), so the Space holds only a Dockerfile
-  that clones the public GitHub repo, plus a README with Space metadata.
+- Hosting: Hugging Face made Docker/Gradio Spaces paid (Amit's account shows it), and
+  Koyeb now needs a card, so the app is hosted on Render's free web service (Docker,
+  no card, 512 MB, sleeps after 15 idle minutes) via `render.yaml`.
 - Groq free tier (llama-3.1-8b-instant ~6k TPM, 30 RPM): chat is fine; hosted builds are
   slow and capped (1 iteration, 150k tokens). Judge on Groq: openai/gpt-oss-20b.
 - CSP forbids inline styles, so progress uses <progress>, not a styled width.

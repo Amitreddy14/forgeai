@@ -56,7 +56,7 @@ uvicorn forgeai.web.app:app --reload     # http://localhost:8000
 ```
 
 Browse builds as survey certificates, chat with any built agent, or start a build.
-Hosting on Hugging Face Spaces: [deploy/huggingface/SETUP.md](deploy/huggingface/SETUP.md).
+Hosted on Render's free tier from [`render.yaml`](render.yaml); models served by Groq's free tier.
 
 ## Development
 

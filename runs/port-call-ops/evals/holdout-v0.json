@@ -34,7 +34,7 @@
         "PlannedCall:failed",
         "max_length_of_vessel:failed"
       ],
-      "latency_s": 10.369,
+      "latency_s": 31.886,
       "judgement": {
         "case_id": "c01",
         "passed": true,
@@ -87,7 +87,7 @@
         "port-tariff-schedule:p1:c6"
       ],
       "tool_calls": [],
-      "latency_s": 13.131,
+      "latency_s": 10.443,
       "judgement": {
         "case_id": "c05",
         "passed": true,
@@ -132,7 +132,7 @@
         "origin": "llm",
         "split": "holdout"
       },
-      "answer": "The minimum pilotage fee per movement is USD 90.",
+      "answer": "The minimum pilotage fee per movement is USD 1,200.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.8827,
@@ -140,13 +140,12 @@
         "port-tariff-schedule:p1:c3"
       ],
       "tool_calls": [
-        "calculator:ok",
         "calculator:ok"
       ],
-      "latency_s": 15.041,
+      "latency_s": 22.894,
       "judgement": {
         "case_id": "c08",
-        "passed": false,
+        "passed": true,
         "checks": {
           "refusal_ok": true,
           "grounded": true,
@@ -159,13 +158,13 @@
         "facts": [
           {
             "fact": "USD 1,200 per movement",
-            "status": "contradicted",
-            "by": "judge"
+            "status": "present",
+            "by": "string"
           }
         ],
-        "failure": "hallucination",
-        "reason": "facts not stated correctly: USD 1,200 per movement",
-        "judge_used": true
+        "failure": null,
+        "reason": "",
+        "judge_used": false
       }
     },
     {
@@ -195,8 +194,12 @@
       "citations": [
         "port-tariff-schedule:p1:c2"
       ],
-      "tool_calls": [],
-      "latency_s": 17.568,
+      "tool_calls": [
+        "csv_lookup:failed",
+        "csv_lookup:failed",
+        "csv_lookup:failed"
+      ],
+      "latency_s": 34.428,
       "judgement": {
         "case_id": "c11",
         "passed": true,
@@ -249,7 +252,7 @@
         "port-notices:p1:c6"
       ],
       "tool_calls": [],
-      "latency_s": 19.551,
+      "latency_s": 13.789,
       "judgement": {
         "case_id": "c13",
         "passed": true,
@@ -299,26 +302,26 @@
         "origin": "llm",
         "split": "holdout"
       },
-      "answer": "The pre-arrival notification must be submitted at least 72 hours before the estimated time of arrival, or on departure from the last port if the voyage is shorter than 72 hours. The tariff schedule is valid from 1 April 2026 to 31 March 2027.",
+      "answer": "The pre-arrival notification must be submitted at least 72 hours before the estimated time of arrival, or on departure from the last port if the voyage is shorter than 72 hours.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.8169,
       "citations": [
-        "port-notices:p1:c1",
-        "port-tariff-schedule:p1:c0"
+        "port-notices:p1:c1"
       ],
       "tool_calls": [
         "calculator:ok",
+        "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 24.509,
+      "latency_s": 37.249,
       "judgement": {
         "case_id": "c19",
-        "passed": true,
+        "passed": false,
         "checks": {
           "refusal_ok": true,
           "grounded": true,
-          "source_cited": true,
+          "source_cited": false,
           "source_retrieved": true,
           "unsupported_numbers": [],
           "tool_ok": null,
@@ -332,13 +335,13 @@
           },
           {
             "fact": "Valid from 1 April 2026 to 31 March 2027",
-            "status": "present",
-            "by": "string"
+            "status": "contradicted",
+            "by": "judge"
           }
         ],
-        "failure": null,
-        "reason": "",
-        "judge_used": false
+        "failure": "hallucination",
+        "reason": "facts not stated correctly: Valid from 1 April 2026 to 31 March 2027",
+        "judge_used": true
       }
     },
     {
@@ -354,7 +357,7 @@
         "origin": "template",
         "split": "holdout"
       },
-      "answer": "The weather forecast for Kochi for the next two days is as follows: 2026-11-28: 8.5-19.9 °C with 0.3 mm of rain, wind at 9.2 knots with gusts of 29.4 knots; 2026-11-29: 7.0-13.1 °C with 0.5 mm of rain, wind at 6.6 knots with gusts of 21.6 knots.",
+      "answer": "The weather forecast for Kochi for the next two days is as follows: 2026-11-28: 25.2-30.6 °C | rain 2.6 mm | wind 5.8 kn | gusts 15.2 kn; 2026-11-29: 24.8-30.7 °C | rain 3.0 mm | wind 6.5 kn | gusts 15.4 kn.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.6967,
@@ -362,7 +365,7 @@
       "tool_calls": [
         "weather:ok"
       ],
-      "latency_s": 40.311,
+      "latency_s": 42.024,
       "judgement": {
         "case_id": "c22",
         "passed": false,
@@ -400,7 +403,7 @@
       "best_dense": 0.7034,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 25.531,
+      "latency_s": 16.452,
       "judgement": {
         "case_id": "c23",
         "passed": true,
@@ -432,7 +435,7 @@
         "origin": "llm",
         "split": "holdout"
       },
-      "answer": "The recent changes in port rules are as follows: Both ports operate at ISPS security level 1 unless announced otherwise. Visitors to a vessel need a port entry pass, applied for by the agent at least 24 hours in advance. Crew shore leave requires a valid shore pass issued by immigration authorities on arrival.",
+      "answer": "The recent changes in port rules are not mentioned in the provided passages. The documents focus on berth details and security measures but do not contain information on recent rule changes.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.7134,
@@ -440,7 +443,7 @@
         "port-notices:p2:c8"
       ],
       "tool_calls": [],
-      "latency_s": 29.024,
+      "latency_s": 19.361,
       "judgement": {
         "case_id": "c25",
         "passed": false,
@@ -520,8 +523,8 @@
         "pass_rate": 0.6667,
         "by_category": {
           "ambiguous": 1.0,
-          "answerable": 0.75,
-          "multi_doc": 1.0,
+          "answerable": 1.0,
+          "multi_doc": 0.0,
           "out_of_scope": 0.5,
           "tool": 0.0
         },
@@ -531,11 +534,11 @@
         },
         "refusal_accuracy": 0.8889,
         "groundedness": 0.8571,
-        "fact_recall": 0.8571
+        "fact_recall": 0.9286
       }
     },
     "judge_canary_accuracy": 1.0,
     "judge_trusted": true,
-    "mean_latency_s": 21.67
+    "mean_latency_s": 25.39
   }
 }

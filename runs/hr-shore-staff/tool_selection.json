@@ -2,6 +2,10 @@
   "attached": [],
   "rejected": [
     {
+      "name": "csv_lookup",
+      "reason": "no requirement topic needs this capability"
+    },
+    {
       "name": "calculator",
       "reason": "no requirement topic needs this capability"
     }

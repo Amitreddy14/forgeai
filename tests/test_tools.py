@@ -145,14 +145,22 @@ def weather_transport(seen: list[str]) -> httpx.MockTransport:
         if request.url.host == "geocoding-api.open-meteo.com":
             if request.url.params["name"] == "Atlantis":
                 return httpx.Response(200, json={})
-            return httpx.Response(
-                200,
-                json={
-                    "results": [
-                        {"name": "Kochi", "country": "India", "latitude": 9.93, "longitude": 76.26}
-                    ]
-                },
-            )
+            # Like the real API: the Japanese Kochi comes first.
+            japan = {
+                "name": "Kochi",
+                "country": "Japan",
+                "country_code": "JP",
+                "latitude": 33.56,
+                "longitude": 133.53,
+            }
+            india = {
+                "name": "Kochi",
+                "country": "India",
+                "country_code": "IN",
+                "latitude": 9.93,
+                "longitude": 76.26,
+            }
+            return httpx.Response(200, json={"results": [japan, india]})
         if request.url.host == "api.open-meteo.com":
             return httpx.Response(
                 200,
@@ -178,11 +186,14 @@ async def test_weather_geocodes_then_forecasts_with_marine() -> None:
     seen: list[str] = []
     async with httpx.AsyncClient(transport=weather_transport(seen)) as client:
         result = await call_tool(
-            REGISTRY["weather"], {"location": "Kochi", "days": 1, "marine": True}, env(http=client)
+            REGISTRY["weather"],
+            {"location": "Kochi, India", "days": 1, "marine": True},
+            env(http=client),
         )
     assert result.ok, result.output
     assert "2026-11-28: 24.1-31.0 °C | rain 2.5 mm | wind 12.0 kn" in result.output
     assert "waves 1.4 m" in result.output
+    assert "Forecast for Kochi, India (9.93, 76.26)" in result.output
     assert seen == [
         "geocoding-api.open-meteo.com",
         "api.open-meteo.com",
@@ -344,3 +355,18 @@ def test_infer_tool_hints(text: str, hints: list[str]) -> None:
     from forgeai.tools.registry import infer_tool_hints
 
     assert sorted(infer_tool_hints(text, _port_corpus())) == sorted(hints)
+
+
+async def test_weather_country_disambiguates_and_reports_misses() -> None:
+    """Real port run: 'Kochi' alone resolved to Kochi, Japan (a 9-20 °C forecast)."""
+    async with httpx.AsyncClient(transport=weather_transport([])) as client:
+        bare = await call_tool(
+            REGISTRY["weather"], {"location": "Kochi", "days": 1}, env(http=client)
+        )
+        wrong = await call_tool(REGISTRY["weather"], {"location": "Kochi, Peru"}, env(http=client))
+        by_code = await call_tool(
+            REGISTRY["weather"], {"location": "Kochi, IN", "days": 1}, env(http=client)
+        )
+    assert "Kochi, Japan" in bare.output  # no country: first match, and it says which
+    assert "place not found: 'Kochi' in Peru" in wrong.output
+    assert "Kochi, India" in by_code.output

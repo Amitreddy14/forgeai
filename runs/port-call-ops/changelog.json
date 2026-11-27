@@ -4,76 +4,82 @@
     "patch": {
       "op": {
         "op": "add_refuse_topic",
-        "topic": "future operational schedules"
+        "topic": "Real-time operational queries"
       },
       "category": "wrong_refusal",
       "targets": [
-        "c26"
+        "c26",
+        "c27"
       ],
-      "why": "Involves specific vessel's future plans and data, which are proprietary and sensitive.",
+      "why": "Involves specific vessel or port operations that should be handled by the relevant stakeholders.",
       "source": "critic"
     },
     "from_version": 0,
-    "to_version": 1,
-    "accepted": true,
-    "dev_before": 0.8421,
-    "dev_after": 0.8947,
-    "fixed": [
-      "c18"
-    ],
-    "broke": [],
-    "decision": "kept: +1 fixed, none broken",
-    "tokens": 27574
-  },
-  {
-    "iteration": 2,
-    "patch": {
-      "op": {
-        "op": "add_refuse_topic",
-        "topic": "vessel-specific inquiries"
-      },
-      "category": "wrong_refusal",
-      "targets": [
-        "c26"
-      ],
-      "why": "covers questions about specific vessels, their status, or schedules",
-      "source": "critic"
-    },
-    "from_version": 1,
     "to_version": null,
     "accepted": false,
-    "dev_before": 0.8947,
-    "dev_after": 0.8947,
+    "dev_before": 0.7368,
+    "dev_after": 0.6842,
     "fixed": [],
-    "broke": [],
-    "decision": "reverted: 0 fixed, 0 broken (no net gain)",
-    "tokens": 27481
+    "broke": [
+      "c24"
+    ],
+    "decision": "reverted: 0 fixed, 1 broken (no net gain)",
+    "tokens": 32496
   },
   {
-    "iteration": 2,
+    "iteration": 1,
     "patch": {
       "op": {
         "op": "add_rule",
-        "text": "Evaluate the question's intent and context; refuse answers that require external information or actions, and provide accurate, document-based responses for all other questions."
+        "text": "Refuse questions that require personal information or violate privacy policies, and direct users to the appropriate department for such requests."
       },
       "category": "wrong_refusal",
       "targets": [
-        "c21",
-        "c26"
+        "c26",
+        "c27"
       ],
-      "why": "Clarifies the distinction between refusing questions and providing accurate answers based on available documents.",
+      "why": "This rule ensures privacy is maintained and directs users to the correct department for sensitive information.",
       "source": "critic"
     },
-    "from_version": 1,
+    "from_version": 0,
     "to_version": null,
     "accepted": false,
-    "dev_before": 0.8947,
-    "dev_after": 0.8421,
+    "dev_before": 0.7368,
+    "dev_after": 0.7368,
+    "fixed": [
+      "c27"
+    ],
+    "broke": [
+      "c24"
+    ],
+    "decision": "reverted: 1 fixed, 1 broken (no net gain)",
+    "tokens": 31491
+  },
+  {
+    "iteration": 1,
+    "patch": {
+      "op": {
+        "op": "add_rule",
+        "text": "Extract and verify all relevant facts from the retrieved passage before providing an answer."
+      },
+      "category": "prompt_defect",
+      "targets": [
+        "c14",
+        "c21"
+      ],
+      "why": "Ensures all pertinent details are captured and accurately conveyed, preventing omissions or misstatements.",
+      "source": "critic"
+    },
+    "from_version": 0,
+    "to_version": null,
+    "accepted": false,
+    "dev_before": 0.7368,
+    "dev_after": 0.6842,
     "fixed": [],
     "broke": [
-      "c18"
+      "c24"
     ],
     "decision": "reverted: 0 fixed, 1 broken (no net gain)",
-    "tokens": 28383
+    "tokens": 32744
   }
 ]

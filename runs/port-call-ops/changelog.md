@@ -1,31 +1,31 @@
 # Change log
 
-## Iteration 1: add refuse topic: "future operational schedules"
+## Iteration 1: add refuse topic: "Real-time operational queries"
 
 - category: wrong_refusal (proposed by critic)
-- targets: c26
-- why: Involves specific vessel's future plans and data, which are proprietary and sensitive.
-- dev pass rate: 84% -> 89%
-- fixed: c18; broke: none
-- decision: kept: +1 fixed, none broken (now agent v1)
-- tokens: 27,574
-
-## Iteration 2: add refuse topic: "vessel-specific inquiries"
-
-- category: wrong_refusal (proposed by critic)
-- targets: c26
-- why: covers questions about specific vessels, their status, or schedules
-- dev pass rate: 89% -> 89%
-- fixed: none; broke: none
-- decision: reverted: 0 fixed, 0 broken (no net gain)
-- tokens: 27,481
-
-## Iteration 2: add rule: "Evaluate the question's intent and context; refuse answers that require external information or actions, and provide accurate, document-based responses for all other questions."
-
-- category: wrong_refusal (proposed by critic)
-- targets: c21, c26
-- why: Clarifies the distinction between refusing questions and providing accurate answers based on available documents.
-- dev pass rate: 89% -> 84%
-- fixed: none; broke: c18
+- targets: c26, c27
+- why: Involves specific vessel or port operations that should be handled by the relevant stakeholders.
+- dev pass rate: 74% -> 68%
+- fixed: none; broke: c24
 - decision: reverted: 0 fixed, 1 broken (no net gain)
-- tokens: 28,383
+- tokens: 32,496
+
+## Iteration 1: add rule: "Refuse questions that require personal information or violate privacy policies, and direct users to the appropriate department for such requests."
+
+- category: wrong_refusal (proposed by critic)
+- targets: c26, c27
+- why: This rule ensures privacy is maintained and directs users to the correct department for sensitive information.
+- dev pass rate: 74% -> 74%
+- fixed: c27; broke: c24
+- decision: reverted: 1 fixed, 1 broken (no net gain)
+- tokens: 31,491
+
+## Iteration 1: add rule: "Extract and verify all relevant facts from the retrieved passage before providing an answer."
+
+- category: prompt_defect (proposed by critic)
+- targets: c14, c21
+- why: Ensures all pertinent details are captured and accurately conveyed, preventing omissions or misstatements.
+- dev pass rate: 74% -> 68%
+- fixed: none; broke: c24
+- decision: reverted: 0 fixed, 1 broken (no net gain)
+- tokens: 32,744

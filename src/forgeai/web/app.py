@@ -41,8 +41,7 @@ SECURITY_HEADERS = {
     "Permissions-Policy": "camera=(), microphone=(), geolocation=()",
     "Content-Security-Policy": (
         "default-src 'self'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; "
-        "font-src https://fonts.gstatic.com; img-src 'self' data:; frame-ancestors 'self' "
-        "https://huggingface.co https://*.hf.space"
+        "font-src https://fonts.gstatic.com; img-src 'self' data:; frame-ancestors 'self'"
     ),
 }
 SAFE_FILENAME = re.compile(r"[^A-Za-z0-9._-]+")

@@ -1,23 +1,15 @@
 {
   "agent": "Shore Staff Port Operations Desk",
-  "final_version": 1,
+  "final_version": 0,
   "iterations": [
     {
       "version": 0,
-      "dev_pass_rate": 0.8421,
-      "dev_passed": 16,
+      "dev_pass_rate": 0.7368,
+      "dev_passed": 14,
       "dev_cases": 19,
       "failures": {
         "hallucination": 1,
-        "wrong_refusal": 2
-      }
-    },
-    {
-      "version": 1,
-      "dev_pass_rate": 0.8947,
-      "dev_passed": 17,
-      "dev_cases": 19,
-      "failures": {
+        "prompt_defect": 2,
         "wrong_refusal": 2
       }
     }
@@ -32,15 +24,17 @@
   ],
   "judge_canary_accuracy": 1.0,
   "judge_trusted": true,
-  "stop_reason": "iteration 2 found no patch that improved dev without regressions",
-  "tokens_used": 141668,
+  "stop_reason": "iteration 1 found no patch that improved dev without regressions",
+  "tokens_used": 216588,
+  "model_calls": 337,
+  "cached_calls": 172,
   "by_stage_tokens": {
     "intake": 0,
     "guard": 0,
-    "generate": 0,
+    "generate": 1898,
     "evalgen": 0,
-    "judge": 1438,
-    "agent": 139674,
-    "critic": 556
+    "judge": 895,
+    "agent": 212141,
+    "critic": 1654
   }
 }
