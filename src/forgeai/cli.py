@@ -6,18 +6,32 @@ import asyncio
 import time
 from pathlib import Path
 
+import click
 import httpx
 import typer
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ValidationError
 from rich.console import Console
+from rich.markdown import Markdown
 from rich.table import Table
 
 from forgeai import __version__
 from forgeai.config import Settings, get_settings
 from forgeai.errors import ForgeError
 from forgeai.ingest import chunk_corpus, load_folder
+from forgeai.llm.factory import build_llm
+from forgeai.pipeline import RequirementsOutcome, build_requirements
 from forgeai.retrieval import HybridIndex, RetrievalConfig, make_embedder
 from forgeai.schemas import ChunkingConfig
+from forgeai.schemas.requirements import Requirements
+from forgeai.stages.context import ForgeContext, ModelRoles
+from forgeai.stages.intake import (
+    Answerer,
+    AutoAnswerer,
+    FileAnswerer,
+    InteractiveAnswerer,
+    requirements_markdown,
+)
+from forgeai.store import RunStore, new_run_id, validate_run_id
 
 app = typer.Typer(
     name="forge",
@@ -181,6 +195,87 @@ def search(
             f"rrf={hit.score:.4f} bm25={hit.bm25:.2f} dense={hit.dense:.2f}"
         )
         console.print(f"   {hit.chunk.text[:240]}{'…' if len(hit.chunk.text) > 240 else ''}")
+
+
+def _approve_interactively(req: Requirements) -> Requirements:
+    """Human checkpoint: approve the requirements, or edit them as JSON and re-check."""
+    while True:
+        console.print(Markdown(requirements_markdown(req)))
+        if typer.confirm("Approve these requirements?", default=True):
+            return req
+        edited = click.edit(req.model_dump_json(indent=2), extension=".json")
+        if not edited:
+            console.print("No changes made.")
+            continue
+        try:
+            req = Requirements.model_validate_json(edited)
+        except ValidationError as exc:
+            console.print(f"[red]Those edits are not valid requirements:[/red]\n{exc}")
+
+
+def _make_answerer(answers: str, ctx: ForgeContext) -> Answerer:
+    if answers == "auto":
+        return AutoAnswerer(ctx)
+    if answers == "interactive":
+        return InteractiveAnswerer(lambda q, default: typer.prompt(q, default=default))
+    path = Path(answers)
+    if not path.is_file():
+        raise typer.BadParameter("--answers must be auto, interactive, or a JSON file path")
+    return FileAnswerer(path)
+
+
+async def _intake(
+    brief_text: str, docs: Path, answers: str, approve: bool, run_id: str
+) -> RequirementsOutcome:
+    settings = get_settings()
+    stack = build_llm(settings)
+    ctx = ForgeContext(
+        llm=stack.llm,
+        models=ModelRoles(generator=settings.generator_model, judge=settings.judge_model),
+        embedder=make_embedder(settings.embedder),
+    )
+    store = RunStore(settings.runs_dir, run_id)
+    try:
+        return await build_requirements(
+            ctx,
+            store,
+            brief_text,
+            docs,
+            _make_answerer(answers, ctx),
+            approve=_approve_interactively if approve else None,
+        )
+    finally:
+        store.write_json("budget.json", stack.budget.report())
+        await stack.aclose()
+
+
+@app.command()
+def intake(
+    brief: Path = typer.Option(..., exists=True, dir_okay=False, help="Brief (text/markdown)."),
+    docs: Path = typer.Option(..., exists=True, file_okay=False, help="Documents folder."),
+    answers: str = typer.Option(
+        "interactive", help="interactive, auto (unattended), or a JSON file of answers."
+    ),
+    approve: bool = typer.Option(False, help="Review and approve requirements before saving."),
+    run_id: str | None = typer.Option(None, help="Run folder name (default: generated)."),
+) -> None:
+    """Interview the requester, check the brief against the documents, write requirements."""
+    brief_text = brief.read_text(encoding="utf-8")
+    rid = validate_run_id(run_id) if run_id else new_run_id(brief.stem)
+    try:
+        outcome = asyncio.run(_intake(brief_text, docs, answers, approve, rid))
+    except (ForgeError, ValueError) as exc:
+        console.print(f"[red]Stopped:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    req = outcome.requirements
+    console.print(f"[green]Requirements written[/green] to {get_settings().runs_dir / rid}")
+    console.print(
+        f"  {req.agent_name}: {len(req.must_answer)} must-answer, "
+        f"{len(req.must_refuse)} must-refuse, {len(req.flagged_gaps)} flagged gaps, "
+        f"{len(req.assumptions)} assumptions"
+    )
+    for gap in req.flagged_gaps:
+        console.print(f"  [yellow]Flagged[/yellow] {gap.topic}")
 
 
 if __name__ == "__main__":  # pragma: no cover

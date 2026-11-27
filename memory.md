@@ -2,6 +2,24 @@
 
 Newest first. Decisions, bugs, changes, and anything the next session must know.
 
+## 2026-11-27 — Phase 2
+
+- `forge smoke` on Amit's laptop: both models return valid JSON, but 55 s (qwen) / 26 s
+  (llama) for ~115 tokens — cold load and/or model swapping (both don't fit in 8 GB
+  together). Mitigations: group calls by model per stage, short prompts, deterministic
+  checks before the judge. Asked for `ollama run --verbose` + `ollama ps` numbers.
+- Ollama's default context window may truncate long prompts silently; set
+  `OLLAMA_CONTEXT_LENGTH=8192` before serving.
+- Every prompt starts with a `TASK: <name>` line: makes logs readable and lets the
+  scripted test model route on it.
+- Answer sources: `requester` (human, including accepting a shown default), `brief`
+  (proxy inferred it), `default` (nobody answered). Non-requester answers become
+  assumptions in requirements and the final report.
+- Guard trusts quote words, not chunk ids: a wrong chunk id with a real quote is corrected;
+  a real chunk id with a fabricated quote is rejected.
+- Tool topics are not checked against prose; `table_lookup` needs a CSV in the folder.
+- If every topic fails the guard, the run stops with GroundingError (no agent generated).
+
 ## 2026-11-27 — Phase 1
 
 - Amit's venv is Python 3.13 (no 3.11 on his laptop); CI matrix now 3.11/3.12/3.13.

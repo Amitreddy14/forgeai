@@ -130,3 +130,56 @@ def test_smoke_fails_cleanly_on_bad_json(monkeypatch: pytest.MonkeyPatch) -> Non
     result = runner.invoke(cli.app, ["smoke"])
     assert result.exit_code == 1
     assert "ModelOutputError" in result.stdout
+
+
+def test_intake_unattended_writes_requirements(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import json as _json
+
+    from forgeai.llm import Budget, BudgetedLLM, FakeLLM
+    from tests import scripted
+
+    class Stack:
+        def __init__(self) -> None:
+            self.budget = Budget(max_tokens=100_000)
+            self.llm = BudgetedLLM(FakeLLM(responder=scripted.responder), self.budget)
+
+        async def aclose(self) -> None:
+            return None
+
+    monkeypatch.setattr(cli, "build_llm", lambda _s: Stack())
+    folder = build_docs_folder(tmp_path)
+    brief = tmp_path / "hr-brief.md"
+    brief.write_text("I need an assistant that answers HR policy questions.", encoding="utf-8")
+    result = runner.invoke(
+        cli.app,
+        [
+            "intake",
+            "--brief",
+            str(brief),
+            "--docs",
+            str(folder),
+            "--answers",
+            "auto",
+            "--run-id",
+            "cli-intake",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+    assert "Flagged" in result.stdout
+    run = cli.get_settings().runs_dir / "cli-intake"
+    budget = _json.loads((run / "budget.json").read_text())
+    assert budget["by_stage"]["intake"]["calls"] == 3
+    assert budget["by_stage"]["guard"]["calls"] == 4
+    assert (run / "requirements.md").exists()
+
+
+def test_intake_rejects_bad_answers_option(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    folder = build_docs_folder(tmp_path)
+    brief = tmp_path / "b.md"
+    brief.write_text("I need an assistant that answers HR policy questions.", encoding="utf-8")
+    result = runner.invoke(
+        cli.app, ["intake", "--brief", str(brief), "--docs", str(folder), "--answers", "nope.json"]
+    )
+    assert result.exit_code != 0
