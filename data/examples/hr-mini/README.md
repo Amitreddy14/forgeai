@@ -19,3 +19,9 @@ The generated HR agent should have no tools.
 
 Use `--answers interactive` to answer the questions yourself, or
 `--answers data/examples/hr-mini/answers.json` for scripted answers.
+
+Or run every stage in one go (unattended):
+
+```bash
+forge build --brief data/examples/hr-mini/brief.md --docs data/examples/hr-mini/docs --run-id scratch-hr-mini-build --min-cases 10
+```

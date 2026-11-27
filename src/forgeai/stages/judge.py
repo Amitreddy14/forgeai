@@ -7,7 +7,8 @@ Layer 1, deterministic (decides everything it can):
 Layer 2, LLM judge (only for facts layer 1 could not confirm):
   a model from a *different family* than the generator (self-preference), grading one
   answer at a time against facts, not a reference essay (no position bias, no reward
-  for length), told explicitly that length earns nothing (verbosity bias).
+  for length), told explicitly that length earns nothing (verbosity bias). It must quote
+  the answer as evidence; code checks that quote and its numbers (leniency).
 Layer 3, canaries: planted answers with known verdicts (a wrong number, a long confident
   answer that omits the fact, a padded correct answer, a terse correct answer). If the
   judge gets them wrong, its verdicts are not trusted and only layer 1 counts.
@@ -48,8 +49,9 @@ PADDING = (
 
 
 class _JudgedFact(BaseModel):
-    fact: str
+    fact: str = ""
     status: FactStatus
+    evidence: str = ""
 
 
 class _JudgeOut(BaseModel):
@@ -144,6 +146,21 @@ def layer_one(
 # ---------- Layer 2 -------------------------------------------------------------------
 
 
+def check_judge_evidence(fact: str, status: FactStatus, evidence: str, answer: str) -> FactStatus:
+    """The judge must quote the answer. Code checks the quote, so a lenient judge cannot
+    call a fact present when the answer never states it, or wave through a wrong number.
+    """
+    if status == "missing":
+        return "missing"
+    if not evidence.strip() or not contains_fact(answer, evidence):
+        return "missing"  # evidence invented: the answer does not contain those words
+    fact_numbers = extract_numbers(fact)
+    if status == "present" and fact_numbers and not fact_numbers <= extract_numbers(evidence):
+        # The quoted words carry different numbers than the fact: that is a contradiction.
+        return "contradicted" if extract_numbers(evidence) else "missing"
+    return status
+
+
 async def llm_fact_judge(
     ctx: ForgeContext, question: str, facts: list[str], answer: str
 ) -> list[FactCheck]:
@@ -164,12 +181,15 @@ async def llm_fact_judge(
         )
     except ModelOutputError:
         return [FactCheck(fact=f, status="missing", by="judge") for f in facts]
-    statuses = [f.status for f in out.facts]
-    # Align by position; if the judge dropped some, the rest count as missing.
-    return [
-        FactCheck(fact=fact, status=statuses[i] if i < len(statuses) else "missing", by="judge")
-        for i, fact in enumerate(facts)
-    ]
+    checks: list[FactCheck] = []
+    for i, fact in enumerate(facts):
+        if i < len(out.facts):  # align by position; dropped facts count as missing
+            judged = out.facts[i]
+            status = check_judge_evidence(fact, judged.status, judged.evidence, answer)
+        else:
+            status = "missing"
+        checks.append(FactCheck(fact=fact, status=status, by="judge"))
+    return checks
 
 
 # ---------- Verdict -------------------------------------------------------------------

@@ -281,3 +281,48 @@ def test_evalgen_and_evaluate(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -
 
     bad = runner.invoke(cli.app, ["evaluate", *common, "--split", "train"])
     assert bad.exit_code != 0
+
+
+def test_build_runs_the_whole_factory_unattended(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from tests import sim
+
+    monkeypatch.setattr(cli, "build_llm", lambda _s: _scripted_stack(sim.respond))
+    folder = build_docs_folder(tmp_path)
+    brief = tmp_path / "hr.md"
+    brief.write_text("I need an assistant that answers HR policy questions.", encoding="utf-8")
+    result = runner.invoke(
+        cli.app,
+        [
+            "build",
+            "--brief",
+            str(brief),
+            "--docs",
+            str(folder),
+            "--run-id",
+            "cli-build",
+            "--min-cases",
+            "5",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+    assert "Built Shore Staff HR Desk" in result.stdout
+    assert "holdout:" in result.stdout
+    assert (cli.get_settings().runs_dir / "cli-build" / "report.md").exists()
+
+
+def test_build_reports_where_artifacts_are_on_failure(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from tests import sim
+
+    monkeypatch.setattr(cli, "build_llm", lambda _s: _scripted_stack(sim.respond))
+    folder = build_docs_folder(tmp_path)
+    brief = tmp_path / "hr.md"
+    brief.write_text("I need an assistant that answers HR policy questions.", encoding="utf-8")
+    result = runner.invoke(
+        cli.app, ["build", "--brief", str(brief), "--docs", str(folder), "--run-id", "cli-fail"]
+    )
+    assert result.exit_code == 1  # default 20 cases cannot come from the tiny fixture
+    assert "Artifacts so far are in" in result.stdout

@@ -58,13 +58,22 @@ Legend: `[x]` done · `[ ]` open · `(S)` stretch.
       judge distrusted below 75% canary accuracy
 - [x] Failure classifier (wrong refusal > retrieval miss > hallucination > prompt defect)
 - [x] `forge evalgen`, `forge evaluate`; agent calls first, judge calls after (one model swap)
+- [x] 4.1 fixes from the first real run: out-of-scope answerability check, fact hygiene,
+      context-dependent question filter, similarity-based pairing, judge evidence check
 
 ## Phase 5 — Optimizer + report (branch `phase-5-optimizer`)
-- [ ] Failure classifier (signals first, LLM tiebreak)
-- [ ] Critic → typed patches → apply → re-run dev → keep/revert
-- [ ] Iteration loop (≤ 3) + changelog
-- [ ] Scorecard + `report.md` (holdout headline, open failures, assumptions, judge reliability)
-- [ ] (S) Budget early stop · (S) Prompt tournament
+- [x] Typed patches (top_k, chunk size, retrieval mode, threshold, add rule, add refuse topic),
+      each naming its failure category and target cases; versioned definitions
+- [x] Critic: mechanical fixes computed from evidence first (retrieval, threshold), model-written
+      rules second; rules that contain an expected answer are rejected (anti-overfitting)
+- [x] Loop ≤ 3 iterations, ≤ 3 candidates each: keep only if dev rises with zero regressions
+- [x] Change log: what, why, targets, fixed/broken cases, dev before/after, tokens
+- [x] Report: holdout headline with Wilson 95% interval, before vs after, per-iteration dev
+      scorecard, open failures by category with reasons, judge trust, gaps, assumptions, cost
+- [x] (S) Budget early stop: stop when the remaining budget cannot cover another evaluation,
+      or when an iteration finds no improving patch
+- [x] (S) Prompt tournament (`--tournament`)
+- [x] `forge build`: the whole factory unattended, with `--resume`
 
 ## Phase 6 — Demo runs (branch `phase-6-demos`)
 - [ ] Synthesis prompts + HR docs (3 PDFs) + port-call docs (CSV + 2 PDFs)

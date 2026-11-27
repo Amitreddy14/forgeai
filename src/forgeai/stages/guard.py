@@ -70,7 +70,7 @@ def verify_judgement(topic: Topic, judgement: TopicJudgement, hits: list[Hit]) -
     )
 
 
-async def _check_topic(ctx: ForgeContext, index: HybridIndex, topic: Topic) -> GroundingCheck:
+async def check_topic(ctx: ForgeContext, index: HybridIndex, topic: Topic) -> GroundingCheck:
     query = f"{topic.topic}. {topic.detail}".strip()
     hits = index.search(query, RetrievalConfig(top_k=GUARD_TOP_K))
     if not hits:
@@ -114,7 +114,7 @@ async def check_groundability(
     ctx: ForgeContext, req: Requirements, corpus: Corpus, index: HybridIndex
 ) -> GroundabilityReport:
     with stage("guard"):
-        checks = await asyncio.gather(*(_check_topic(ctx, index, t) for t in req.document_topics))
+        checks = await asyncio.gather(*(check_topic(ctx, index, t) for t in req.document_topics))
     return GroundabilityReport(checks=[*checks, *_tool_checks(req, corpus)])
 
 

@@ -24,14 +24,28 @@ from forgeai.errors import ModelOutputError
 from forgeai.ingest import chunk_corpus
 from forgeai.llm import ChatMessage, complete_json, stage
 from forgeai.prompts import render
+from forgeai.retrieval import Embedder, HybridIndex
 from forgeai.schemas.corpus import Chunk, ChunkingConfig, Corpus, Document
 from forgeai.schemas.evals import Category, EvalCase, EvalSet, ExpectedSource, RejectedCase
-from forgeai.schemas.requirements import Requirements
+from forgeai.schemas.requirements import Requirements, Topic
 from forgeai.stages.context import ForgeContext
-from forgeai.textutil import contains_fact, contains_quote, word_jaccard
+from forgeai.stages.guard import check_topic
+from forgeai.textutil import contains_fact, contains_quote, normalize, word_jaccard
 from forgeai.tools.calculator import format_number
 
 MIN_CASES = 20
+MAX_FACT_WORDS = 10
+_CONTEXT_DEPENDENT = re.compile(
+    r"\b(this|that|the above|the following|the given|the attached)\s+"
+    r"(policy|document|passage|text|section|file|excerpt)\b",
+    re.IGNORECASE,
+)
+_GENERIC = frozenset(
+    (
+        "the a an and or of for to in on at by with is are be can may must what which who how "
+        "many much does do per any all staff employee employees policy inr usd eur"
+    ).split()
+)
 DEV_FRACTION = 0.6
 DUPLICATE_JACCARD = 0.7
 MIN_PASSAGE_WORDS = 25
@@ -107,14 +121,26 @@ def select_passages(corpus: Corpus, chunks: list[Chunk], limit: int) -> list[Chu
     return picked
 
 
-def _pairs(corpus: Corpus, passages: list[Chunk], limit: int) -> list[tuple[Chunk, Chunk]]:
+def _pairs(
+    corpus: Corpus, passages: list[Chunk], limit: int, embedder: Embedder
+) -> list[tuple[Chunk, Chunk]]:
+    """Pair passages from different documents that talk about related things (highest
+    embedding similarity first), so a two-source question is natural, not forced."""
     prose = [c for c in passages if (d := corpus.get(c.doc_id)) is not None and d.kind != "csv"]
     cross = [(a, b) for i, a in enumerate(prose) for b in prose[i + 1 :] if a.doc_id != b.doc_id]
     if not cross:  # single document: pair different sections instead
         cross = [
             (a, b) for i, a in enumerate(prose) for b in prose[i + 1 :] if a.heading != b.heading
         ]
-    cross.sort(key=lambda p: _stable_key(p[0].chunk_id + p[1].chunk_id))
+    if not cross:
+        return []
+    vectors = embedder.embed_documents([c.text for c in prose])
+    position = {c.chunk_id: i for i, c in enumerate(prose)}
+
+    def similarity(pair: tuple[Chunk, Chunk]) -> float:
+        return float(vectors[position[pair[0].chunk_id]] @ vectors[position[pair[1].chunk_id]])
+
+    cross.sort(key=lambda p: (-round(similarity(p), 4), _stable_key(p[0].chunk_id + p[1].chunk_id)))
     out: list[tuple[Chunk, Chunk]] = []
     used: set[str] = set()
     for a, b in cross:
@@ -130,6 +156,29 @@ def _pairs(corpus: Corpus, passages: list[Chunk], limit: int) -> list[tuple[Chun
 # ---------- Validation ----------------------------------------------------------------
 
 
+def _content_words(text: str) -> set[str]:
+    return {w for w in normalize(text).split() if w not in _GENERIC and not w.isdigit()}
+
+
+def clean_facts(question: str, facts: list[str]) -> list[str]:
+    """Keep facts that are short and answer what was asked.
+
+    Small models pad key facts with whole sentences or with rules the question never
+    asked about; such facts would fail a correct answer. The first fact is the direct
+    answer; later facts must share at least two content words with the question.
+    """
+    out: list[str] = []
+    q_words = _content_words(question)
+    for i, raw in enumerate(facts):
+        fact = raw.strip().rstrip(".;").strip()
+        if not fact or len(fact.split()) > MAX_FACT_WORDS:
+            continue
+        if i > 0 and len(_content_words(fact) & q_words) < 2:
+            continue
+        out.append(fact)
+    return out
+
+
 def validate_candidate(
     category: Category,
     question: str,
@@ -139,6 +188,10 @@ def validate_candidate(
     """Return a rejection reason, or None if the case is sound."""
     if len(question.strip()) < 8:
         return "question too short"
+    if _CONTEXT_DEPENDENT.search(question):
+        return "question depends on unseen context (e.g. 'this policy')"
+    if category != "out_of_scope" and not facts:
+        return "no short, relevant key fact"
     for _doc_id, quote, passage in quotes:
         if not contains_quote(passage, quote):
             return "quote is not a verbatim span of the source passage"
@@ -208,7 +261,7 @@ async def _single_passage_case(
     except ModelOutputError as exc:
         rejected.append(RejectedCase(category=category, question="", reason=f"model output: {exc}"))
         return None
-    facts = [f.strip() for f in out.key_facts if f.strip()]
+    facts = clean_facts(out.question, out.key_facts)
     reason = validate_candidate(
         category, out.question, facts, [(chunk.doc_id, out.quote, chunk.text)]
     )
@@ -266,7 +319,12 @@ async def _multi_doc_case(
             )
         )
         return None
-    facts = [out.fact_a.strip(), out.fact_b.strip()]
+    facts = [f.strip().rstrip(".;").strip() for f in (out.fact_a, out.fact_b)]
+    if any(len(f.split()) > MAX_FACT_WORDS for f in facts):
+        rejected.append(
+            RejectedCase(category="multi_doc", question=out.question, reason="key fact too long")
+        )
+        return None
     reason = validate_candidate(
         "multi_doc",
         out.question,
@@ -325,8 +383,23 @@ async def _refusal_cases(
             RejectedCase(category="out_of_scope", question="", reason=f"model output: {exc}")
         )
         return []
+    items = [i for i in out.questions[: count + 2] if not _CONTEXT_DEPENDENT.search(i.question)]
+    index = HybridIndex(chunks, ctx.embedder)
+    checks = await asyncio.gather(
+        *(check_topic(ctx, index, Topic(topic=i.question.strip())) for i in items)
+    )
     candidates: list[_Candidate] = []
-    for item in out.questions[: count + 2]:
+    for item, check in zip(items, checks, strict=True):
+        if check.verdict != "unsupported":
+            # The model wrote a question the documents DO answer: not out of scope.
+            rejected.append(
+                RejectedCase(
+                    category="out_of_scope",
+                    question=item.question,
+                    reason=f'answerable from the documents ({check.chunk_id}: "{check.quote}")',
+                )
+            )
+            continue
         case = EvalCase(
             id="",
             category="out_of_scope",
@@ -505,7 +578,7 @@ async def generate_evals(
             ),
             *(
                 _multi_doc_case(ctx, req, corpus, a, b, rejected)
-                for a, b in _pairs(corpus, pool, targets.multi_doc)
+                for a, b in _pairs(corpus, pool, targets.multi_doc, ctx.embedder)
             ),
         ]
         singles = [c for c in await asyncio.gather(*jobs) if c is not None]
