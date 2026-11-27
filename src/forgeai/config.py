@@ -39,6 +39,7 @@ class Settings(BaseSettings):
 
     # Web app.
     allow_builds: bool = True
+    warm_chat: bool = False  # build chat runtimes at startup (hosted)
     max_upload_mb: int = Field(default=10, ge=1, le=50)
     max_upload_files: int = Field(default=10, ge=1, le=50)
     pass_mark: float = Field(default=0.7, ge=0.0, le=1.0)

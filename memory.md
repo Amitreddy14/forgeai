@@ -14,6 +14,14 @@ the instance then failed twice (Render events "Instance failed"). Two causes fix
 - Chat errors are now logged; a broken-format reply gets its own message (502).
 - `HEAD /` answers 200 (Render's uptime probe got 405).
 
+Phase 7.2: the instance failures were really "HTTP health check failed (timed out after
+5 seconds)". Building a chat runtime embeds the whole corpus synchronously inside the
+async handler; on 0.1 CPU that blocks the event loop long enough for Render to kill the
+instance. Runtime builds and per-question retrieval now run in a worker thread (one
+lock, built once), and with FORGE_WARM_CHAT=true (set in render.yaml) both demo
+runtimes are built at startup. Model failures now name the cause (bad key, unknown
+model, HTTP status) instead of a generic "did not answer".
+
 ## 2026-11-28 — Phase 6.4 (fourth demo runs)
 
 HR: optimizer kept "future financial forecasts" refuse topic (87% -> 93% dev). Port: Kochi
