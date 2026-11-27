@@ -2,6 +2,21 @@
 
 Newest first. Decisions, bugs, changes, and anything the next session must know.
 
+## 2026-11-27 — Phase 3
+
+- Real-model check (hr-mini, qwen2.5:7b): intake + guard ran end to end and flagged the
+  planted "salary band" gap. Warm qwen on the 4060: ~85 tok/s, 100% GPU.
+- `OLLAMA_CONTEXT_LENGTH` env var was not picked up (ollama ps showed 4096), so named
+  variants with `PARAMETER num_ctx 8192` are used: `qwen2.5-8k`, `llama3.1-8k`.
+- Tool contract = capability in requirements AND evidence in the human's own words
+  (brief + requester answers, not proxy answers) — or a CSV for table lookup. Evidence
+  word lists avoid generic words ("current", "date", "now") that HR briefs use.
+- Code chooses chunking/top-k/threshold; the 7B model only writes prose (role, rules,
+  refusal line). Threshold is off when must-answer and must-refuse topics overlap.
+- Runtime makes 1 model call per question when no tools are attached (no plan step).
+- Calculator strips only thousands separators (a plain comma strip broke `round(x, 2)`).
+- Windows needs the `tzdata` package for zoneinfo.
+
 ## 2026-11-27 — Phase 2
 
 - `forge smoke` on Amit's laptop: both models return valid JSON, but 55 s (qwen) / 26 s

@@ -34,11 +34,16 @@ Legend: `[x]` done · `[ ]` open · `(S)` stretch.
 - [x] Prompts as versioned `.md` templates; `data/examples/hr-mini` for quick real-model runs
 
 ## Phase 3 — Agent (branch `phase-3-agent`)
-- [ ] Tool registry: `csv_lookup`, `calculator` (AST), `weather` (open-meteo), `current_date`
-- [ ] Tool-need contracts + check
-- [ ] Agent generator → `AgentDefinition` v0 (prompt, chunking, retrieval, tools, contract)
-- [ ] Runtime agent loop (plan → act → answer → check)
-- [ ] `forge chat <definition>` CLI runner
+- [x] Tool registry: `csv_lookup` (typed filters), `calculator` (AST, no eval), `weather`
+      (open-meteo + marine, fixed hosts), `current_date` (injected clock, tzdata)
+- [x] Tool-need contracts: requirement capability AND the human's own words (or a CSV) —
+      unjustified proposals rejected, required-but-omitted tools added, all logged
+- [x] Agent generator → `AgentDefinition` v0: model writes role prompt / rules / refusal line;
+      code sets chunk size (median section), top-k (corpus shape), calibrated refusal threshold
+- [x] Runtime loop: retrieve → plan/act (≤3 steps, only if tools) → answer → verify citations
+      → one repair → grounded flag; threshold refusal skips the model
+- [x] `forge generate`, `forge chat` (any definition; warns when documents changed)
+- [x] Ollama Modelfiles pinning an 8k context (`ollama/`)
 
 ## Phase 4 — Evals + judge (branch `phase-4-evals`)
 - [ ] Eval generator: answerable / out-of-scope / ambiguous / two-document, ≥ 20, quotas

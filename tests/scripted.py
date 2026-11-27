@@ -84,3 +84,22 @@ def responder(messages: list[ChatMessage], guard: dict[str, dict[str, str]] = GU
         name = topic.group(1).strip() if topic else ""
         return json.dumps(guard.get(name, {"status": "unsupported"}))
     raise AssertionError(f"unscripted task {task!r}")
+
+
+AGENT_DRAFT = {
+    "role_prompt": (
+        "You are the Shore Staff HR Desk. You help shore-based employees understand "
+        "the company's leave and travel policies, using only the policy documents."
+    ),
+    "rules": ["Name the policy section you used.", "Give amounts with their currency."],
+    "refusal_message": "I can't help with that here; please contact HR at hr@example.com.",
+    "tools": [
+        {"name": "weather", "justification": "staff may travel"},  # must be rejected
+    ],
+}
+
+
+def generator_responder(messages: list[ChatMessage]) -> str:
+    if _task(messages) == "generate.agent":
+        return json.dumps(AGENT_DRAFT)
+    return responder(messages)

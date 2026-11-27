@@ -5,7 +5,7 @@ documents. It interviews you, checks that the documents can support the brief, b
 grounded agent, writes its own test set, judges the results, fixes what failed (up to 3
 times), and hands back the agent with an honest report of what still fails and why.
 
-> Status: Phase 2 (requirements). See [task.md](task.md) for progress.
+> Status: Phase 3 (agent generator + runtime). See [task.md](task.md) for progress.
 
 ## Why it can be trusted
 
@@ -28,7 +28,7 @@ python -m venv .venv
 source .venv/bin/activate          # Windows: .venv\Scripts\activate
 pip install -e ".[dev]"
 cp .env.example .env               # Windows: copy .env.example .env
-ollama pull qwen2.5:7b && ollama pull llama3.1:8b
+ollama pull qwen2.5:7b && ollama pull llama3.1:8b   # then see ollama/README.md
 forge doctor                       # checks settings and the model endpoint
 forge smoke                        # one structured-JSON call per model, timed
 forge ingest path/to/docs          # what was extracted and how it chunks
@@ -37,10 +37,12 @@ forge search path/to/docs "how many days of annual leave?"
 # Intake + groundability guard on the small example (about 8 model calls)
 forge intake --brief data/examples/hr-mini/brief.md --docs data/examples/hr-mini/docs \
   --answers auto --run-id scratch-hr-mini
+forge generate --run-id scratch-hr-mini --docs data/examples/hr-mini/docs
+forge chat runs/scratch-hr-mini/agent.v0.json
 ```
 
-For Ollama, set `OLLAMA_CONTEXT_LENGTH=8192` before `ollama serve` so long prompts are
-not silently truncated.
+For Ollama, create the 8k-context model variants in [`ollama/`](ollama/README.md) so long
+prompts are not silently truncated.
 
 Run the web app: `uvicorn forgeai.web.app:app --reload`, then open
 http://localhost:8000/healthz.
