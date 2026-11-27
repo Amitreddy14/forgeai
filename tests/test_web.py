@@ -187,3 +187,7 @@ def test_builds_can_be_switched_off(runs_dir: Path) -> None:
     assert "switched off" in client.get("/new").text
     response = client.post("/builds", data={"brief": "x" * 30}, files=[("files", ("a.md", b"a"))])
     assert response.status_code == 403
+
+
+def test_home_answers_head_for_uptime_checks(client: TestClient) -> None:
+    assert client.head("/").status_code == 200

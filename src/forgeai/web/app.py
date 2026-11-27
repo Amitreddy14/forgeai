@@ -20,7 +20,7 @@ from fastapi.templating import Jinja2Templates
 
 from forgeai import __version__
 from forgeai.config import Settings, get_settings
-from forgeai.errors import ForgeError
+from forgeai.errors import ForgeError, ModelOutputError
 from forgeai.ingest.loaders import ALLOWED
 from forgeai.llm import Budget
 from forgeai.llm.factory import build_llm
@@ -130,7 +130,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     async def healthz() -> dict[str, str]:
         return {"status": "ok", "version": __version__}
 
-    @app.get("/", response_class=HTMLResponse)
+    @app.api_route("/", methods=["GET", "HEAD"], response_class=HTMLResponse)
     async def builds(request: Request) -> HTMLResponse:
         return templates.TemplateResponse(
             request,
@@ -201,7 +201,14 @@ def create_app(settings: Settings | None = None) -> FastAPI:
             raise HTTPException(
                 status_code=503, detail="The agent's documents are missing on this server."
             ) from exc
+        except ModelOutputError as exc:
+            log.warning("chat %s: model output unusable: %s", run_id, exc)
+            raise HTTPException(
+                status_code=502,
+                detail="The model answered in a broken format. Ask again, or rephrase.",
+            ) from exc
         except ForgeError as exc:
+            log.warning("chat %s: model call failed: %s", run_id, exc)
             raise HTTPException(
                 status_code=503, detail="The model server did not answer. Try again shortly."
             ) from exc

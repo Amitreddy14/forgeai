@@ -243,3 +243,32 @@ async def test_build_llm_wires_cache_and_budget(tmp_path: Path) -> None:
         assert isinstance(stack.llm, BudgetedLLM)
     finally:
         await stack.aclose()
+
+
+async def test_client_hands_back_groq_json_validation_failure() -> None:
+    body = {
+        "error": {
+            "message": "Failed to generate JSON.",
+            "type": "invalid_request_error",
+            "code": "json_validate_failed",
+            "failed_generation": '{"answer": "half',
+        }
+    }
+    client = OpenAICompatClient(
+        "http://x/v1", transport=httpx.MockTransport(lambda _r: httpx.Response(400, json=body))
+    )
+    async with client:
+        out = await client.complete(user("hi"), model="m", json_schema={"type": "object"})
+    assert out.text == '{"answer": "half'
+
+
+async def test_client_still_raises_on_other_400s() -> None:
+    client = OpenAICompatClient(
+        "http://x/v1",
+        transport=httpx.MockTransport(
+            lambda _r: httpx.Response(400, json={"error": {"code": "model_not_found"}})
+        ),
+    )
+    async with client:
+        with pytest.raises(ModelUnavailable, match="400"):
+            await client.complete(user("hi"), model="m")
