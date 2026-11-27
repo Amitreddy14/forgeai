@@ -1,0 +1,133 @@
+{
+  "brief": "I need an assistant that answers HR policy questions for our shore staff in the Kochi\nand Mumbai offices: leave, travel bookings and expense claims, and conduct rules such as\ngifts, remote work and how to raise a grievance. It should also tell each employee how\nmany leave days they have left this year.",
+  "corpus": {
+    "documents": [
+      {
+        "doc_id": "code-of-conduct",
+        "title": "Code of Conduct and Grievance Procedure",
+        "kind": "pdf",
+        "pages": 2,
+        "words": 533,
+        "headings": [
+          "1. Purpose",
+          "2. Working hours and attendance",
+          "3. Remote work",
+          "4. Gifts and hospitality",
+          "5. Conflicts of interest",
+          "6. Confidential information",
+          "7. Harassment and the Internal Committee",
+          "8. Grievance procedure",
+          "9. Disciplinary action"
+        ],
+        "columns": null,
+        "sample_rows": []
+      },
+      {
+        "doc_id": "leave-policy",
+        "title": "Leave Policy for Shore Staff",
+        "kind": "pdf",
+        "pages": 2,
+        "words": 528,
+        "headings": [
+          "1. Scope",
+          "2. Annual leave",
+          "3. Carry forward and encashment",
+          "4. Sick leave",
+          "5. Maternity, paternity and adoption leave",
+          "6. Bereavement and compassionate leave",
+          "7. Public holidays",
+          "8. Applying for leave",
+          "9. Leave without pay"
+        ],
+        "columns": null,
+        "sample_rows": []
+      },
+      {
+        "doc_id": "travel-expenses-policy",
+        "title": "Travel and Expenses Policy",
+        "kind": "pdf",
+        "pages": 2,
+        "words": 476,
+        "headings": [
+          "1. Scope",
+          "2. Approval",
+          "3. Air travel",
+          "4. Hotels",
+          "5. Daily allowance",
+          "6. Local transport",
+          "7. Travel advances",
+          "8. Expense claims",
+          "9. Non-reimbursable expenses"
+        ],
+        "columns": null,
+        "sample_rows": []
+      }
+    ],
+    "skipped": []
+  },
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Is the assistant intended for use by all shore staff or only specific roles?",
+      "why": "Determines the scope of the assistant and who needs access.",
+      "default_answer": "All shore staff."
+    },
+    {
+      "id": "q2",
+      "question": "Should the assistant be able to handle real-time data or computations?",
+      "why": "Decides if live data or computation is needed, e.g., today's date, weather.",
+      "default_answer": "No, it should not handle real-time data or computations."
+    },
+    {
+      "id": "q3",
+      "question": "Are there specific HR policies that must be refused or not followed by the assistant?",
+      "why": "Identifies policies that the assistant must not support.",
+      "default_answer": "No specific policies."
+    },
+    {
+      "id": "q4",
+      "question": "Should the assistant provide information on remote work policies?",
+      "why": "Determines if remote work policies are part of the assistant's scope.",
+      "default_answer": "Yes, it should include remote work policies."
+    },
+    {
+      "id": "q5",
+      "question": "Is there a need for the assistant to look up table rows or specific data from the documents?",
+      "why": "Decides if the assistant needs to reference specific data from the documents.",
+      "default_answer": "No, it should not look up table rows or specific data."
+    }
+  ],
+  "answers": [
+    {
+      "question_id": "q1",
+      "question": "Is the assistant intended for use by all shore staff or only specific roles?",
+      "answer": "All shore staff.",
+      "source": "default"
+    },
+    {
+      "question_id": "q2",
+      "question": "Should the assistant be able to handle real-time data or computations?",
+      "answer": "No, it should not handle real-time data or computations.",
+      "source": "default"
+    },
+    {
+      "question_id": "q3",
+      "question": "Are there specific HR policies that must be refused or not followed by the assistant?",
+      "answer": "No specific policies.",
+      "source": "default"
+    },
+    {
+      "question_id": "q4",
+      "question": "Should the assistant provide information on remote work policies?",
+      "answer": "Yes, it should include remote work policies.",
+      "source": "brief"
+    },
+    {
+      "question_id": "q5",
+      "question": "Is there a need for the assistant to look up table rows or specific data from the documents?",
+      "answer": "No, it should not look up table rows or specific data.",
+      "source": "default"
+    }
+  ],
+  "mode": "auto"
+}

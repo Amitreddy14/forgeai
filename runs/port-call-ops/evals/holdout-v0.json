@@ -1,0 +1,541 @@
+{
+  "agent_version": 0,
+  "split": "holdout",
+  "results": [
+    {
+      "case": {
+        "id": "c01",
+        "category": "answerable",
+        "question": "What is the maximum length of a vessel that can berth at berth KOC-CT1 in Kochi?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "berths",
+            "quote": "berth_id: KOC-CT1; port: Kochi; terminal: Vallarpadam Container Terminal; berth_type: container; max_loa_m: 350;"
+          }
+        ],
+        "key_facts": [
+          "max_loa_m: 350"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from berths p.4",
+        "origin": "llm",
+        "split": "holdout"
+      },
+      "answer": "The maximum length of a vessel that can berth at berth KOC-CT1 in Kochi is 350 meters.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.7807,
+      "citations": [
+        "berths:r4"
+      ],
+      "tool_calls": [
+        "csv_lookup:ok",
+        "PlannedCall:failed",
+        "max_length_of_vessel:failed"
+      ],
+      "latency_s": 10.369,
+      "judgement": {
+        "case_id": "c01",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "max_loa_m: 350",
+            "status": "present",
+            "by": "judge"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": true
+      }
+    },
+    {
+      "case": {
+        "id": "c05",
+        "category": "answerable",
+        "question": "What surcharge applies to pilotage and towage performed between 22:00 and 06:00 or on a public holiday?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-tariff-schedule",
+            "quote": "Pilotage and towage performed between 22:00 and 06:00, or on a public holiday, attract a surcharge of 25 percent."
+          }
+        ],
+        "key_facts": [
+          "25 percent"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from port-tariff-schedule p.1 — 6. Overtime and holidays",
+        "origin": "llm",
+        "split": "holdout"
+      },
+      "answer": "A surcharge of 25 percent applies to pilotage and towage performed between 22:00 and 06:00, or on a public holiday.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8304,
+      "citations": [
+        "port-tariff-schedule:p1:c6"
+      ],
+      "tool_calls": [],
+      "latency_s": 13.131,
+      "judgement": {
+        "case_id": "c05",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "25 percent",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c08",
+        "category": "answerable",
+        "question": "What is the minimum pilotage fee per movement?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-tariff-schedule",
+            "quote": "The pilotage fee is USD 0.18 per GT for each inward or outward movement, subject to a minimum of USD 1,200 per movement."
+          }
+        ],
+        "key_facts": [
+          "USD 1,200 per movement"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from port-tariff-schedule p.1 — 3. Pilotage",
+        "origin": "llm",
+        "split": "holdout"
+      },
+      "answer": "The minimum pilotage fee per movement is USD 90.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8827,
+      "citations": [
+        "port-tariff-schedule:p1:c3"
+      ],
+      "tool_calls": [
+        "calculator:ok",
+        "calculator:ok"
+      ],
+      "latency_s": 15.041,
+      "judgement": {
+        "case_id": "c08",
+        "passed": false,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "USD 1,200 per movement",
+            "status": "contradicted",
+            "by": "judge"
+          }
+        ],
+        "failure": "hallucination",
+        "reason": "facts not stated correctly: USD 1,200 per movement",
+        "judge_used": true
+      }
+    },
+    {
+      "case": {
+        "id": "c11",
+        "category": "answerable",
+        "question": "What percentage of port dues must vessels calling only for bunkering, crew change or stores pay?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-tariff-schedule",
+            "quote": "Vessels calling only for bunkering, crew change or stores, and staying less than 24 hours, pay 50 percent of port dues."
+          }
+        ],
+        "key_facts": [
+          "50 percent of port dues"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from port-tariff-schedule p.1 — 2. Port dues",
+        "origin": "llm",
+        "split": "holdout"
+      },
+      "answer": "Vessels calling only for bunkering, crew change or stores, and staying less than 24 hours, pay 50 percent of port dues.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8391,
+      "citations": [
+        "port-tariff-schedule:p1:c2"
+      ],
+      "tool_calls": [],
+      "latency_s": 17.568,
+      "judgement": {
+        "case_id": "c11",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "50 percent of port dues",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c13",
+        "category": "ambiguous",
+        "question": "What's the rule for bunkering at anchorage?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-notices",
+            "quote": "Bunkering at anchorage is allowed in daylight hours only and is suspended when the wind exceeds 20 knots."
+          }
+        ],
+        "key_facts": [
+          "allowed in daylight hours only"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from port-notices p.1 — 6. Bunkering",
+        "origin": "llm",
+        "split": "holdout"
+      },
+      "answer": "Bunkering at anchorage is allowed in daylight hours only and is suspended when the wind exceeds 20 knots.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8607,
+      "citations": [
+        "port-notices:p1:c6"
+      ],
+      "tool_calls": [],
+      "latency_s": 19.551,
+      "judgement": {
+        "case_id": "c13",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "allowed in daylight hours only",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c19",
+        "category": "multi_doc",
+        "question": "How many hours before arrival must the pre-arrival notification be submitted? Also, how long is this tariff schedule valid from?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-notices",
+            "quote": "The vessel's agent must submit the pre-arrival notification at least 72 hours before the estimated time of arrival, or on departure from the last port if the voyage is shorter than 72 hours."
+          },
+          {
+            "doc_id": "port-tariff-schedule",
+            "quote": "Port Tariff Schedule 2026 (Kochi and Mumbai) Synthetic document for demonstration. The figures below are invented and are not the tariffs of any real port authority. Valid from 1 April 2026 to 31 March 2027."
+          }
+        ],
+        "key_facts": [
+          "at least 72 hours before the estimated time of arrival",
+          "Valid from 1 April 2026 to 31 March 2027"
+        ],
+        "expected_tool": null,
+        "rationale": "joins two verified questions from port-notices and port-tariff-schedule",
+        "origin": "llm",
+        "split": "holdout"
+      },
+      "answer": "The pre-arrival notification must be submitted at least 72 hours before the estimated time of arrival, or on departure from the last port if the voyage is shorter than 72 hours. The tariff schedule is valid from 1 April 2026 to 31 March 2027.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8169,
+      "citations": [
+        "port-notices:p1:c1",
+        "port-tariff-schedule:p1:c0"
+      ],
+      "tool_calls": [
+        "calculator:ok",
+        "csv_lookup:failed"
+      ],
+      "latency_s": 24.509,
+      "judgement": {
+        "case_id": "c19",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "at least 72 hours before the estimated time of arrival",
+            "status": "present",
+            "by": "string"
+          },
+          {
+            "fact": "Valid from 1 April 2026 to 31 March 2027",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c22",
+        "category": "tool",
+        "question": "What is the weather forecast for Kochi for the next two days?",
+        "expect_refusal": false,
+        "sources": [],
+        "key_facts": [],
+        "expected_tool": "weather",
+        "rationale": "live data: must call the weather tool, not answer from memory",
+        "origin": "template",
+        "split": "holdout"
+      },
+      "answer": "The weather forecast for Kochi for the next two days is as follows: 2026-11-28: 8.5-19.9 °C with 0.3 mm of rain, wind at 9.2 knots with gusts of 29.4 knots; 2026-11-29: 7.0-13.1 °C with 0.5 mm of rain, wind at 6.6 knots with gusts of 21.6 knots.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.6967,
+      "citations": [],
+      "tool_calls": [
+        "weather:ok"
+      ],
+      "latency_s": 40.311,
+      "judgement": {
+        "case_id": "c22",
+        "passed": false,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": false,
+          "source_cited": null,
+          "source_retrieved": null,
+          "unsupported_numbers": [],
+          "tool_ok": true,
+          "contract_error": null
+        },
+        "facts": [],
+        "failure": "hallucination",
+        "reason": "citations not verified",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c23",
+        "category": "out_of_scope",
+        "question": "Can you provide customs clearance advice for our vessel?",
+        "expect_refusal": true,
+        "sources": [],
+        "key_facts": [],
+        "expected_tool": null,
+        "rationale": "Legal or customs clearance advice: Outside scope of the assistant's capabilities",
+        "origin": "llm",
+        "split": "holdout"
+      },
+      "answer": "I'm sorry, but I can't provide legal or customs clearance advice. Please contact the appropriate department for that.",
+      "refused": true,
+      "refused_by": "model",
+      "best_dense": 0.7034,
+      "citations": [],
+      "tool_calls": [],
+      "latency_s": 25.531,
+      "judgement": {
+        "case_id": "c23",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": null,
+          "source_retrieved": null,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c25",
+        "category": "out_of_scope",
+        "question": "Could you tell me about the recent changes in port rules?",
+        "expect_refusal": true,
+        "sources": [],
+        "key_facts": [],
+        "expected_tool": null,
+        "rationale": "Near miss - related policy: While the assistant can provide current port rules, the question asks for recent changes which are not covered in the documents.",
+        "origin": "llm",
+        "split": "holdout"
+      },
+      "answer": "The recent changes in port rules are as follows: Both ports operate at ISPS security level 1 unless announced otherwise. Visitors to a vessel need a port entry pass, applied for by the agent at least 24 hours in advance. Crew shore leave requires a valid shore pass issued by immigration authorities on arrival.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.7134,
+      "citations": [
+        "port-notices:p2:c8"
+      ],
+      "tool_calls": [],
+      "latency_s": 29.024,
+      "judgement": {
+        "case_id": "c25",
+        "passed": false,
+        "checks": {
+          "refusal_ok": false,
+          "grounded": true,
+          "source_cited": null,
+          "source_retrieved": null,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [],
+        "failure": "wrong_refusal",
+        "reason": "answered a question it must refuse",
+        "judge_used": false
+      }
+    }
+  ],
+  "canaries": [
+    {
+      "kind": "correct_terse",
+      "case_id": "c02",
+      "answer": "need a port entry pass.",
+      "should_pass": true,
+      "judge_passed": true
+    },
+    {
+      "kind": "correct_padded",
+      "case_id": "c02",
+      "answer": "This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. In short: need a port entry pass. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+      "should_pass": true,
+      "judge_passed": true
+    },
+    {
+      "kind": "confident_omission",
+      "case_id": "c02",
+      "answer": "Yes, absolutely. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+      "should_pass": false,
+      "judge_passed": false
+    },
+    {
+      "kind": "correct_terse",
+      "case_id": "c03",
+      "answer": "3 tugs.",
+      "should_pass": true,
+      "judge_passed": true
+    },
+    {
+      "kind": "correct_padded",
+      "case_id": "c03",
+      "answer": "This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. In short: 3 tugs. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+      "should_pass": true,
+      "judge_passed": true
+    },
+    {
+      "kind": "confident_omission",
+      "case_id": "c03",
+      "answer": "Yes, absolutely. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+      "should_pass": false,
+      "judge_passed": false
+    },
+    {
+      "kind": "wrong_number",
+      "case_id": "c03",
+      "answer": "According to the policy: 13 tugs.",
+      "should_pass": false,
+      "judge_passed": false
+    }
+  ],
+  "scorecard": {
+    "agent_version": 0,
+    "splits": {
+      "holdout": {
+        "cases": 9,
+        "passed": 6,
+        "pass_rate": 0.6667,
+        "by_category": {
+          "ambiguous": 1.0,
+          "answerable": 0.75,
+          "multi_doc": 1.0,
+          "out_of_scope": 0.5,
+          "tool": 0.0
+        },
+        "failures": {
+          "hallucination": 2,
+          "wrong_refusal": 1
+        },
+        "refusal_accuracy": 0.8889,
+        "groundedness": 0.8571,
+        "fact_recall": 0.8571
+      }
+    },
+    "judge_canary_accuracy": 1.0,
+    "judge_trusted": true,
+    "mean_latency_s": 21.67
+  }
+}

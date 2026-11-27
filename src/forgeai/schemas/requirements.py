@@ -2,9 +2,9 @@
 
 from __future__ import annotations
 
-from typing import Literal
+from typing import Any, Literal
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, Field, field_validator, model_validator
 
 MAX_QUESTIONS = 5
 
@@ -88,9 +88,23 @@ class Topic(BaseModel):
     topic: str = Field(min_length=2, description="Short name, e.g. 'annual leave entitlement'.")
     detail: str = Field(default="", description="What exactly must be covered.")
     answered_from: Literal["documents", "tool"] = "documents"
-    tool_hint: ToolHint | None = Field(
-        default=None, description="Only when answered_from is 'tool'."
+    tool_hints: list[ToolHint] = Field(
+        default_factory=list,
+        description="Capabilities this topic needs beyond reading the documents.",
     )
+
+    @model_validator(mode="before")
+    @classmethod
+    def _accept_single_hint(cls, data: Any) -> Any:
+        """Models often write `tool_hint: "weather"`; accept it as a one-item list."""
+        if isinstance(data, dict) and "tool_hint" in data:
+            data = dict(data)
+            hint = data.pop("tool_hint")
+            hints = list(data.get("tool_hints") or [])
+            if hint and hint not in hints:
+                hints.append(hint)
+            data["tool_hints"] = hints
+        return data
 
 
 class RefuseTopic(BaseModel):
@@ -123,11 +137,12 @@ class Requirements(RequirementsDraft):
 
     @property
     def document_topics(self) -> list[Topic]:
-        return [t for t in self.must_answer if t.answered_from == "documents"]
+        """Topics answered purely from prose; tool topics are checked differently."""
+        return [t for t in self.must_answer if t.answered_from == "documents" and not t.tool_hints]
 
     @property
     def tool_hints(self) -> set[str]:
-        return {t.tool_hint for t in self.must_answer if t.tool_hint}
+        return {h for t in self.must_answer for h in t.tool_hints}
 
 
 # ---------- Groundability -------------------------------------------------------------
@@ -146,6 +161,7 @@ class TopicJudgement(BaseModel):
 
 class GroundingCheck(BaseModel):
     topic: str
+    kind: Literal["documents", "personal_records", "table"] = "documents"
     claimed: SupportStatus
     verdict: SupportStatus
     chunk_id: str | None = None

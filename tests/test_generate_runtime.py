@@ -252,3 +252,14 @@ async def test_agent_markdown_lists_tools_and_prompt(tmp_path: Path, docs: Path)
     assert "**csv_lookup**" in md
     assert "Added by contract (generator omitted them): csv_lookup" in md
     assert callable(agent_markdown)
+
+
+async def test_system_prompt_says_tool_results_are_evidence(tmp_path: Path, docs: Path) -> None:
+    """Second real port run: the weather tool returned a forecast and the agent still
+    refused, because nothing said tool output counts when the documents are silent."""
+    definition, _ = await _generated(tmp_path, docs)
+    prompt = system_prompt(definition)
+    assert "Tool results are live, trusted evidence" in prompt
+    assert "TOOLS: csv_lookup" in prompt
+    no_tools = system_prompt(definition.model_copy(update={"tools": []}))
+    assert "TOOLS:" not in no_tools

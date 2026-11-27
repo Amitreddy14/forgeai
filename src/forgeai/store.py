@@ -43,6 +43,20 @@ def new_run_id(slug: str) -> str:
     return validate_run_id(f"{base}-{stamp}")
 
 
+def _plain(value: Any) -> Any:
+    """JSON-ready copy: models (also nested in lists and dicts) become plain data.
+    Anything else that JSON cannot hold is a bug, so it raises instead of str()-ing."""
+    if isinstance(value, BaseModel):
+        return value.model_dump(mode="json")
+    if isinstance(value, dict):
+        return {str(k): _plain(v) for k, v in value.items()}
+    if isinstance(value, list | tuple):
+        return [_plain(v) for v in value]
+    if value is None or isinstance(value, str | int | float | bool):
+        return value
+    raise TypeError(f"cannot store {type(value).__name__} as JSON")
+
+
 class RunStore:
     def __init__(self, runs_dir: Path, run_id: str) -> None:
         self.run_id = validate_run_id(run_id)
@@ -64,7 +78,7 @@ class RunStore:
         if isinstance(value, BaseModel):
             text = value.model_dump_json(indent=2)
         else:
-            text = json.dumps(value, indent=2, ensure_ascii=False, default=str)
+            text = json.dumps(_plain(value), indent=2, ensure_ascii=False)
         target.write_text(text + "\n", encoding="utf-8")
         return target
 

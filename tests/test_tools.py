@@ -211,7 +211,7 @@ def test_tool_cards_describe_arguments() -> None:
 
 def _req(brief: str, *hints: str) -> Requirements:
     topics = [Topic(topic="Leave rules")] + [
-        Topic(topic=f"topic {h}", answered_from="tool", tool_hint=h)  # type: ignore[arg-type]
+        Topic(topic=f"topic {h}", answered_from="tool", tool_hints=[h])  # type: ignore[arg-type]
         for h in hints
     ]
     return Requirements(
@@ -295,3 +295,52 @@ def test_requester_answers_count_as_evidence_but_csv_is_required() -> None:
     req = _req("Help port agents.", "current_date", "table_lookup")
     sel = select_tools([], req, _corpus(False), ["We need days until the berth booking expires"])
     assert [t.name for t in sel.attached] == ["current_date"]
+
+
+# ---------- Phase 6.1: capabilities inferred from topic text ---------------------------
+
+
+def _port_corpus() -> Corpus:
+    berths = Document(
+        doc_id="berths",
+        filename="berths.csv",
+        kind="csv",
+        title="berths",
+        columns=["berth_id", "port", "max_loa_m", "max_draft_m", "daily_berth_hire_usd"],
+        pages=[Page(number=1, text="Row 1: berth_id: KOC-Q1")],
+    )
+    notices = Document(
+        doc_id="notices",
+        filename="n.pdf",
+        kind="pdf",
+        title="N",
+        pages=[Page(number=1, text="text")],
+    )
+    return Corpus(root=".", documents=[berths, notices])
+
+
+@pytest.mark.parametrize(
+    ("text", "hints"),
+    [
+        # The real port run: the 7B model marked all three of these as "documents".
+        ("Berth allocation. Find berths that fit a vessel's length and draft.", ["table_lookup"]),
+        (
+            "Weather forecast. Check the wind and weather forecast for the arrival window.",
+            ["weather"],
+        ),
+        (
+            "Port charges estimation. Estimate berth hire, port dues and pilotage.",
+            ["arithmetic", "table_lookup"],
+        ),
+        # One generic shared word ("port") must not drag in a table lookup.
+        ("Port rules and notices. Answer questions about notices to port users.", []),
+        (
+            "Pre-arrival deadline. How many hours before arrival is today's deadline?",
+            ["current_date"],
+        ),
+    ],
+)
+def test_infer_tool_hints(text: str, hints: list[str]) -> None:
+    from forgeai.tools.registry import infer_tool_hints
+
+    assert sorted(infer_tool_hints(text, _port_corpus())) == sorted(hints)

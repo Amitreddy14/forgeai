@@ -1,0 +1,1102 @@
+{
+  "agent_version": 2,
+  "split": "dev",
+  "results": [
+    {
+      "case": {
+        "id": "c02",
+        "category": "answerable",
+        "question": "What is the requirement for visitors to a vessel?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-notices",
+            "quote": "Visitors to a vessel need a port entry pass, applied for by the agent at least 24 hours in advance."
+          }
+        ],
+        "key_facts": [
+          "need a port entry pass"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from port-notices p.2 — 8. Security",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "Visitors to a vessel need a port entry pass, applied for by the agent at least 24 hours in advance.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.7383,
+      "citations": [
+        "port-notices:p2:c8"
+      ],
+      "tool_calls": [],
+      "latency_s": 10.816,
+      "judgement": {
+        "case_id": "c02",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "need a port entry pass",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c03",
+        "category": "answerable",
+        "question": "How many tugs are required for vessels longer than 250 meters?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-tariff-schedule",
+            "quote": "vessels longer than 250 m need 3 tugs for berthing and unberthing."
+          }
+        ],
+        "key_facts": [
+          "3 tugs"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from port-tariff-schedule p.1 — 4. Towage",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "For vessels longer than 250 meters, 3 tugs are required for berthing and unberthing.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8453,
+      "citations": [
+        "port-tariff-schedule:p1:c4"
+      ],
+      "tool_calls": [
+        "csv_lookup:failed",
+        "csv_lookup:failed",
+        "calculator:ok"
+      ],
+      "latency_s": 12.583,
+      "judgement": {
+        "case_id": "c03",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "3 tugs",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c04",
+        "category": "answerable",
+        "question": "How far south of Prongs Reef light does the pilot board at Mumbai?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-notices",
+            "quote": "At Mumbai the pilot boards 2 nautical miles south of the Prongs Reef light."
+          }
+        ],
+        "key_facts": [
+          "2 nautical miles south"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from port-notices p.1 — 2. Pilot boarding",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "The pilot boards 2 nautical miles south of the Prongs Reef light at Mumbai.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.7918,
+      "citations": [
+        "port-notices:p1:c2"
+      ],
+      "tool_calls": [],
+      "latency_s": 14.117,
+      "judgement": {
+        "case_id": "c04",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "2 nautical miles south",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c06",
+        "category": "answerable",
+        "question": "What percentage of the foreign-going rate do coastal vessels pay for port dues and pilotage?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-tariff-schedule",
+            "quote": "Coastal vessels pay 60 percent of the foreign-going rate for port dues and pilotage."
+          }
+        ],
+        "key_facts": [
+          "60 percent of the foreign-going rate"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from port-tariff-schedule p.1 — 1. Applicability",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "Coastal vessels pay 60 percent of the foreign-going rate for port dues and pilotage.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.7967,
+      "citations": [
+        "port-tariff-schedule:p1:c1"
+      ],
+      "tool_calls": [
+        "calculator:ok"
+      ],
+      "latency_s": 15.805,
+      "judgement": {
+        "case_id": "c06",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "60 percent of the foreign-going rate",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c07",
+        "category": "answerable",
+        "question": "How many hours before arrival must the pre-arrival notification be submitted?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-notices",
+            "quote": "The vessel's agent must submit the pre-arrival notification at least 72 hours before the estimated time of arrival, or on departure from the last port if the voyage is shorter than 72 hours."
+          }
+        ],
+        "key_facts": [
+          "at least 72 hours before the estimated time of arrival"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from port-notices p.1 — 1. Pre-arrival notification",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "The pre-arrival notification must be submitted at least 72 hours before the estimated time of arrival, or on departure from the last port if the voyage is shorter than 72 hours.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8733,
+      "citations": [
+        "port-notices:p1:c1"
+      ],
+      "tool_calls": [
+        "csv_lookup:failed",
+        "csv_lookup:failed",
+        "csv_lookup:failed"
+      ],
+      "latency_s": 18.306,
+      "judgement": {
+        "case_id": "c07",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "at least 72 hours before the estimated time of arrival",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c09",
+        "category": "answerable",
+        "question": "Where must vessels carrying dangerous goods anchor?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-notices",
+            "quote": "Vessels carrying dangerous goods anchor in the separate dangerous goods anchorage, at least 1 nautical mile from other vessels."
+          }
+        ],
+        "key_facts": [
+          "in the separate dangerous goods anchorage"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from port-notices p.1 — 5. Anchorage",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "Vessels carrying dangerous goods must anchor in the separate dangerous goods anchorage, at least 1 nautical mile from other vessels.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.7529,
+      "citations": [
+        "port-notices:p1:c5"
+      ],
+      "tool_calls": [],
+      "latency_s": 20.495,
+      "judgement": {
+        "case_id": "c09",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "in the separate dangerous goods anchorage",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c10",
+        "category": "answerable",
+        "question": "How long is this tariff schedule valid from?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-tariff-schedule",
+            "quote": "Port Tariff Schedule 2026 (Kochi and Mumbai) Synthetic document for demonstration. The figures below are invented and are not the tariffs of any real port authority. Valid from 1 April 2026 to 31 March 2027."
+          }
+        ],
+        "key_facts": [
+          "Valid from 1 April 2026 to 31 March 2027"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from port-tariff-schedule p.1",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "This tariff schedule is valid from 1 April 2026 to 31 March 2027.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.7506,
+      "citations": [
+        "port-tariff-schedule:p1:c0"
+      ],
+      "tool_calls": [],
+      "latency_s": 22.942,
+      "judgement": {
+        "case_id": "c10",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "Valid from 1 April 2026 to 31 March 2027",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c12",
+        "category": "answerable",
+        "question": "What are the restrictions on the Kochi approach channel during the monsoon season?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-notices",
+            "quote": "From 1 June to 30 September, the Kochi approach channel is restricted to vessels with a draft of no more than 12.5 metres, regardless of berth depth."
+          }
+        ],
+        "key_facts": [
+          "vessels with a draft of no more than 12.5 metres"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from port-notices p.1 — 3. Monsoon restrictions",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "During the monsoon season (1 June to 30 September), the Kochi approach channel is restricted to vessels with a draft of no more than 12.5 metres, regardless of berth depth.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.9129,
+      "citations": [
+        "port-notices:p1:c3"
+      ],
+      "tool_calls": [],
+      "latency_s": 25.756,
+      "judgement": {
+        "case_id": "c12",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "vessels with a draft of no more than 12.5 metres",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c14",
+        "category": "ambiguous",
+        "question": "What must the ship's agent do before docking?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-tariff-schedule",
+            "quote": "The vessel's agent must deposit 100 percent of the estimated port charges before berthing."
+          }
+        ],
+        "key_facts": [
+          "deposit 100 percent of the estimated port charges"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from port-tariff-schedule p.1 — 8. Payment terms",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "The ship's agent must submit the pre-arrival notification at least 72 hours before the estimated time of arrival, or on departure from the last port if the voyage is shorter than 72 hours. The notification includes the crew list, cargo manifest, dangerous goods declaration, ISPS security information and the last 10 ports of call. Additionally, the agent must deposit 100 percent of the estimated port charges before berthing.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.7284,
+      "citations": [
+        "port-notices:p1:c1",
+        "port-tariff-schedule:p1:c8"
+      ],
+      "tool_calls": [
+        "csv_lookup:failed",
+        "csv_lookup:failed",
+        "csv_lookup:failed"
+      ],
+      "latency_s": 30.669,
+      "judgement": {
+        "case_id": "c14",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "deposit 100 percent of the estimated port charges",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c15",
+        "category": "ambiguous",
+        "question": "What time can ships over 250 meters enter Kochi channel?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-notices",
+            "quote": "Vessels longer than 250 metres may enter or leave the Kochi channel only between 06:00 and 18:00."
+          }
+        ],
+        "key_facts": [
+          "between 06:00 and 18:00"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from port-notices p.1 — 4. Night navigation",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "Ships over 250 meters can enter Kochi channel only between 06:00 and 18:00.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8189,
+      "citations": [
+        "port-notices:p1:c4"
+      ],
+      "tool_calls": [
+        "csv_lookup:failed",
+        "csv_lookup:failed",
+        "csv_lookup:failed"
+      ],
+      "latency_s": 32.698,
+      "judgement": {
+        "case_id": "c15",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "between 06:00 and 18:00",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c16",
+        "category": "multi_doc",
+        "question": "What rebates can vessels receive for using shore power? Also, what is the fixed waste fee per vessel call?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-tariff-schedule",
+            "quote": "Vessels using shore power while at berth receive an additional 5 percent rebate on berth hire."
+          },
+          {
+            "doc_id": "port-notices",
+            "quote": "Each vessel is charged a fixed waste fee of USD 350 per call, whether or not waste is delivered, which covers up to 5 cubic metres of garbage."
+          }
+        ],
+        "key_facts": [
+          "an additional 5 percent rebate on berth hire",
+          "USD 350 per call"
+        ],
+        "expected_tool": null,
+        "rationale": "joins two verified questions from port-tariff-schedule and port-notices",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "Vessels holding a valid Environmental Ship Index score of 30 or more receive a 10 percent rebate on port dues. Vessels using shore power while at berth receive an additional 5 percent rebate on berth hire. The fixed waste fee per vessel call is USD 350, which covers up to 5 cubic metres of garbage.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8049,
+      "citations": [
+        "port-tariff-schedule:p1:c7",
+        "port-notices:p1:c7"
+      ],
+      "tool_calls": [
+        "csv_lookup:failed",
+        "csv_lookup:failed",
+        "csv_lookup:failed"
+      ],
+      "latency_s": 37.775,
+      "judgement": {
+        "case_id": "c16",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "an additional 5 percent rebate on berth hire",
+            "status": "present",
+            "by": "string"
+          },
+          {
+            "fact": "USD 350 per call",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c17",
+        "category": "multi_doc",
+        "question": "How many tugs are required for vessels longer than 250 meters? Also, where must vessels carrying dangerous goods anchor?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-tariff-schedule",
+            "quote": "vessels longer than 250 m need 3 tugs for berthing and unberthing."
+          },
+          {
+            "doc_id": "port-notices",
+            "quote": "Vessels carrying dangerous goods anchor in the separate dangerous goods anchorage, at least 1 nautical mile from other vessels."
+          }
+        ],
+        "key_facts": [
+          "3 tugs",
+          "in the separate dangerous goods anchorage"
+        ],
+        "expected_tool": null,
+        "rationale": "joins two verified questions from port-tariff-schedule and port-notices",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "Vessels longer than 250 meters require 3 tugs for berthing and unberthing. Vessels carrying dangerous goods must anchor in the separate dangerous goods anchorage, at least 1 nautical mile from other vessels.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8293,
+      "citations": [
+        "port-tariff-schedule:p1:c4",
+        "port-notices:p1:c5"
+      ],
+      "tool_calls": [
+        "csv_lookup:failed",
+        "csv_lookup:failed",
+        "csv_lookup:failed",
+        "csv_lookup:failed"
+      ],
+      "latency_s": 41.375,
+      "judgement": {
+        "case_id": "c17",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "3 tugs",
+            "status": "present",
+            "by": "string"
+          },
+          {
+            "fact": "in the separate dangerous goods anchorage",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c18",
+        "category": "multi_doc",
+        "question": "What is the requirement for visitors to a vessel? Also, what percentage of port dues must vessels calling only for bunkering, crew change or stores pay?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "port-notices",
+            "quote": "Visitors to a vessel need a port entry pass, applied for by the agent at least 24 hours in advance."
+          },
+          {
+            "doc_id": "port-tariff-schedule",
+            "quote": "Vessels calling only for bunkering, crew change or stores, and staying less than 24 hours, pay 50 percent of port dues."
+          }
+        ],
+        "key_facts": [
+          "need a port entry pass",
+          "50 percent of port dues"
+        ],
+        "expected_tool": null,
+        "rationale": "joins two verified questions from port-notices and port-tariff-schedule",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "Vessels calling only for bunkering, crew change or stores, and staying less than 24 hours, pay 50 percent of port dues. Vessels that call more than 12 times in a financial year receive a 15 percent rebate on port dues from the 13th call onwards.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.7803,
+      "citations": [
+        "port-tariff-schedule:p1:c2"
+      ],
+      "tool_calls": [
+        "csv_lookup:failed",
+        "csv_lookup:failed",
+        "csv_lookup:failed",
+        "csv_lookup:failed",
+        "csv_lookup:failed"
+      ],
+      "latency_s": 44.636,
+      "judgement": {
+        "case_id": "c18",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": false,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "need a port entry pass",
+            "status": "present",
+            "by": "judge"
+          },
+          {
+            "fact": "50 percent of port dues",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": true
+      }
+    },
+    {
+      "case": {
+        "id": "c20",
+        "category": "tool",
+        "question": "What is the max loa m for berth id KOC-CR1?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "berths",
+            "quote": "Row 8: berth_id: KOC-CR1; port: Kochi; terminal: Ernakulam Wharf; berth_type: cruise; max_loa_m: 300; max_draft_m: 10.0; max_beam_m: 38; max_dwt_t: 0; cargo: cruise passengers; daily_berth_hire_usd: 4500"
+          }
+        ],
+        "key_facts": [
+          "300"
+        ],
+        "expected_tool": "csv_lookup",
+        "rationale": "table lookup in berths row 8",
+        "origin": "template",
+        "split": "dev"
+      },
+      "answer": "The max loa m for berth id KOC-CR1 is 300.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8097,
+      "citations": [
+        "berths:r8"
+      ],
+      "tool_calls": [
+        "csv_lookup:ok"
+      ],
+      "latency_s": 45.944,
+      "judgement": {
+        "case_id": "c20",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": true,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "300",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c21",
+        "category": "tool",
+        "question": "What is the total daily berth hire usd for 3 days at berth id KOC-CR1?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "berths",
+            "quote": "Row 8: berth_id: KOC-CR1; port: Kochi; terminal: Ernakulam Wharf; berth_type: cruise; max_loa_m: 300; max_draft_m: 10.0; max_beam_m: 38; max_dwt_t: 0; cargo: cruise passengers; daily_berth_hire_usd: 4500"
+          }
+        ],
+        "key_facts": [
+          "13500"
+        ],
+        "expected_tool": "calculator",
+        "rationale": "3 x 4500 = 13500 (computed by code)",
+        "origin": "template",
+        "split": "dev"
+      },
+      "answer": "The total daily berth hire USD for 3 days at berth id KOC-CR1 is 13500.",
+      "refused": true,
+      "refused_by": "model",
+      "best_dense": 0.7648,
+      "citations": [
+        "berths:r8"
+      ],
+      "tool_calls": [
+        "csv_lookup:failed",
+        "csv_lookup:ok",
+        "calculator:ok"
+      ],
+      "latency_s": 63.977,
+      "judgement": {
+        "case_id": "c21",
+        "passed": false,
+        "checks": {
+          "refusal_ok": false,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": true,
+          "contract_error": null
+        },
+        "facts": [],
+        "failure": "wrong_refusal",
+        "reason": "refused an answerable question",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c24",
+        "category": "out_of_scope",
+        "question": "Do you have any information on the personal schedule of the port manager?",
+        "expect_refusal": true,
+        "sources": [],
+        "key_facts": [],
+        "expected_tool": null,
+        "rationale": "Personal or confidential data: No access to individual employee records or personal data",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "I'm sorry, but I can't provide personal schedule information for the port manager. Please contact the appropriate department for that.",
+      "refused": true,
+      "refused_by": "model",
+      "best_dense": 0.6946,
+      "citations": [],
+      "tool_calls": [],
+      "latency_s": 49.311,
+      "judgement": {
+        "case_id": "c24",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": null,
+          "source_retrieved": null,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c26",
+        "category": "out_of_scope",
+        "question": "Is there a specific berth available for our vessel next week?",
+        "expect_refusal": true,
+        "sources": [],
+        "key_facts": [],
+        "expected_tool": null,
+        "rationale": "Within scope, but not a refusal question",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "To secure a berth for your vessel, please submit a pre-arrival notification at least 72 hours before the estimated time of arrival. The available berths are KOC-Q5, KOC-CT1, KOC-LB1, and KOC-CT2. Please check the vessel's dimensions against the berth specifications to ensure compatibility.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.7439,
+      "citations": [
+        "berths:r3",
+        "berths:r4",
+        "berths:r6",
+        "berths:r5",
+        "port-notices:p1:c1"
+      ],
+      "tool_calls": [],
+      "latency_s": 60.247,
+      "judgement": {
+        "case_id": "c26",
+        "passed": false,
+        "checks": {
+          "refusal_ok": false,
+          "grounded": true,
+          "source_cited": null,
+          "source_retrieved": null,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [],
+        "failure": "wrong_refusal",
+        "reason": "answered a question it must refuse",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c27",
+        "category": "out_of_scope",
+        "question": "Can you share the personal contact details of the port agent handling our vessel?",
+        "expect_refusal": true,
+        "sources": [],
+        "key_facts": [],
+        "expected_tool": null,
+        "rationale": "Personal or confidential data: No access to individual employee records or personal data",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "I'm sorry, but I can't provide personal contact details of the port agent handling your vessel. Please contact the appropriate department for that information.",
+      "refused": true,
+      "refused_by": "model",
+      "best_dense": 0.6911,
+      "citations": [],
+      "tool_calls": [],
+      "latency_s": 61.645,
+      "judgement": {
+        "case_id": "c27",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": null,
+          "source_retrieved": null,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c28",
+        "category": "out_of_scope",
+        "question": "What is the status of my colleague's application for a security clearance?",
+        "expect_refusal": true,
+        "sources": [],
+        "key_facts": [],
+        "expected_tool": null,
+        "rationale": "Personal or confidential data: No access to individual employee records or personal data",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "I'm sorry, but I can't provide legal or customs clearance advice. Please contact the appropriate department for that.",
+      "refused": true,
+      "refused_by": "threshold",
+      "best_dense": 0.6172,
+      "citations": [],
+      "tool_calls": [],
+      "latency_s": 0.007,
+      "judgement": {
+        "case_id": "c28",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": false,
+          "source_cited": null,
+          "source_retrieved": null,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    }
+  ],
+  "canaries": [
+    {
+      "kind": "correct_terse",
+      "case_id": "c02",
+      "answer": "need a port entry pass.",
+      "should_pass": true,
+      "judge_passed": true
+    },
+    {
+      "kind": "correct_padded",
+      "case_id": "c02",
+      "answer": "This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. In short: need a port entry pass. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+      "should_pass": true,
+      "judge_passed": true
+    },
+    {
+      "kind": "confident_omission",
+      "case_id": "c02",
+      "answer": "Yes, absolutely. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+      "should_pass": false,
+      "judge_passed": false
+    },
+    {
+      "kind": "correct_terse",
+      "case_id": "c03",
+      "answer": "3 tugs.",
+      "should_pass": true,
+      "judge_passed": true
+    },
+    {
+      "kind": "correct_padded",
+      "case_id": "c03",
+      "answer": "This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. In short: 3 tugs. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+      "should_pass": true,
+      "judge_passed": true
+    },
+    {
+      "kind": "confident_omission",
+      "case_id": "c03",
+      "answer": "Yes, absolutely. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+      "should_pass": false,
+      "judge_passed": false
+    },
+    {
+      "kind": "wrong_number",
+      "case_id": "c03",
+      "answer": "According to the policy: 13 tugs.",
+      "should_pass": false,
+      "judge_passed": false
+    }
+  ],
+  "scorecard": {
+    "agent_version": 2,
+    "splits": {
+      "dev": {
+        "cases": 19,
+        "passed": 17,
+        "pass_rate": 0.8947,
+        "by_category": {
+          "ambiguous": 1.0,
+          "answerable": 1.0,
+          "multi_doc": 1.0,
+          "out_of_scope": 0.75,
+          "tool": 0.5
+        },
+        "failures": {
+          "wrong_refusal": 2
+        },
+        "refusal_accuracy": 0.8947,
+        "groundedness": 1.0,
+        "fact_recall": 1.0
+      }
+    },
+    "judge_canary_accuracy": 1.0,
+    "judge_trusted": true,
+    "mean_latency_s": 32.06
+  }
+}

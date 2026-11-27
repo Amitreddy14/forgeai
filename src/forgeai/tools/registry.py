@@ -188,3 +188,72 @@ def select_tools(
             added.append(name)
     attached.sort(key=lambda c: c.name)
     return ToolSelection(attached=attached, rejected=rejected, added=added)
+
+
+# ---------- Inferring capabilities from requirement topics (deterministic) -------------
+
+_TOPIC_WORDS: dict[ToolHint, tuple[str, ...]] = {
+    "weather": EVIDENCE["weather"],
+    "current_date": EVIDENCE["current_date"],
+    "arithmetic": (
+        "estimate",
+        "estimates",
+        "estimating",
+        "estimation",
+        "calculate",
+        "calculation",
+        "compute",
+        "total",
+        "totals",
+        "cost",
+        "costs",
+        "charges",
+        "fees",
+        "dues",
+        "how much",
+    ),
+}
+_TABLE_NOISE = frozenset({"id", "m", "t", "usd", "inr", "eur", "max", "min", "type", "no", "of"})
+
+
+def _stem(word: str) -> str:
+    return word[:-1] if len(word) > 3 and word.endswith("s") else word
+
+
+def _words(text: str) -> set[str]:
+    return {_stem(w) for w in re.split(r"[^a-z0-9]+", text.lower()) if w} - _TABLE_NOISE
+
+
+def _needs_table(topic_text: str, corpus: Corpus) -> bool:
+    """A topic needs a table if it names the table itself (`berths`) or shares at least
+    two words with its columns (`length`, `draft`). One generic shared word such as
+    `port` is not enough."""
+    words = _words(topic_text)
+    for doc in corpus.documents:
+        if doc.kind != "csv":
+            continue
+        if words & _words(doc.doc_id):
+            return True
+        columns: set[str] = set()
+        for column in doc.columns or []:
+            columns |= _words(column)
+        if len(words & columns) >= 2:
+            return True
+    return False
+
+
+def infer_tool_hints(text: str, corpus: Corpus) -> list[ToolHint]:
+    """Capabilities a requirement topic needs, read from its own words and the folder.
+
+    The 7B model often marks 'check the weather forecast' as a documents topic. Code
+    reads the topic text instead of trusting that label. (Attaching a tool still needs
+    the requester's own words: see `select_tools`.)
+    """
+    lowered = text.lower()
+    hints: list[ToolHint] = []
+    for capability, words in _TOPIC_WORDS.items():
+        if any(re.search(rf"\b{re.escape(w)}\b", lowered) for w in words):
+            hints.append(capability)
+    if _needs_table(text, corpus):
+        hints.append("table_lookup")
+    return hints

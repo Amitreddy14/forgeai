@@ -124,3 +124,32 @@ def test_overlap_must_be_smaller_than_chunk() -> None:
     )
     with pytest.raises(ValueError, match="overlap"):
         chunk_document(doc, ChunkingConfig(chunk_words=50, overlap_words=50))
+
+
+def test_heading_at_page_foot_stays_with_its_text(tmp_path: Path) -> None:
+    """A real PDF put '8. Applying for leave' at the bottom of page 1 and its text on
+    page 2; the chunker used to emit a 4-word heading-only chunk."""
+    doc = Document(
+        doc_id="leave",
+        filename="leave.pdf",
+        kind="pdf",
+        title="Leave",
+        pages=[
+            Page(
+                number=1,
+                text="7. Public holidays\nThe company observes 12 paid public holidays each "
+                "year, published every December for each office.\n8. Applying for leave",
+            ),
+            Page(
+                number=2,
+                text="Annual leave must be applied for through the HR portal at least 10 "
+                "working days in advance.\n9. Leave without pay\nUp to 30 days may be requested.",
+            ),
+        ],
+    )
+    chunks = chunk_document(doc, ChunkingConfig(chunk_words=120, overlap_words=10))
+    applying = next(c for c in chunks if c.heading == "8. Applying for leave")
+    assert applying.text.startswith("8. Applying for leave Annual leave must be applied")
+    assert applying.page == 1
+    assert all(len(c.text.split()) >= 8 for c in chunks)
+    assert contains_quote(doc.full_text, applying.text)

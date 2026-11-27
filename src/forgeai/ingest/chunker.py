@@ -26,10 +26,10 @@ def _is_heading(line: str) -> bool:
     return len(line) <= 90 and bool(_HEADING.match(line.strip()))
 
 
-def _paragraphs(text: str) -> list[tuple[str | None, str]]:
-    """Return (heading, paragraph) pairs, tracking the most recent heading."""
+def _paragraphs(text: str, heading: str | None = None) -> list[tuple[str | None, str]]:
+    """Return (heading, paragraph) pairs, tracking the most recent heading. `heading` is
+    the section still open from the previous page."""
     out: list[tuple[str | None, str]] = []
-    heading: str | None = None
     buffer: list[str] = []
 
     def flush() -> None:
@@ -76,33 +76,42 @@ def _split_long(paragraph: str, limit: int) -> list[str]:
 
 
 def _chunk_prose(doc: Document, config: ChunkingConfig) -> list[Chunk]:
-    chunks: list[Chunk] = []
+    """Chunk the document as one stream of units, so a section that crosses a page break
+    stays one section (a heading at the foot of a page belongs to the text on the next
+    page). A chunk is cited by the page it starts on."""
+    units: list[tuple[int, str | None, str]] = []
+    open_heading: str | None = None
     for page in doc.pages:
-        units: list[tuple[str | None, str]] = []
-        for heading, para in _paragraphs(page.text):
-            units.extend((heading, piece) for piece in _split_long(para, config.chunk_words))
+        for heading, para in _paragraphs(page.text, open_heading):
+            units.extend(
+                (page.number, heading, piece) for piece in _split_long(para, config.chunk_words)
+            )
+            open_heading = heading
 
-        current: list[str] = []
-        current_heading: str | None = None
-        for heading, unit in units:
-            unit_words = unit.split()
-            starts_new_section = heading != current_heading and bool(current)
-            too_big = len(current) + len(unit_words) > config.chunk_words
-            if starts_new_section and not too_big and len(current) < MIN_CHUNK_WORDS:
-                # A stray title line before the first heading: fold it into the next section
-                # rather than emitting a chunk too small to retrieve or quote.
-                current_heading = heading
-                starts_new_section = False
-            if current and (too_big or starts_new_section):
-                chunks.append(_make(doc, page.number, len(chunks), current_heading, current))
-                carry = current[-config.overlap_words :] if config.overlap_words else []
-                # Never carry text across a heading boundary: it would blur citations.
-                current = [] if starts_new_section else list(carry)
-            if not current:
-                current_heading = heading
-            current.extend(unit_words)
-        if current:
-            chunks.append(_make(doc, page.number, len(chunks), current_heading, current))
+    chunks: list[Chunk] = []
+    current: list[str] = []
+    current_heading: str | None = None
+    start_page = doc.pages[0].number if doc.pages else 1
+    for page_number, heading, unit in units:
+        unit_words = unit.split()
+        starts_new_section = heading != current_heading and bool(current)
+        too_big = len(current) + len(unit_words) > config.chunk_words
+        if starts_new_section and not too_big and len(current) < MIN_CHUNK_WORDS:
+            # A stray title line before the first heading: fold it into the next section
+            # rather than emitting a chunk too small to retrieve or quote.
+            current_heading = heading
+            starts_new_section = False
+        if current and (too_big or starts_new_section):
+            chunks.append(_make(doc, start_page, len(chunks), current_heading, current))
+            carry = current[-config.overlap_words :] if config.overlap_words else []
+            # Never carry text across a heading boundary: it would blur citations.
+            current = [] if starts_new_section else list(carry)
+        if not current:
+            current_heading = heading
+            start_page = page_number
+        current.extend(unit_words)
+    if current:
+        chunks.append(_make(doc, start_page, len(chunks), current_heading, current))
     return chunks
 
 

@@ -128,7 +128,7 @@ def _requirements_text(req: Requirements) -> str:
         "Must answer:",
         *[
             f"- {t.topic}: {t.detail}"
-            + (f" [needs tool capability: {t.tool_hint}]" if t.tool_hint else "")
+            + (f" [needs tool capabilities: {', '.join(t.tool_hints)}]" if t.tool_hints else "")
             for t in req.must_answer
         ],
         "Must refuse:",

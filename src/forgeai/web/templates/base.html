@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}ForgeAI{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..700&family=JetBrains+Mono:wght@400;500&family=Source+Serif+4:opsz,wght@8..60,400;8..60,600&display=swap">
+  <link rel="stylesheet" href="/static/forge.css">
+  <script src="/static/htmx.min.js" defer></script>
+  <script src="/static/app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="wordmark" href="/">ForgeAI</a>
+    <nav aria-label="Main">
+      <a href="/" {% if nav == "builds" %}aria-current="page"{% endif %}>Builds</a>
+      <a href="/new" {% if nav == "new" %}aria-current="page"{% endif %}>New build</a>
+    </nav>
+    <span class="spacer"></span>
+    <small>Agents built, tested and surveyed by small open models</small>
+  </header>
+  <main>
+    <p id="error" class="error" role="alert" hidden></p>
+    {% block content %}{% endblock %}
+  </main>
+  <footer class="foot"><small>ForgeAI {{ version }}. Every score on these pages is computed from the run's committed artifacts.</small></footer>
+</body>
+</html>

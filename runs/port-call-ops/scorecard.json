@@ -1,0 +1,46 @@
+{
+  "agent": "Shore Staff Port Operations Desk",
+  "final_version": 1,
+  "iterations": [
+    {
+      "version": 0,
+      "dev_pass_rate": 0.8421,
+      "dev_passed": 16,
+      "dev_cases": 19,
+      "failures": {
+        "hallucination": 1,
+        "wrong_refusal": 2
+      }
+    },
+    {
+      "version": 1,
+      "dev_pass_rate": 0.8947,
+      "dev_passed": 17,
+      "dev_cases": 19,
+      "failures": {
+        "wrong_refusal": 2
+      }
+    }
+  ],
+  "holdout_before": 0.6667,
+  "holdout_after": 0.6667,
+  "holdout_passed": 6,
+  "holdout_cases": 9,
+  "holdout_ci95": [
+    0.35419734749908977,
+    0.879418401317257
+  ],
+  "judge_canary_accuracy": 1.0,
+  "judge_trusted": true,
+  "stop_reason": "iteration 2 found no patch that improved dev without regressions",
+  "tokens_used": 141668,
+  "by_stage_tokens": {
+    "intake": 0,
+    "guard": 0,
+    "generate": 0,
+    "evalgen": 0,
+    "judge": 1438,
+    "agent": 139674,
+    "critic": 556
+  }
+}

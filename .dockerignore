@@ -11,4 +11,5 @@ coverage.xml
 .env
 .forge_cache
 tests
-data/docs
+runs/scratch-*
+_to_delete

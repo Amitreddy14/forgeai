@@ -33,7 +33,7 @@ from forgeai.schemas.patch import (
     SetTopK,
 )
 from forgeai.stages.context import ForgeContext
-from forgeai.textutil import contains_fact, extract_numbers, normalize
+from forgeai.textutil import contains_fact, extract_numbers, normalize, word_jaccard
 
 log = logging.getLogger(__name__)
 
@@ -69,6 +69,11 @@ MAX_CHUNK_WORDS = 600
 
 class _CriticRule(BaseModel):
     rule: str = Field(min_length=10)
+    rationale: str = ""
+
+
+class _CriticTopic(BaseModel):
+    topic: str = Field(min_length=3)
     rationale: str = ""
 
 
@@ -194,6 +199,46 @@ def mechanical_patches(
     return out
 
 
+async def critic_refuse_topic_patch(
+    ctx: ForgeContext, failures: list[CaseResult], defn: AgentDefinition
+) -> Patch | None:
+    """For must-refuse questions the agent answered: name a general category to refuse.
+    Rejected if it copies a test question (that would memorise the test, not generalise)."""
+    answered = [r for r in failures if r.case.expect_refusal and not r.refused]
+    if not answered:
+        return None
+    prompt = render(
+        "critic_refuse_topic",
+        questions="\n".join(f"- {r.case.question}" for r in answered[:6]),
+        topics="\n".join(f"- {t}" for t in defn.refusal.refuse_topics) or "(none)",
+    )
+    try:
+        with stage("critic"):
+            out = await complete_json(
+                ctx.llm,
+                [ChatMessage(role="user", content=prompt)],
+                _CriticTopic,
+                model=ctx.models.generator,
+            )
+    except ModelOutputError:
+        return None
+    topic = out.topic.strip().rstrip(".")
+    if not 3 <= len(topic) <= 120 or len(topic.split()) > 10:
+        return None
+    if any(word_jaccard(topic, r.case.question) >= 0.6 for r in answered):
+        log.warning("refuse topic copies a test question: %s", topic)
+        return None
+    if any(word_jaccard(topic, t) >= 0.6 for t in defn.refusal.refuse_topics):
+        return None
+    return Patch(
+        op=AddRefuseTopic(topic=topic),
+        category="wrong_refusal",
+        targets=_ids(answered),
+        why=out.rationale or "the agent answered questions it must refuse",
+        source="critic",
+    )
+
+
 async def critic_rule_patch(
     ctx: ForgeContext, category: FailureCategory, failures: list[CaseResult], defn: AgentDefinition
 ) -> Patch | None:
@@ -260,6 +305,10 @@ async def candidate_patches(
     for category, targeted in failure_categories(run):
         for patch in mechanical_patches(category, targeted, defn, run):
             yield patch
+        if category == "wrong_refusal":
+            topic_patch = await critic_refuse_topic_patch(ctx, targeted, defn)
+            if topic_patch is not None:
+                yield topic_patch
         if category != "retrieval_miss":
             rule = await critic_rule_patch(ctx, category, targeted, defn)
             if rule is not None:

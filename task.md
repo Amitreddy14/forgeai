@@ -76,16 +76,30 @@ Legend: `[x]` done · `[ ]` open · `(S)` stretch.
 - [x] `forge build`: the whole factory unattended, with `--resume`
 
 ## Phase 6 — Demo runs (branch `phase-6-demos`)
-- [ ] Synthesis prompts + HR docs (3 PDFs) + port-call docs (CSV + 2 PDFs)
+- [x] Synthesis prompts (`data/synthesis/`) + Markdown sources + deterministic PDF renderer
+- [x] hr-shore-staff: 3 policy PDFs, 27 sections; brief plants an ungroundable ask (leave balance)
+- [x] port-call-ops: 14-row berth CSV + tariff + notices; brief needs lookup, arithmetic, weather
+- [x] Fix found on the demo PDFs: headings at a page foot now stay with their text
+- [x] Sharper out-of-scope answerability check (own prompt; personal data, other groups,
+      future changes and actions are not "answered" by general policy text)
+- [x] 6.1 fixes from the first demo runs: tool hints inferred in code, personal-records split,
+      similarity backstop for out-of-scope labels, composed two-document cases,
+      refuse-topic critic patch
 - [ ] Run A end to end on Ollama, commit `runs/hr-shore-staff/`
 - [ ] Run B end to end on Ollama, commit `runs/port-call-ops/`
 - [ ] Dry run on a third unseen brief (not committed) to check generality
 
 ## Phase 7 — Web UI + hosting (branch `phase-7-web`)
-- [ ] Builds list, new build (upload + brief), live survey log, certificate page
-- [ ] Chat page for any definition
-- [ ] Security headers, upload checks, rate limit
-- [ ] Deploy to Hugging Face Spaces (Groq key as a Space secret; bake the bge-small model into the image)
+- [x] Builds register, certificate page (survey log, load line, conditions, particulars,
+      optimizer log, full report, all artifacts), live progress with HTMX polling
+- [x] Chat page for any build (verified quotes, tool output, refusals shown as such)
+- [x] New build form: upload checks (types, size, count, filename sanitising), one build
+      at a time, per-client rate limits, failures written to stage_error.json
+- [x] Security headers incl. CSP (no inline scripts/styles; htmx vendored), docs off in prod
+- [x] Fix found while building the UI: RunStore wrote lists of models as Python reprs
+- [x] Hugging Face Space: `deploy/huggingface/` (Dockerfile clones the GitHub repo,
+      bakes bge-small); Groq free tier, generator and judge from different families
+- [ ] Create the Space and set secrets (Amit)
 
 ## Phase 8 — Ship (branch `phase-8-ship`)
 - [ ] README: quick start, architecture, results tables from the committed runs

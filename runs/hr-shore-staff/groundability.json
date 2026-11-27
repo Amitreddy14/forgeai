@@ -1,0 +1,168 @@
+{
+  "checks": [
+    {
+      "topic": "Annual leave entitlement",
+      "kind": "documents",
+      "claimed": "supported",
+      "verdict": "supported",
+      "chunk_id": "leave-policy:p1:c2",
+      "quote": "2. Annual leave Shore staff earn 24 working days of paid annual leave per calendar year. Leave accrues at 2 days for each completed month of service.",
+      "quote_verified": true,
+      "retrieved": [
+        "leave-policy:p1:c2",
+        "leave-policy:p1:c3",
+        "leave-policy:p1:c4",
+        "leave-policy:p2:c9",
+        "leave-policy:p1:c8"
+      ],
+      "note": ""
+    },
+    {
+      "topic": "Leave application process",
+      "kind": "documents",
+      "claimed": "supported",
+      "verdict": "supported",
+      "chunk_id": "leave-policy:p1:c8",
+      "quote": "Annual leave must be applied for through the HR portal at least 10 working days in advance and approved by the reporting manager. Leave of more than 10 consecutive working days also needs approval from the department head. Emergency leave may be applied for retrospectively within 3 working days of returning to work.",
+      "quote_verified": true,
+      "retrieved": [
+        "leave-policy:p1:c8",
+        "leave-policy:p1:c2",
+        "leave-policy:p2:c9",
+        "leave-policy:p1:c4",
+        "leave-policy:p1:c3"
+      ],
+      "note": ""
+    },
+    {
+      "topic": "Travel booking policy",
+      "kind": "documents",
+      "claimed": "supported",
+      "verdict": "supported",
+      "chunk_id": "travel-expenses-policy:p1:c3",
+      "quote": "All flights must be booked through the corporate travel desk at least 7 days before departure.",
+      "quote_verified": true,
+      "retrieved": [
+        "travel-expenses-policy:p1:c2",
+        "travel-expenses-policy:p1:c1",
+        "travel-expenses-policy:p1:c7",
+        "travel-expenses-policy:p1:c3",
+        "travel-expenses-policy:p1:c5"
+      ],
+      "note": ""
+    },
+    {
+      "topic": "Expense claim process",
+      "kind": "documents",
+      "claimed": "supported",
+      "verdict": "supported",
+      "chunk_id": "travel-expenses-policy:p1:c8",
+      "quote": "Expense claims must be submitted through the finance portal within 30 days of returning from the trip. Original receipts are required for any single expense above INR 500. Approved claims are reimbursed with the next monthly salary run. Claims submitted after 60 days are paid only with approval from the Chief Financial Officer.",
+      "quote_verified": true,
+      "retrieved": [
+        "travel-expenses-policy:p1:c8",
+        "travel-expenses-policy:p1:c7",
+        "travel-expenses-policy:p1:c1",
+        "travel-expenses-policy:p1:c4",
+        "code-of-conduct:p2:c8"
+      ],
+      "note": ""
+    },
+    {
+      "topic": "Remote work policy",
+      "kind": "documents",
+      "claimed": "supported",
+      "verdict": "supported",
+      "chunk_id": "code-of-conduct:p1:c3",
+      "quote": "3. Remote work Employees may work remotely for up to 2 days per week with their manager's approval, once they have completed 6 months of service.",
+      "quote_verified": true,
+      "retrieved": [
+        "code-of-conduct:p1:c3",
+        "code-of-conduct:p1:c6",
+        "leave-policy:p1:c1",
+        "travel-expenses-policy:p1:c1",
+        "leave-policy:p1:c0"
+      ],
+      "note": ""
+    },
+    {
+      "topic": "Gifts and hospitality policy",
+      "kind": "documents",
+      "claimed": "supported",
+      "verdict": "supported",
+      "chunk_id": "code-of-conduct:p1:c4",
+      "quote": "Employees may accept gifts worth up to INR 3,000 from a business partner, no more than once per calendar year from the same partner.",
+      "quote_verified": true,
+      "retrieved": [
+        "code-of-conduct:p1:c4",
+        "travel-expenses-policy:p1:c1",
+        "leave-policy:p1:c1",
+        "leave-policy:p1:c0",
+        "travel-expenses-policy:p1:c0"
+      ],
+      "note": ""
+    },
+    {
+      "topic": "Confidential information policy",
+      "kind": "documents",
+      "claimed": "supported",
+      "verdict": "supported",
+      "chunk_id": "code-of-conduct:p1:c6",
+      "quote": "6. Confidential information Commercial terms, crew personal data, vessel performance data and client correspondence are confidential.",
+      "quote_verified": true,
+      "retrieved": [
+        "code-of-conduct:p1:c6",
+        "code-of-conduct:p2:c9",
+        "leave-policy:p1:c1",
+        "travel-expenses-policy:p1:c1",
+        "travel-expenses-policy:p1:c0"
+      ],
+      "note": ""
+    },
+    {
+      "topic": "Grievance procedure",
+      "kind": "documents",
+      "claimed": "supported",
+      "verdict": "supported",
+      "chunk_id": "code-of-conduct:p2:c8",
+      "quote": "An employee with a work-related grievance should first raise it with their reporting manager, who must respond within 7 working days. If the grievance is not resolved, the employee may escalate it in writing to the Head of HR, who must hold a meeting within 10 working days. The final appeal lies with the Managing Director, whose decision is final.",
+      "quote_verified": true,
+      "retrieved": [
+        "code-of-conduct:p2:c8",
+        "code-of-conduct:p1:c0",
+        "code-of-conduct:p1:c1",
+        "code-of-conduct:p1:c7",
+        "code-of-conduct:p2:c9"
+      ],
+      "note": ""
+    },
+    {
+      "topic": "Disciplinary action policy",
+      "kind": "documents",
+      "claimed": "supported",
+      "verdict": "supported",
+      "chunk_id": "code-of-conduct:p2:c9",
+      "quote": "9. Disciplinary action Depending on seriousness, breaches of this code lead to a verbal warning, a written warning, suspension, or dismissal.",
+      "quote_verified": true,
+      "retrieved": [
+        "code-of-conduct:p1:c1",
+        "code-of-conduct:p2:c9",
+        "code-of-conduct:p1:c7",
+        "travel-expenses-policy:p1:c1",
+        "leave-policy:p1:c1"
+      ],
+      "note": ""
+    },
+    {
+      "topic": "Remaining leave balance",
+      "kind": "personal_records",
+      "claimed": "supported",
+      "verdict": "unsupported",
+      "chunk_id": null,
+      "quote": null,
+      "quote_verified": false,
+      "retrieved": [],
+      "note": "days an employee has left this year needs records about individual people; the documents contain only general rules"
+    }
+  ]
+}

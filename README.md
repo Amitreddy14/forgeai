@@ -5,7 +5,7 @@ documents. It interviews you, checks that the documents can support the brief, b
 grounded agent, writes its own test set, judges the results, fixes what failed (up to 3
 times), and hands back the agent with an honest report of what still fails and why.
 
-> Status: Phase 5 (critic-optimizer + honest report). One command runs the whole factory:
+> Status: Phase 7 (web UI + hosting). One command runs the whole factory:
 >
 > `forge build --brief brief.md --docs docs/ --answers auto` See [task.md](task.md) for progress.
 
@@ -48,6 +48,15 @@ prompts are not silently truncated.
 
 Run the web app: `uvicorn forgeai.web.app:app --reload`, then open
 http://localhost:8000/healthz.
+
+## Web app
+
+```bash
+uvicorn forgeai.web.app:app --reload     # http://localhost:8000
+```
+
+Browse builds as survey certificates, chat with any built agent, or start a build.
+Hosting on Hugging Face Spaces: [deploy/huggingface/SETUP.md](deploy/huggingface/SETUP.md).
 
 ## Development
 

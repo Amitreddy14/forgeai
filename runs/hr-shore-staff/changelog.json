@@ -1,0 +1,50 @@
+[
+  {
+    "iteration": 1,
+    "patch": {
+      "op": {
+        "op": "add_refuse_topic",
+        "topic": "company's financial forecasts"
+      },
+      "category": "wrong_refusal",
+      "targets": [
+        "c23"
+      ],
+      "why": "Involves sensitive and proprietary information about the company's future financial plans.",
+      "source": "critic"
+    },
+    "from_version": 0,
+    "to_version": null,
+    "accepted": false,
+    "dev_before": 0.9333,
+    "dev_after": 0.9333,
+    "fixed": [],
+    "broke": [],
+    "decision": "reverted: 0 fixed, 0 broken (no net gain)",
+    "tokens": 16775
+  },
+  {
+    "iteration": 1,
+    "patch": {
+      "op": {
+        "op": "add_rule",
+        "text": "Assess each question's context and ensure the assistant either answers with certainty or refuses with clarity, without providing partial or incorrect information."
+      },
+      "category": "wrong_refusal",
+      "targets": [
+        "c23"
+      ],
+      "why": "Clarifies the assistant's approach to handling questions, ensuring it neither provides misleading information nor refuses valid queries.",
+      "source": "critic"
+    },
+    "from_version": 0,
+    "to_version": null,
+    "accepted": false,
+    "dev_before": 0.9333,
+    "dev_after": 0.9333,
+    "fixed": [],
+    "broke": [],
+    "decision": "reverted: 0 fixed, 0 broken (no net gain)",
+    "tokens": 17054
+  }
+]

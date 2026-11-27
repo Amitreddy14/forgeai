@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% set nav = "builds" %}
+{% block title %}Chat: {{ run.name }} · ForgeAI{% endblock %}
+{% block content %}
+<p class="kicker"><a href="/runs/{{ run.run_id }}">&larr; Certificate</a></p>
+<h1>{{ run.name }}</h1>
+<p class="quiet">Answers come only from this agent's documents and tools. Every quote is checked against the source before it is shown as verified.</p>
+<div class="chat">
+  <div>
+    <div id="transcript" class="transcript" aria-live="polite"></div>
+    <form class="ask-form" hx-post="/runs/{{ run.run_id }}/chat" hx-target="#transcript" hx-swap="beforeend" hx-indicator="#thinking" data-reset>
+      <label for="question" class="kicker">Your question</label>
+      <textarea id="question" name="question" required minlength="2" maxlength="500" placeholder="e.g. How many days of sick leave do shore staff get?"></textarea>
+      <div class="row">
+        <small id="thinking" class="htmx-indicator">The agent is reading its documents&hellip;</small>
+        <button class="button" type="submit">Ask</button>
+      </div>
+    </form>
+  </div>
+  {% set a = run.agent %}
+  <aside class="aside">
+    <h3>Tools</h3>
+    <ul>{% for t in a.tools %}<li>{{ t.name }}</li>{% else %}<li>None</li>{% endfor %}</ul>
+    <h3>Answers</h3>
+    <ul>{% for t in a.must_answer %}<li>{{ t }}</li>{% endfor %}</ul>
+    <h3>Refuses</h3>
+    <ul>{% for t in a.refusal.refuse_topics %}<li>{{ t }}</li>{% endfor %}</ul>
+    <h3>Model</h3>
+    <ul><li>{{ settings.generator_model }}</li></ul>
+  </aside>
+</div>
+{% endblock %}

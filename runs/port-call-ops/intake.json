@@ -1,0 +1,124 @@
+{
+  "brief": "Our port agents in Kochi and Mumbai need an assistant to plan vessel calls: find berths\nthat fit a vessel's length and draft, estimate port charges such as berth hire, port dues\nand pilotage, check the wind and weather forecast for the arrival window, and answer\nquestions about port rules and notices to port users. It must not give legal or customs\nclearance advice.",
+  "corpus": {
+    "documents": [
+      {
+        "doc_id": "berths",
+        "title": "berths",
+        "kind": "csv",
+        "pages": 14,
+        "words": 352,
+        "headings": [],
+        "columns": [
+          "berth_id",
+          "port",
+          "terminal",
+          "berth_type",
+          "max_loa_m",
+          "max_draft_m",
+          "max_beam_m",
+          "max_dwt_t",
+          "cargo",
+          "daily_berth_hire_usd"
+        ],
+        "sample_rows": [
+          "Row 1: berth_id: KOC-Q1; port: Kochi; terminal: Ernakulam Wharf; berth_type: general cargo; max_loa_m: 185; max_draft_m: 9.1; max_beam_m: 30; max_dwt_t: 25000; cargo: breakbulk and project cargo; daily_berth_hire_usd: 2400",
+          "Row 2: berth_id: KOC-Q2; port: Kochi; terminal: Ernakulam Wharf; berth_type: general cargo; max_loa_m: 170; max_draft_m: 8.5; max_beam_m: 28; max_dwt_t: 18000; cargo: bagged cargo and steel; daily_berth_hire_usd: 2100",
+          "Row 3: berth_id: KOC-Q5; port: Kochi; terminal: Mattancherry Wharf; berth_type: multipurpose; max_loa_m: 220; max_draft_m: 10.4; max_beam_m: 32; max_dwt_t: 40000; cargo: breakbulk and containers; daily_berth_hire_usd: 3150"
+        ]
+      },
+      {
+        "doc_id": "port-notices",
+        "title": "Notices to Port Users 2026 (Kochi and Mumbai)",
+        "kind": "pdf",
+        "pages": 2,
+        "words": 464,
+        "headings": [
+          "1. Pre-arrival notification",
+          "2. Pilot boarding",
+          "3. Monsoon restrictions",
+          "4. Night navigation",
+          "5. Anchorage",
+          "6. Bunkering",
+          "7. Waste reception",
+          "8. Security"
+        ],
+        "columns": null,
+        "sample_rows": []
+      },
+      {
+        "doc_id": "port-tariff-schedule",
+        "title": "Port Tariff Schedule 2026 (Kochi and Mumbai)",
+        "kind": "pdf",
+        "pages": 2,
+        "words": 460,
+        "headings": [
+          "1. Applicability",
+          "2. Port dues",
+          "3. Pilotage",
+          "4. Towage",
+          "5. Berth hire",
+          "6. Overtime and holidays",
+          "7. Green vessel rebate",
+          "8. Payment terms"
+        ],
+        "columns": null,
+        "sample_rows": []
+      }
+    ],
+    "skipped": []
+  },
+  "questions": [
+    {
+      "id": "q1",
+      "question": "Is the assistant intended for use by port agents only, or will it be accessible to other stakeholders like ship captains or customs officials?",
+      "why": "Determines the user interface and permissions design.",
+      "default_answer": "Intended for use by port agents only."
+    },
+    {
+      "id": "q2",
+      "question": "Should the assistant provide real-time weather and wind forecasts, or rely on static data from the port notices?",
+      "why": "Influences the integration of external data sources.",
+      "default_answer": "Rely on static data from the port notices."
+    },
+    {
+      "id": "q3",
+      "question": "Does the assistant need to handle live data computations, such as berth availability or port charges, or will it use pre-calculated data from the documents?",
+      "why": "Decides the backend architecture and data handling.",
+      "default_answer": "Will use pre-calculated data from the documents."
+    },
+    {
+      "id": "q4",
+      "question": "Are there specific port rules or notices that must be enforced by the assistant, or should it only provide general information?",
+      "why": "Guides the inclusion of rule enforcement mechanisms.",
+      "default_answer": "Should only provide general information."
+    }
+  ],
+  "answers": [
+    {
+      "question_id": "q1",
+      "question": "Is the assistant intended for use by port agents only, or will it be accessible to other stakeholders like ship captains or customs officials?",
+      "answer": "Intended for use by port agents only.",
+      "source": "default"
+    },
+    {
+      "question_id": "q2",
+      "question": "Should the assistant provide real-time weather and wind forecasts, or rely on static data from the port notices?",
+      "answer": "Rely on static data from the port notices.",
+      "source": "brief"
+    },
+    {
+      "question_id": "q3",
+      "question": "Does the assistant need to handle live data computations, such as berth availability or port charges, or will it use pre-calculated data from the documents?",
+      "answer": "Will use pre-calculated data from the documents.",
+      "source": "brief"
+    },
+    {
+      "question_id": "q4",
+      "question": "Are there specific port rules or notices that must be enforced by the assistant, or should it only provide general information?",
+      "answer": "Should only provide general information.",
+      "source": "brief"
+    }
+  ],
+  "mode": "auto"
+}

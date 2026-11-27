@@ -1,0 +1,530 @@
+{
+  "cases": [
+    {
+      "id": "c01",
+      "category": "answerable",
+      "question": "What is the maximum length of a vessel that can berth at berth KOC-CT1 in Kochi?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "berths",
+          "quote": "berth_id: KOC-CT1; port: Kochi; terminal: Vallarpadam Container Terminal; berth_type: container; max_loa_m: 350;"
+        }
+      ],
+      "key_facts": [
+        "max_loa_m: 350"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from berths p.4",
+      "origin": "llm",
+      "split": "holdout"
+    },
+    {
+      "id": "c02",
+      "category": "answerable",
+      "question": "What is the requirement for visitors to a vessel?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-notices",
+          "quote": "Visitors to a vessel need a port entry pass, applied for by the agent at least 24 hours in advance."
+        }
+      ],
+      "key_facts": [
+        "need a port entry pass"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from port-notices p.2 — 8. Security",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c03",
+      "category": "answerable",
+      "question": "How many tugs are required for vessels longer than 250 meters?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-tariff-schedule",
+          "quote": "vessels longer than 250 m need 3 tugs for berthing and unberthing."
+        }
+      ],
+      "key_facts": [
+        "3 tugs"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from port-tariff-schedule p.1 — 4. Towage",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c04",
+      "category": "answerable",
+      "question": "How far south of Prongs Reef light does the pilot board at Mumbai?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-notices",
+          "quote": "At Mumbai the pilot boards 2 nautical miles south of the Prongs Reef light."
+        }
+      ],
+      "key_facts": [
+        "2 nautical miles south"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from port-notices p.1 — 2. Pilot boarding",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c05",
+      "category": "answerable",
+      "question": "What surcharge applies to pilotage and towage performed between 22:00 and 06:00 or on a public holiday?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-tariff-schedule",
+          "quote": "Pilotage and towage performed between 22:00 and 06:00, or on a public holiday, attract a surcharge of 25 percent."
+        }
+      ],
+      "key_facts": [
+        "25 percent"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from port-tariff-schedule p.1 — 6. Overtime and holidays",
+      "origin": "llm",
+      "split": "holdout"
+    },
+    {
+      "id": "c06",
+      "category": "answerable",
+      "question": "What percentage of the foreign-going rate do coastal vessels pay for port dues and pilotage?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-tariff-schedule",
+          "quote": "Coastal vessels pay 60 percent of the foreign-going rate for port dues and pilotage."
+        }
+      ],
+      "key_facts": [
+        "60 percent of the foreign-going rate"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from port-tariff-schedule p.1 — 1. Applicability",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c07",
+      "category": "answerable",
+      "question": "How many hours before arrival must the pre-arrival notification be submitted?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-notices",
+          "quote": "The vessel's agent must submit the pre-arrival notification at least 72 hours before the estimated time of arrival, or on departure from the last port if the voyage is shorter than 72 hours."
+        }
+      ],
+      "key_facts": [
+        "at least 72 hours before the estimated time of arrival"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from port-notices p.1 — 1. Pre-arrival notification",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c08",
+      "category": "answerable",
+      "question": "What is the minimum pilotage fee per movement?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-tariff-schedule",
+          "quote": "The pilotage fee is USD 0.18 per GT for each inward or outward movement, subject to a minimum of USD 1,200 per movement."
+        }
+      ],
+      "key_facts": [
+        "USD 1,200 per movement"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from port-tariff-schedule p.1 — 3. Pilotage",
+      "origin": "llm",
+      "split": "holdout"
+    },
+    {
+      "id": "c09",
+      "category": "answerable",
+      "question": "Where must vessels carrying dangerous goods anchor?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-notices",
+          "quote": "Vessels carrying dangerous goods anchor in the separate dangerous goods anchorage, at least 1 nautical mile from other vessels."
+        }
+      ],
+      "key_facts": [
+        "in the separate dangerous goods anchorage"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from port-notices p.1 — 5. Anchorage",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c10",
+      "category": "answerable",
+      "question": "How long is this tariff schedule valid from?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-tariff-schedule",
+          "quote": "Port Tariff Schedule 2026 (Kochi and Mumbai) Synthetic document for demonstration. The figures below are invented and are not the tariffs of any real port authority. Valid from 1 April 2026 to 31 March 2027."
+        }
+      ],
+      "key_facts": [
+        "Valid from 1 April 2026 to 31 March 2027"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from port-tariff-schedule p.1",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c11",
+      "category": "answerable",
+      "question": "What percentage of port dues must vessels calling only for bunkering, crew change or stores pay?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-tariff-schedule",
+          "quote": "Vessels calling only for bunkering, crew change or stores, and staying less than 24 hours, pay 50 percent of port dues."
+        }
+      ],
+      "key_facts": [
+        "50 percent of port dues"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from port-tariff-schedule p.1 — 2. Port dues",
+      "origin": "llm",
+      "split": "holdout"
+    },
+    {
+      "id": "c12",
+      "category": "answerable",
+      "question": "What are the restrictions on the Kochi approach channel during the monsoon season?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-notices",
+          "quote": "From 1 June to 30 September, the Kochi approach channel is restricted to vessels with a draft of no more than 12.5 metres, regardless of berth depth."
+        }
+      ],
+      "key_facts": [
+        "vessels with a draft of no more than 12.5 metres"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from port-notices p.1 — 3. Monsoon restrictions",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c13",
+      "category": "ambiguous",
+      "question": "What's the rule for bunkering at anchorage?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-notices",
+          "quote": "Bunkering at anchorage is allowed in daylight hours only and is suspended when the wind exceeds 20 knots."
+        }
+      ],
+      "key_facts": [
+        "allowed in daylight hours only"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from port-notices p.1 — 6. Bunkering",
+      "origin": "llm",
+      "split": "holdout"
+    },
+    {
+      "id": "c14",
+      "category": "ambiguous",
+      "question": "What must the ship's agent do before docking?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-tariff-schedule",
+          "quote": "The vessel's agent must deposit 100 percent of the estimated port charges before berthing."
+        }
+      ],
+      "key_facts": [
+        "deposit 100 percent of the estimated port charges"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from port-tariff-schedule p.1 — 8. Payment terms",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c15",
+      "category": "ambiguous",
+      "question": "What time can ships over 250 meters enter Kochi channel?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-notices",
+          "quote": "Vessels longer than 250 metres may enter or leave the Kochi channel only between 06:00 and 18:00."
+        }
+      ],
+      "key_facts": [
+        "between 06:00 and 18:00"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from port-notices p.1 — 4. Night navigation",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c16",
+      "category": "multi_doc",
+      "question": "What rebates can vessels receive for using shore power? Also, what is the fixed waste fee per vessel call?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-tariff-schedule",
+          "quote": "Vessels using shore power while at berth receive an additional 5 percent rebate on berth hire."
+        },
+        {
+          "doc_id": "port-notices",
+          "quote": "Each vessel is charged a fixed waste fee of USD 350 per call, whether or not waste is delivered, which covers up to 5 cubic metres of garbage."
+        }
+      ],
+      "key_facts": [
+        "an additional 5 percent rebate on berth hire",
+        "USD 350 per call"
+      ],
+      "expected_tool": null,
+      "rationale": "joins two verified questions from port-tariff-schedule and port-notices",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c17",
+      "category": "multi_doc",
+      "question": "How many tugs are required for vessels longer than 250 meters? Also, where must vessels carrying dangerous goods anchor?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-tariff-schedule",
+          "quote": "vessels longer than 250 m need 3 tugs for berthing and unberthing."
+        },
+        {
+          "doc_id": "port-notices",
+          "quote": "Vessels carrying dangerous goods anchor in the separate dangerous goods anchorage, at least 1 nautical mile from other vessels."
+        }
+      ],
+      "key_facts": [
+        "3 tugs",
+        "in the separate dangerous goods anchorage"
+      ],
+      "expected_tool": null,
+      "rationale": "joins two verified questions from port-tariff-schedule and port-notices",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c18",
+      "category": "multi_doc",
+      "question": "What is the requirement for visitors to a vessel? Also, what percentage of port dues must vessels calling only for bunkering, crew change or stores pay?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-notices",
+          "quote": "Visitors to a vessel need a port entry pass, applied for by the agent at least 24 hours in advance."
+        },
+        {
+          "doc_id": "port-tariff-schedule",
+          "quote": "Vessels calling only for bunkering, crew change or stores, and staying less than 24 hours, pay 50 percent of port dues."
+        }
+      ],
+      "key_facts": [
+        "need a port entry pass",
+        "50 percent of port dues"
+      ],
+      "expected_tool": null,
+      "rationale": "joins two verified questions from port-notices and port-tariff-schedule",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c19",
+      "category": "multi_doc",
+      "question": "How many hours before arrival must the pre-arrival notification be submitted? Also, how long is this tariff schedule valid from?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "port-notices",
+          "quote": "The vessel's agent must submit the pre-arrival notification at least 72 hours before the estimated time of arrival, or on departure from the last port if the voyage is shorter than 72 hours."
+        },
+        {
+          "doc_id": "port-tariff-schedule",
+          "quote": "Port Tariff Schedule 2026 (Kochi and Mumbai) Synthetic document for demonstration. The figures below are invented and are not the tariffs of any real port authority. Valid from 1 April 2026 to 31 March 2027."
+        }
+      ],
+      "key_facts": [
+        "at least 72 hours before the estimated time of arrival",
+        "Valid from 1 April 2026 to 31 March 2027"
+      ],
+      "expected_tool": null,
+      "rationale": "joins two verified questions from port-notices and port-tariff-schedule",
+      "origin": "llm",
+      "split": "holdout"
+    },
+    {
+      "id": "c20",
+      "category": "tool",
+      "question": "What is the max loa m for berth id KOC-CR1?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "berths",
+          "quote": "Row 8: berth_id: KOC-CR1; port: Kochi; terminal: Ernakulam Wharf; berth_type: cruise; max_loa_m: 300; max_draft_m: 10.0; max_beam_m: 38; max_dwt_t: 0; cargo: cruise passengers; daily_berth_hire_usd: 4500"
+        }
+      ],
+      "key_facts": [
+        "300"
+      ],
+      "expected_tool": "csv_lookup",
+      "rationale": "table lookup in berths row 8",
+      "origin": "template",
+      "split": "dev"
+    },
+    {
+      "id": "c21",
+      "category": "tool",
+      "question": "What is the total daily berth hire usd for 3 days at berth id KOC-CR1?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "berths",
+          "quote": "Row 8: berth_id: KOC-CR1; port: Kochi; terminal: Ernakulam Wharf; berth_type: cruise; max_loa_m: 300; max_draft_m: 10.0; max_beam_m: 38; max_dwt_t: 0; cargo: cruise passengers; daily_berth_hire_usd: 4500"
+        }
+      ],
+      "key_facts": [
+        "13500"
+      ],
+      "expected_tool": "calculator",
+      "rationale": "3 x 4500 = 13500 (computed by code)",
+      "origin": "template",
+      "split": "dev"
+    },
+    {
+      "id": "c22",
+      "category": "tool",
+      "question": "What is the weather forecast for Kochi for the next two days?",
+      "expect_refusal": false,
+      "sources": [],
+      "key_facts": [],
+      "expected_tool": "weather",
+      "rationale": "live data: must call the weather tool, not answer from memory",
+      "origin": "template",
+      "split": "holdout"
+    },
+    {
+      "id": "c23",
+      "category": "out_of_scope",
+      "question": "Can you provide customs clearance advice for our vessel?",
+      "expect_refusal": true,
+      "sources": [],
+      "key_facts": [],
+      "expected_tool": null,
+      "rationale": "Legal or customs clearance advice: Outside scope of the assistant's capabilities",
+      "origin": "llm",
+      "split": "holdout"
+    },
+    {
+      "id": "c24",
+      "category": "out_of_scope",
+      "question": "Do you have any information on the personal schedule of the port manager?",
+      "expect_refusal": true,
+      "sources": [],
+      "key_facts": [],
+      "expected_tool": null,
+      "rationale": "Personal or confidential data: No access to individual employee records or personal data",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c25",
+      "category": "out_of_scope",
+      "question": "Could you tell me about the recent changes in port rules?",
+      "expect_refusal": true,
+      "sources": [],
+      "key_facts": [],
+      "expected_tool": null,
+      "rationale": "Near miss - related policy: While the assistant can provide current port rules, the question asks for recent changes which are not covered in the documents.",
+      "origin": "llm",
+      "split": "holdout"
+    },
+    {
+      "id": "c26",
+      "category": "out_of_scope",
+      "question": "Is there a specific berth available for our vessel next week?",
+      "expect_refusal": true,
+      "sources": [],
+      "key_facts": [],
+      "expected_tool": null,
+      "rationale": "Within scope, but not a refusal question",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c27",
+      "category": "out_of_scope",
+      "question": "Can you share the personal contact details of the port agent handling our vessel?",
+      "expect_refusal": true,
+      "sources": [],
+      "key_facts": [],
+      "expected_tool": null,
+      "rationale": "Personal or confidential data: No access to individual employee records or personal data",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c28",
+      "category": "out_of_scope",
+      "question": "What is the status of my colleague's application for a security clearance?",
+      "expect_refusal": true,
+      "sources": [],
+      "key_facts": [],
+      "expected_tool": null,
+      "rationale": "Personal or confidential data: No access to individual employee records or personal data",
+      "origin": "llm",
+      "split": "dev"
+    }
+  ],
+  "rejected": [
+    {
+      "category": "answerable",
+      "question": "How much of the estimated port charges must be deposited before berthing?",
+      "reason": "quote is not a verbatim span of the source passage"
+    },
+    {
+      "category": "answerable",
+      "question": "What is the maximum length of a vessel that can berth at this berth in meters?",
+      "reason": "near-duplicate of another question"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What are the current port charges for our vessel?",
+      "reason": "answerable from the documents (similarity 0.78 to the documents is at or above the answerable-question floor 0.78)"
+    }
+  ],
+  "prompts": [
+    "evals_answerable",
+    "evals_ambiguous",
+    "evals_out_of_scope",
+    "evals_answerability"
+  ]
+}

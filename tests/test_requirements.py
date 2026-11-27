@@ -248,3 +248,67 @@ def test_prompt_render_fails_on_missing_variable() -> None:
     with pytest.raises(KeyError):
         render("intake_questions", brief="x")
     assert render("intake_questions", brief="B", corpus_summary="S").startswith("TASK:")
+
+
+# ---------- Phase 6.1: personal-records asks --------------------------------------------
+
+
+def test_personal_records_ask_is_split_off_and_refused() -> None:
+    """Real HR run: the model merged 'how many leave days are left' into 'annual leave
+    entitlement', and a real entitlement quote let it pass the guard."""
+    from forgeai.schemas.corpus import Corpus, Document, Page
+    from forgeai.stages.guard import _personal_record_checks
+
+    req = Requirements(
+        agent_name="HR Desk",
+        purpose="p",
+        scope="s",
+        audience="a",
+        tone="t",
+        must_answer=[
+            Topic(
+                topic="annual leave entitlement",
+                detail="How many leave days an employee has left this year.",
+            ),
+            Topic(topic="remote work policy", detail="days per week allowed"),
+        ],
+        must_refuse=[{"topic": "Legal advice", "reason": "r"}],  # type: ignore[list-item]
+        brief=BRIEF,
+    )
+    corpus = Corpus(
+        root=".",
+        documents=[
+            Document(
+                doc_id="leave",
+                filename="l.pdf",
+                kind="pdf",
+                title="L",
+                pages=[Page(number=1, text="x")],
+            )
+        ],
+    )
+    checks = _personal_record_checks(req, corpus)
+    assert [c.topic for c in checks] == ["annual leave entitlement"]
+    out = apply_guard(req, GroundabilityReport(checks=checks))
+    assert [(t.topic, t.detail) for t in out.must_answer] == [
+        ("annual leave entitlement", ""),  # the general topic stays answerable
+        ("remote work policy", "days per week allowed"),
+    ]
+    assert out.must_refuse[-1].topic == "How many leave days an employee has left this year"
+    assert out.flagged_gaps[0].topic == "How many leave days an employee has left this year"
+
+
+@pytest.mark.parametrize(
+    ("text", "personal"),
+    [
+        ("Remaining leave balance: days an employee has left this year", True),
+        ("Leave balance for each employee", True),
+        ("How many sick days do I have remaining", True),
+        ("Annual leave entitlement: days earned per year", False),
+        ("Carry forward of unused days into the next year", False),
+    ],
+)
+def test_personal_records_pattern(text: str, personal: bool) -> None:
+    from forgeai.stages.guard import PERSONAL_RECORDS
+
+    assert bool(PERSONAL_RECORDS.search(text)) is personal

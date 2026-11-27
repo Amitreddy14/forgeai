@@ -2,6 +2,74 @@
 
 Newest first. Decisions, bugs, changes, and anything the next session must know.
 
+## 2026-11-28 — Phase 7
+
+- Web: FastAPI + Jinja + HTMX, hand-written CSS from design.md. Verified with headless
+  Chrome screenshots (desktop + 400 px): fixed a load-line label collision and a mobile
+  overflow (grid children need min-width: 0).
+- Bug found by the UI: `RunStore.write_json` used `json.dumps(default=str)`, so lists of
+  models (changelog.json, canaries.json) were saved as Python reprs. Now converted
+  recursively; anything non-JSON raises. Demo runs must be regenerated.
+- Hosting: HF rejects un-LFS binaries (our PDFs), so the Space holds only a Dockerfile
+  that clones the public GitHub repo, plus a README with Space metadata.
+- Groq free tier (llama-3.1-8b-instant ~6k TPM, 30 RPM): chat is fine; hosted builds are
+  slow and capped (1 iteration, 150k tokens). Judge on Groq: openai/gpt-oss-20b.
+- CSP forbids inline styles, so progress uses <progress>, not a styled width.
+
+## 2026-11-28 — Phase 6.2 (second demo runs)
+
+Second runs: HR dev 82% / holdout 7/8; port dev 84% -> 89% (optimizer kept refuse topic
+"future operational schedules"), holdout 7/9. Port agent got exactly csv_lookup,
+calculator, weather (current_date not attached): the contract works. c21 showed the
+agent loop self-correcting (csv_lookup failed, retried ok, then calculator).
+Still not committed; fixes:
+- Personal split kept a topic literally named "Remaining leave balance". Now a topic
+  whose own name is the personal ask is dropped (refused), not kept.
+- Out-of-scope candidates that name a must-answer topic ("HR policies for remote work")
+  with no refusal cue (my, next, plans, recent changes, book, status...) are rejected.
+- Weather tool returned a forecast and the agent refused anyway: the system prompt now
+  states tool results are trusted evidence, and TOOL RESULTS come before PASSAGES.
+- agent.v0.prompt.md is now always written.
+
+## 2026-11-27 — Phase 6.1 (fixes from the first two demo runs)
+
+First demo runs: HR dev 75% / holdout 7/7; port dev 67% / holdout 3/7. Not committed,
+because both showed factory bugs:
+- HR: the model merged "how many leave days are left" into "annual leave entitlement";
+  a real entitlement quote passed the guard, so the planted trap was missed. Fix: a
+  deterministic personal-records pattern flags such asks; apply_guard SPLITS the topic
+  (general topic stays answerable, the personal ask becomes a refusal + gap). The
+  requirements prompt now says one ask per topic, personal asks on their own.
+- Port: the model marked weather/berths/charges as "documents" topics with no tool
+  hints, so no tools were attached, and "port charges estimation" was wrongly flagged.
+  Fix: `Topic.tool_hints` (list); code infers hints from the topic's words and the
+  folder's CSV (table name, or ≥ 2 column words); topics with hints skip the prose guard.
+- Out-of-scope labels: qwen still called in-scope questions "not answered". Backstop:
+  an out-of-scope candidate as similar to the documents as the 25th-percentile
+  answerable question is rejected.
+- Two-document questions written by the model were forced ("compare monsoon draft with
+  port dues"). Now composed in code by joining two verified single-document questions
+  from different documents ("...? Also, ..."), facts already proven.
+- Optimizer had no fix for answering must-refuse questions. New critic patch: a general
+  refuse topic (rejected if it copies a test question).
+- Split: every category with ≥ 2 cases has at least one holdout case.
+
+## 2026-11-27 — Phase 6
+
+- hr-mini after 4.1: dev 90%, holdout 100%, canaries 100% (was 46% / 40% / 62%).
+  `forge build` on hr-mini: 80 s, every dev case passed, so the optimizer had nothing to
+  do; hr-mini is too small (11 cases) for the real demos.
+- 4.1's out-of-scope check reused the guard prompt and over-rejected true refusals
+  ("how much sick leave do I have left" was "supported" by the general sick-leave rule).
+  Now a dedicated `evals_answerability` prompt asks whether a passage states the
+  specific answer; personal data, other groups, future changes and actions don't count.
+- Demo PDFs exposed a chunker bug: a heading at the foot of a page became a 4-word
+  chunk and the body on the next page lost its heading. Chunking now streams across
+  pages; a chunk is cited by the page it starts on.
+- Demo documents: fictional company "Konkan Marine Services"; invented port tariffs;
+  every document says it is synthetic on its first line.
+- Eval targets raised: answerable 12, ambiguous 3, multi-doc 4, out-of-scope 7, refill 8.
+
 ## 2026-11-27 — Phase 5
 
 - One canary set per run (dev cases), reused by every evaluation so judge trust is stable.

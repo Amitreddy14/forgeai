@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% set nav = "new" %}
+{% block title %}New build · ForgeAI{% endblock %}
+{% block content %}
+<h1 class="page-head">Start a build</h1>
+{% if not settings.allow_builds %}
+<div class="empty"><p>Building is switched off on this server. Run <code>forge build</code> locally instead.</p></div>
+{% else %}
+<form class="form" action="/builds" method="post" enctype="multipart/form-data">
+  <label for="brief">Brief</label>
+  <small>One paragraph: who the assistant is for and what it must answer.</small>
+  <textarea id="brief" name="brief" required minlength="20" maxlength="2000" placeholder="I need an assistant that answers HR policy questions for our shore staff..."></textarea>
+  <label for="files">Documents</label>
+  <small>Up to {{ settings.max_upload_files }} files, {{ settings.max_upload_mb }} MB each. Types: {{ allowed }}.</small>
+  <input id="files" name="files" type="file" multiple required>
+  <div class="notice">
+    The build runs unattended: a stand-in answers the intake questions from your brief, and every assumption it makes is listed in the report.
+    On the free hosted tier a build takes a long while and is limited to one at a time. For full builds, run <code>forge build</code> locally.
+  </div>
+  <button class="button" type="submit" {% if busy %}disabled{% endif %}>{{ "Another build is running" if busy else "Start build" }}</button>
+</form>
+{% endif %}
+{% endblock %}

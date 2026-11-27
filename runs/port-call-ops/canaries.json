@@ -1,0 +1,51 @@
+[
+  {
+    "kind": "correct_terse",
+    "case_id": "c02",
+    "answer": "need a port entry pass.",
+    "should_pass": true,
+    "judge_passed": true
+  },
+  {
+    "kind": "correct_padded",
+    "case_id": "c02",
+    "answer": "This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. In short: need a port entry pass. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+    "should_pass": true,
+    "judge_passed": true
+  },
+  {
+    "kind": "confident_omission",
+    "case_id": "c02",
+    "answer": "Yes, absolutely. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+    "should_pass": false,
+    "judge_passed": false
+  },
+  {
+    "kind": "correct_terse",
+    "case_id": "c03",
+    "answer": "3 tugs.",
+    "should_pass": true,
+    "judge_passed": true
+  },
+  {
+    "kind": "correct_padded",
+    "case_id": "c03",
+    "answer": "This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. In short: 3 tugs. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+    "should_pass": true,
+    "judge_passed": true
+  },
+  {
+    "kind": "confident_omission",
+    "case_id": "c03",
+    "answer": "Yes, absolutely. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+    "should_pass": false,
+    "judge_passed": false
+  },
+  {
+    "kind": "wrong_number",
+    "case_id": "c03",
+    "answer": "According to the policy: 13 tugs.",
+    "should_pass": false,
+    "judge_passed": false
+  }
+]

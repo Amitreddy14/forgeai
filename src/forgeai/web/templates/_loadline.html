@@ -1,0 +1,22 @@
+{# The load line: a Plimsoll mark whose bar sits at the pass mark. The water is the
+   holdout score; the dev score is a tick on the same scale. #}
+{% macro loadline(holdout, dev, pass_mark, low, high) %}
+<svg viewBox="0 0 230 290" role="img" aria-label="Holdout score {{ holdout|pct }} against a pass mark of {{ pass_mark|pct }}">
+  <rect x="70" y="20" width="120" height="220" fill="#ffffff" stroke="#0f2a3f" stroke-width="1"/>
+  <rect x="71" y="{{ ly(high) }}" width="118" height="{{ ly(low) - ly(high) }}" fill="#eef2f3"/>
+  <rect x="71" y="{{ ly(holdout) }}" width="118" height="{{ 239 - ly(holdout) }}" fill="#bfd6e2"/>
+  <line x1="70" x2="190" y1="{{ ly(holdout) }}" y2="{{ ly(holdout) }}" stroke="#0f2a3f" stroke-width="2"/>
+  {% for v in [0, 0.25, 0.5, 0.75, 1.0] %}
+  <line x1="62" x2="70" y1="{{ ly(v) }}" y2="{{ ly(v) }}" stroke="#0f2a3f"/>
+  <text x="56" y="{{ ly(v) + 4 }}" text-anchor="end" font-size="11" fill="#3c556a">{{ (v * 100)|int }}</text>
+  {% endfor %}
+  <circle cx="130" cy="{{ ly(pass_mark) }}" r="30" fill="none" stroke="#0f2a3f" stroke-width="3"/>
+  <line x1="88" x2="172" y1="{{ ly(pass_mark) }}" y2="{{ ly(pass_mark) }}" stroke="#0f2a3f" stroke-width="3"/>
+  {% if dev is not none %}
+  <line x1="190" x2="202" y1="{{ ly(dev) }}" y2="{{ ly(dev) }}" stroke="#0f2a3f" stroke-width="2"/>
+  <text x="204" y="{{ ly(dev) + 4 }}" font-size="11" fill="#3c556a">dev</text>
+  {% endif %}
+  <text x="130" y="262" text-anchor="middle" font-size="12" fill="#3c556a">water: holdout pass rate</text>
+  <text x="130" y="280" text-anchor="middle" font-size="12" fill="#3c556a">ring and bar: pass mark {{ pass_mark|pct }}</text>
+</svg>
+{% endmacro %}

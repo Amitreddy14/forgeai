@@ -1,0 +1,10 @@
+{
+  "attached": [],
+  "rejected": [
+    {
+      "name": "calculator",
+      "reason": "no requirement topic needs this capability"
+    }
+  ],
+  "added": []
+}
