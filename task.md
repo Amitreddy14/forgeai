@@ -85,8 +85,8 @@ Legend: `[x]` done · `[ ]` open · `(S)` stretch.
 - [x] 6.1 fixes from the first demo runs: tool hints inferred in code, personal-records split,
       similarity backstop for out-of-scope labels, composed two-document cases,
       refuse-topic critic patch
-- [ ] Run A end to end on Ollama, commit `runs/hr-shore-staff/`
-- [ ] Run B end to end on Ollama, commit `runs/port-call-ops/`
+- [x] Run A end to end on Ollama, commit `runs/hr-shore-staff/`
+- [x] Run B end to end on Ollama, commit `runs/port-call-ops/`
 - [ ] Dry run on a third unseen brief (not committed) to check generality
 
 ## Phase 7 — Web UI + hosting (branch `phase-7-web`)
@@ -99,9 +99,11 @@ Legend: `[x]` done · `[ ]` open · `(S)` stretch.
 - [x] Fix found while building the UI: RunStore wrote lists of models as Python reprs
 - [x] Render free web service from `render.yaml` (Docker, bge-small baked in); Groq free
       tier, generator and judge from different model families
-- [ ] Deploy on Render and set FORGE_LLM_API_KEY (Amit)
+- [x] Deploy on Render and set FORGE_LLM_API_KEY (Amit): https://forgeai-524s.onrender.com
+- [x] 7.1–7.4 hosting fixes: small embedding batches, runtimes built off the event loop and
+      warmed at startup, Groq model swap (llama-3.1-8b-instant retired), weather fallback
 
 ## Phase 8 — Ship (branch `phase-8-ship`)
-- [ ] README: quick start, architecture, results tables from the committed runs
+- [x] README: quick start, architecture, results tables from the committed runs
 - [ ] Demo video script (3–8 min) + recording
 - [ ] Final check against PRD success criteria; submit

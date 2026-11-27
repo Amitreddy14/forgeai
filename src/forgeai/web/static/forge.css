@@ -213,3 +213,6 @@ footer.foot { padding: var(--s6); text-align: left; max-width: 1240px; margin: 0
   .register .hide-sm { display: none; }
   .aside { position: static; }
 }
+
+/* Keep the agent's line breaks (multi-day forecasts, lists). */
+.reply .answer { white-space: pre-line; }

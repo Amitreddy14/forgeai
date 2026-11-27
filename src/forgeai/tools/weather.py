@@ -7,6 +7,7 @@ from __future__ import annotations
 
 import asyncio
 from collections import defaultdict
+from datetime import datetime, timedelta
 from typing import Any, ClassVar
 
 import httpx
@@ -127,13 +128,22 @@ def _open_meteo_lines(daily: dict[str, Any], waves: list[Any]) -> list[str]:
     return lines
 
 
-def _metno_lines(data: dict[str, Any], days: int) -> list[str]:
-    """Fold MET Norway's hourly series into daily lines (UTC dates)."""
+def _metno_lines(data: dict[str, Any], days: int, lon: float = 0.0) -> list[str]:
+    """Fold MET Norway's hourly series into daily lines on approximate local dates.
+
+    MET Norway reports UTC. Shifting by the longitude's solar offset (rounded to 30 min)
+    keeps an evening-in-UTC hour from becoming a day that has already ended locally.
+    """
+    offset = timedelta(hours=round(lon / 15 * 2) / 2)
     temps: dict[str, list[float]] = defaultdict(list)
     winds: dict[str, list[float]] = defaultdict(list)
     rain: dict[str, float] = defaultdict(float)
     for step in (data.get("properties") or {}).get("timeseries", []):
-        day = str(step.get("time", ""))[:10]
+        try:
+            stamp = datetime.fromisoformat(str(step.get("time", "")).replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        day = (stamp + offset).date().isoformat()
         details = ((step.get("data") or {}).get("instant") or {}).get("details") or {}
         if "air_temperature" in details:
             temps[day].append(float(details["air_temperature"]))
@@ -196,7 +206,7 @@ class Weather:
                 metno = await _get_json(
                     client, METNO_URL, {"lat": round(lat, 4), "lon": round(lon, 4)}
                 )
-                lines = _metno_lines(metno, args.days)
+                lines = _metno_lines(metno, args.days, lon)
             if args.marine:
                 try:
                     marine = await _get_json(
