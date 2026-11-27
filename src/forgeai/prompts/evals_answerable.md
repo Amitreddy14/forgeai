@@ -10,7 +10,13 @@ PASSAGE [$chunk_id] from "$doc_title":
 $passage
 
 Rules:
-- The question must not contain the answer, and must make sense without the passage.
-- `key_facts`: 1 to 3 short facts (2 to 8 words each, e.g. "24 days per year"), each
-  copied word for word from the passage, numbers exactly as written.
+- The question must make sense on its own: name the subject (for example "sick leave"),
+  never "this policy" or "the passage". It must not contain the answer.
+- `key_facts`: 1 or 2 SHORT facts (2 to 8 words), copied word for word from the passage,
+  that answer exactly what the question asks. No facts the question does not ask about.
 - `quote`: the sentence(s) from the passage that contain all key facts, copied exactly.
+
+Example of the shape (not of the content):
+{"question": "How many days of annual leave do shore staff earn each year?",
+ "key_facts": ["24 days of annual leave"],
+ "quote": "Shore staff earn 24 days of annual leave per calendar year."}

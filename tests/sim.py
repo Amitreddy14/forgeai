@@ -132,7 +132,9 @@ def judge(prompt: str) -> str:
     return json.dumps(
         {
             "facts": [
-                {"fact": f, "status": "present" if normalize(f) in answer else "missing"}
+                {"fact": f, "status": "present", "evidence": f}
+                if normalize(f) in answer
+                else {"fact": f, "status": "missing", "evidence": ""}
                 for f in facts
             ]
         }
@@ -158,4 +160,22 @@ def respond(messages: list[ChatMessage]) -> str:
         return json.dumps({"calls": []})
     if task == "judge.facts":
         return judge(prompt)
+    if task == "generate.variants":
+        return json.dumps(
+            {
+                "prompts": [
+                    "You are a precise HR assistant for shore staff. Quote exact figures and name the "
+                    "policy section they come from. Answer only from the policy documents.",
+                    "You are a friendly HR helper for shore staff. Answer the need in plain words "
+                    "first, then give the exact policy details from the documents.",
+                ]
+            }
+        )
+    if task == "critic.rule":
+        return json.dumps(
+            {
+                "rule": "Answer the exact question first, using the document's own wording.",
+                "rationale": "answers drifted from the asked fact",
+            }
+        )
     return generator_responder(messages)

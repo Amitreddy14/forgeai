@@ -11,6 +11,7 @@ PASSAGE [$chunk_id] from "$doc_title":
 $passage
 
 Rules:
-- The question must not contain the answer.
-- `key_facts`: 1 to 2 short facts copied word for word from the passage.
+- The question must name its subject (never "this policy") and not contain the answer.
+- `key_facts`: 1 or 2 SHORT facts (2 to 8 words) copied word for word from the passage,
+  answering exactly what is asked.
 - `quote`: the sentence(s) containing the key facts, copied exactly.

@@ -91,6 +91,8 @@ class CaseResult(BaseModel):
     case: EvalCase
     answer: str
     refused: bool
+    refused_by: Literal["model", "threshold"] | None = None
+    best_dense: float = 0.0
     citations: list[str] = Field(default_factory=list)
     tool_calls: list[str] = Field(default_factory=list)
     latency_s: float = 0.0

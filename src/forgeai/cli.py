@@ -22,12 +22,14 @@ from forgeai.errors import ForgeError
 from forgeai.ingest import chunk_corpus, load_folder
 from forgeai.llm.factory import build_llm
 from forgeai.pipeline import (
+    FactoryResult,
     RequirementsOutcome,
     build_agent,
     build_evals,
     build_requirements,
     evaluate_agent,
     load_requirements_outcome,
+    run_factory,
 )
 from forgeai.retrieval import HybridIndex, RetrievalConfig, make_embedder
 from forgeai.runtime import AgentTurn, load_definition, load_runtime
@@ -453,6 +455,94 @@ def evaluate(
         )
     if run.scorecard.judge_canary_accuracy is not None:
         console.print(f"judge canary accuracy {run.scorecard.judge_canary_accuracy:.0%}")
+
+
+async def _build(
+    brief_text: str,
+    docs: Path,
+    answers: str,
+    approve: bool,
+    run_id: str,
+    max_iterations: int,
+    tournament: bool,
+    resume: bool,
+    min_cases: int,
+) -> FactoryResult:
+    settings = get_settings()
+    ctx, stack = _context(settings)
+    store = RunStore(settings.runs_dir, run_id)
+    started = time.perf_counter()
+
+    def progress(message: str) -> None:
+        console.print(f"[dim]{time.perf_counter() - started:6.0f}s[/dim]  {escape(message)}")
+
+    try:
+        return await run_factory(
+            ctx,
+            store,
+            brief_text,
+            docs,
+            _make_answerer(answers, ctx),
+            stack.budget,
+            approve=_approve_interactively if approve else None,
+            max_iterations=max_iterations,
+            tournament=tournament,
+            resume=resume,
+            min_cases=min_cases,
+            progress=progress,
+        )
+    finally:
+        store.write_json("budget.json", stack.budget.report())
+        await stack.aclose()
+
+
+@app.command()
+def build(
+    brief: Path = typer.Option(..., exists=True, dir_okay=False, help="Brief (text/markdown)."),
+    docs: Path = typer.Option(..., exists=True, file_okay=False, help="Documents folder."),
+    answers: str = typer.Option("auto", help="auto (unattended), interactive, or answers JSON."),
+    approve: bool = typer.Option(False, help="Human checkpoint on the requirements."),
+    run_id: str | None = typer.Option(None, help="Run folder name (default: generated)."),
+    max_iterations: int = typer.Option(3, min=0, max=3, help="Optimizer iterations (max 3)."),
+    tournament: bool = typer.Option(False, help="Pick the role prompt by a dev-set tournament."),
+    resume: bool = typer.Option(False, help="Reuse finished stages in an existing run folder."),
+    min_cases: int = typer.Option(20, min=1, help="Minimum eval cases after validation."),
+) -> None:
+    """Run the whole factory: brief + documents -> tested agent + honest report."""
+    brief_text = brief.read_text(encoding="utf-8")
+    rid = validate_run_id(run_id) if run_id else new_run_id(brief.stem)
+    try:
+        result = asyncio.run(
+            _build(
+                brief_text,
+                docs,
+                answers,
+                approve,
+                rid,
+                max_iterations,
+                tournament,
+                resume,
+                min_cases,
+            )
+        )
+    except (ForgeError, ValueError, FileNotFoundError) as exc:
+        console.print(f"[red]Stopped:[/red] {escape(str(exc))}")
+        console.print(f"Artifacts so far are in {get_settings().runs_dir / rid}")
+        raise typer.Exit(code=1) from exc
+    card = result.scorecard
+    lo, hi = card.holdout_ci95
+    console.print(f"\n[green bold]Built {card.agent} v{card.final_version}[/green bold]")
+    for it in card.iterations:
+        console.print(
+            f"  dev v{it.version}: {it.dev_passed}/{it.dev_cases} ({it.dev_pass_rate:.0%})"
+        )
+    console.print(
+        f"  holdout: {card.holdout_passed}/{card.holdout_cases} "
+        f"({(card.holdout_after or 0):.0%}, 95% CI {lo:.0%}-{hi:.0%}); "
+        f"before optimization {(card.holdout_before or 0):.0%}"
+    )
+    console.print(f"  stopped: {card.stop_reason}")
+    console.print(f"  report: {result.report_path}")
 
 
 if __name__ == "__main__":  # pragma: no cover
