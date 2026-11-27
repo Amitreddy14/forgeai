@@ -5,7 +5,7 @@ documents. It interviews you, checks that the documents can support the brief, b
 grounded agent, writes its own test set, judges the results, fixes what failed (up to 3
 times), and hands back the agent with an honest report of what still fails and why.
 
-> Status: Phase 0 (scaffold). See [task.md](task.md) for progress.
+> Status: Phase 1 (foundations). See [task.md](task.md) for progress.
 
 ## Why it can be trusted
 
@@ -30,6 +30,9 @@ pip install -e ".[dev]"
 cp .env.example .env               # Windows: copy .env.example .env
 ollama pull qwen2.5:7b && ollama pull llama3.1:8b
 forge doctor                       # checks settings and the model endpoint
+forge smoke                        # one structured-JSON call per model, timed
+forge ingest path/to/docs          # what was extracted and how it chunks
+forge search path/to/docs "how many days of annual leave?"
 ```
 
 Run the web app: `uvicorn forgeai.web.app:app --reload`, then open

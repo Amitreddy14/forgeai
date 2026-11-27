@@ -34,6 +34,9 @@ class Settings(BaseSettings):
     max_tokens_per_run: int = Field(default=400_000, ge=1_000)
     max_iterations: int = Field(default=3, ge=0, le=3)
 
+    # Retrieval: "fastembed" (bge-small, downloads once) or "hash" (offline, for tests).
+    embedder: Literal["fastembed", "hash"] = "fastembed"
+
     # Storage.
     runs_dir: Path = Path("runs")
     cache_path: Path = Path(".forge_cache/llm.sqlite")
