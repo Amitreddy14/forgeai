@@ -6,6 +6,7 @@ import asyncio
 import json
 import logging
 import random
+import re
 from typing import Any
 
 import httpx
@@ -16,6 +17,12 @@ from forgeai.llm.base import ChatMessage, LLMResponse, Usage
 log = logging.getLogger(__name__)
 
 RETRYABLE_STATUS = {408, 409, 425, 429, 500, 502, 503, 504}
+REASONING_HEADROOM = 1024
+_THINK = re.compile(r"<think>.*?(</think>|$)", re.DOTALL)
+
+
+def _is_reasoning_model(model: str) -> bool:
+    return model.startswith("openai/gpt-oss")
 
 
 class OpenAICompatClient:
@@ -79,6 +86,11 @@ class OpenAICompatClient:
         }
         if json_schema is not None:
             payload["response_format"] = {"type": "json_object"}
+        if _is_reasoning_model(model):
+            # gpt-oss thinks before it answers, and the thinking counts against
+            # max_tokens: keep it short and leave room for the actual answer.
+            payload["reasoning_effort"] = "low"
+            payload["max_tokens"] = max_tokens + REASONING_HEADROOM
 
         async with self._semaphore:
             data = await self._post_with_retries(payload)
@@ -157,4 +169,6 @@ def _parse_completion(data: dict[str, Any], requested_model: str) -> LLMResponse
         prompt_tokens=int(usage_raw.get("prompt_tokens", 0) or 0),
         completion_tokens=int(usage_raw.get("completion_tokens", 0) or 0),
     )
+    # Reasoning models (Qwen3 and others) may inline their thinking; it is never the answer.
+    text = _THINK.sub("", text).strip() if "<think>" in text else text
     return LLMResponse(text=text, model=str(data.get("model", requested_model)), usage=usage)

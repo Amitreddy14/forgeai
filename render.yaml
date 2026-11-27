@@ -14,9 +14,9 @@ services:
       - key: FORGE_LLM_BASE_URL
         value: https://api.groq.com/openai/v1
       - key: FORGE_GENERATOR_MODEL
-        value: llama-3.1-8b-instant
+        value: openai/gpt-oss-20b   # Groq retired llama-3.1-8b-instant on 2026-08-16
       - key: FORGE_JUDGE_MODEL
-        value: openai/gpt-oss-20b   # a different model family from the generator
+        value: qwen/qwen3.8-27b     # a different model family from the generator
       - key: FORGE_MAX_ITERATIONS
         value: "1"
       - key: FORGE_MAX_TOKENS_PER_RUN

@@ -22,6 +22,15 @@ lock, built once), and with FORGE_WARM_CHAT=true (set in render.yaml) both demo
 runtimes are built at startup. Model failures now name the cause (bad key, unknown
 model, HTTP status) instead of a generic "did not answer".
 
+Phase 7.3: that message said 404: Groq shut down llama-3.1-8b-instant for free/dev tiers
+on 2026-08-16. Hosted generator is now openai/gpt-oss-20b (Groq's named replacement),
+judge qwen/qwen3.8-27b (preview; a different family). gpt-oss reasons before answering
+and the reasoning counts against max_tokens, so the client sends reasoning_effort=low
+plus 1024 tokens of headroom for gpt-oss models; inline <think> blocks are stripped.
+htmx indicator styles disabled via htmx-config (our CSS has them; CSP blocked the inline
+copy and left a console error). Committed demos were built locally with qwen2.5-8k, so
+hosted chat runs a different model than the certificates measured; README must say so.
+
 ## 2026-11-28 — Phase 6.4 (fourth demo runs)
 
 HR: optimizer kept "future financial forecasts" refuse topic (87% -> 93% dev). Port: Kochi
@@ -57,8 +66,8 @@ artifacts, both also affecting hosted chat:
 - Hosting: Hugging Face made Docker/Gradio Spaces paid (Amit's account shows it), and
   Koyeb now needs a card, so the app is hosted on Render's free web service (Docker,
   no card, 512 MB, sleeps after 15 idle minutes) via `render.yaml`.
-- Groq free tier (llama-3.1-8b-instant ~6k TPM, 30 RPM): chat is fine; hosted builds are
-  slow and capped (1 iteration, 150k tokens). Judge on Groq: openai/gpt-oss-20b.
+- Groq free tier (generator openai/gpt-oss-20b, judge qwen/qwen3.8-27b since 7.3): hosted
+  builds are capped (1 iteration, 150k tokens).
 - CSP forbids inline styles, so progress uses <progress>, not a styled width.
 
 ## 2026-11-28 — Phase 6.2 (second demo runs)
