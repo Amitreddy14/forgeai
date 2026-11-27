@@ -8,7 +8,7 @@
 - dev pass rate: 84% -> 89%
 - fixed: c18; broke: none
 - decision: kept: +1 fixed, none broken (now agent v1)
-- tokens: 27,574
+- tokens: 0
 
 ## Iteration 2: add refuse topic: "vessel-specific inquiries"
 
@@ -18,7 +18,7 @@
 - dev pass rate: 89% -> 89%
 - fixed: none; broke: none
 - decision: reverted: 0 fixed, 0 broken (no net gain)
-- tokens: 27,481
+- tokens: 0
 
 ## Iteration 2: add rule: "Evaluate the question's intent and context; refuse answers that require external information or actions, and provide accurate, document-based responses for all other questions."
 
@@ -28,4 +28,4 @@
 - dev pass rate: 89% -> 84%
 - fixed: none; broke: c18
 - decision: reverted: 0 fixed, 1 broken (no net gain)
-- tokens: 28,383
+- tokens: 0

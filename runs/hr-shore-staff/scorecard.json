@@ -23,14 +23,14 @@
   "judge_canary_accuracy": 1.0,
   "judge_trusted": true,
   "stop_reason": "iteration 1 found no patch that improved dev without regressions",
-  "tokens_used": 61750,
+  "tokens_used": 0,
   "by_stage_tokens": {
     "intake": 0,
     "guard": 0,
-    "generate": 1573,
+    "generate": 0,
     "evalgen": 0,
     "judge": 0,
-    "agent": 59447,
-    "critic": 730
+    "agent": 0,
+    "critic": 0
   }
 }

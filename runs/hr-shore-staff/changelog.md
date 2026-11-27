@@ -8,7 +8,7 @@
 - dev pass rate: 93% -> 93%
 - fixed: none; broke: none
 - decision: reverted: 0 fixed, 0 broken (no net gain)
-- tokens: 16,775
+- tokens: 0
 
 ## Iteration 1: add rule: "Assess each question's context and ensure the assistant either answers with certainty or refuses with clarity, without providing partial or incorrect information."
 
@@ -18,4 +18,4 @@
 - dev pass rate: 93% -> 93%
 - fixed: none; broke: none
 - decision: reverted: 0 fixed, 0 broken (no net gain)
-- tokens: 17,054
+- tokens: 0

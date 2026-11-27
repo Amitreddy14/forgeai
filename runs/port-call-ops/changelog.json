@@ -23,7 +23,7 @@
     ],
     "broke": [],
     "decision": "kept: +1 fixed, none broken",
-    "tokens": 27574
+    "tokens": 0
   },
   {
     "iteration": 2,
@@ -47,7 +47,7 @@
     "fixed": [],
     "broke": [],
     "decision": "reverted: 0 fixed, 0 broken (no net gain)",
-    "tokens": 27481
+    "tokens": 0
   },
   {
     "iteration": 2,
@@ -74,6 +74,6 @@
       "c18"
     ],
     "decision": "reverted: 0 fixed, 1 broken (no net gain)",
-    "tokens": 28383
+    "tokens": 0
   }
 ]

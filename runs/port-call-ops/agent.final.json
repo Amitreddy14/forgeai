@@ -72,7 +72,7 @@
   "provenance": {
     "factory_version": "0.1.0",
     "generator_model": "qwen2.5-8k",
-    "created_at": "2026-11-27T19:10:35+00:00",
+    "created_at": "2026-11-27T19:31:28+00:00",
     "notes": [
       "median section 52 words -> chunk 120, overlap 20",
       "3 documents incl. CSV -> top_k 6",

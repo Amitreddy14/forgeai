@@ -34,7 +34,7 @@
         "PlannedCall:failed",
         "max_length_of_vessel:failed"
       ],
-      "latency_s": 10.369,
+      "latency_s": 0.011,
       "judgement": {
         "case_id": "c01",
         "passed": true,
@@ -87,7 +87,7 @@
         "port-tariff-schedule:p1:c6"
       ],
       "tool_calls": [],
-      "latency_s": 13.131,
+      "latency_s": 0.009,
       "judgement": {
         "case_id": "c05",
         "passed": true,
@@ -143,7 +143,7 @@
         "calculator:ok",
         "calculator:ok"
       ],
-      "latency_s": 15.041,
+      "latency_s": 0.009,
       "judgement": {
         "case_id": "c08",
         "passed": false,
@@ -196,7 +196,7 @@
         "port-tariff-schedule:p1:c2"
       ],
       "tool_calls": [],
-      "latency_s": 17.568,
+      "latency_s": 0.007,
       "judgement": {
         "case_id": "c11",
         "passed": true,
@@ -249,7 +249,7 @@
         "port-notices:p1:c6"
       ],
       "tool_calls": [],
-      "latency_s": 19.551,
+      "latency_s": 0.006,
       "judgement": {
         "case_id": "c13",
         "passed": true,
@@ -311,7 +311,7 @@
         "calculator:ok",
         "csv_lookup:failed"
       ],
-      "latency_s": 24.509,
+      "latency_s": 0.009,
       "judgement": {
         "case_id": "c19",
         "passed": true,
@@ -362,7 +362,7 @@
       "tool_calls": [
         "weather:ok"
       ],
-      "latency_s": 40.311,
+      "latency_s": 1.451,
       "judgement": {
         "case_id": "c22",
         "passed": false,
@@ -400,7 +400,7 @@
       "best_dense": 0.7034,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 25.531,
+      "latency_s": 0.006,
       "judgement": {
         "case_id": "c23",
         "passed": true,
@@ -440,7 +440,7 @@
         "port-notices:p2:c8"
       ],
       "tool_calls": [],
-      "latency_s": 29.024,
+      "latency_s": 0.006,
       "judgement": {
         "case_id": "c25",
         "passed": false,
@@ -536,6 +536,6 @@
     },
     "judge_canary_accuracy": 1.0,
     "judge_trusted": true,
-    "mean_latency_s": 21.67
+    "mean_latency_s": 0.17
   }
 }

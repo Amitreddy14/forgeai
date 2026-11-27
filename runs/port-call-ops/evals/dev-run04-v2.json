@@ -30,7 +30,7 @@
         "port-notices:p2:c8"
       ],
       "tool_calls": [],
-      "latency_s": 2.257,
+      "latency_s": 0.007,
       "judgement": {
         "case_id": "c02",
         "passed": true,
@@ -87,7 +87,7 @@
         "csv_lookup:failed",
         "calculator:ok"
       ],
-      "latency_s": 4.019,
+      "latency_s": 0.007,
       "judgement": {
         "case_id": "c03",
         "passed": true,
@@ -140,7 +140,7 @@
         "port-notices:p1:c2"
       ],
       "tool_calls": [],
-      "latency_s": 5.422,
+      "latency_s": 0.007,
       "judgement": {
         "case_id": "c04",
         "passed": true,
@@ -195,7 +195,7 @@
       "tool_calls": [
         "calculator:ok"
       ],
-      "latency_s": 7.204,
+      "latency_s": 0.009,
       "judgement": {
         "case_id": "c06",
         "passed": true,
@@ -252,7 +252,7 @@
         "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 9.634,
+      "latency_s": 0.01,
       "judgement": {
         "case_id": "c07",
         "passed": true,
@@ -305,7 +305,7 @@
         "port-notices:p1:c5"
       ],
       "tool_calls": [],
-      "latency_s": 11.413,
+      "latency_s": 0.007,
       "judgement": {
         "case_id": "c09",
         "passed": true,
@@ -358,7 +358,7 @@
         "port-tariff-schedule:p1:c0"
       ],
       "tool_calls": [],
-      "latency_s": 13.8,
+      "latency_s": 0.007,
       "judgement": {
         "case_id": "c10",
         "passed": true,
@@ -411,7 +411,7 @@
         "port-notices:p1:c3"
       ],
       "tool_calls": [],
-      "latency_s": 16.691,
+      "latency_s": 0.008,
       "judgement": {
         "case_id": "c12",
         "passed": true,
@@ -469,7 +469,7 @@
         "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 21.626,
+      "latency_s": 0.009,
       "judgement": {
         "case_id": "c14",
         "passed": true,
@@ -526,7 +526,7 @@
         "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 23.614,
+      "latency_s": 0.009,
       "judgement": {
         "case_id": "c15",
         "passed": true,
@@ -589,7 +589,7 @@
         "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 28.722,
+      "latency_s": 0.01,
       "judgement": {
         "case_id": "c16",
         "passed": true,
@@ -658,7 +658,7 @@
         "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 32.366,
+      "latency_s": 0.01,
       "judgement": {
         "case_id": "c17",
         "passed": true,
@@ -727,7 +727,7 @@
         "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 35.617,
+      "latency_s": 0.008,
       "judgement": {
         "case_id": "c18",
         "passed": false,
@@ -787,7 +787,7 @@
       "tool_calls": [
         "csv_lookup:ok"
       ],
-      "latency_s": 36.989,
+      "latency_s": 0.007,
       "judgement": {
         "case_id": "c20",
         "passed": true,
@@ -844,7 +844,7 @@
         "csv_lookup:ok",
         "calculator:ok"
       ],
-      "latency_s": 54.704,
+      "latency_s": 0.009,
       "judgement": {
         "case_id": "c21",
         "passed": false,
@@ -882,7 +882,7 @@
       "best_dense": 0.6946,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 40.152,
+      "latency_s": 0.007,
       "judgement": {
         "case_id": "c24",
         "passed": true,
@@ -926,7 +926,7 @@
         "port-notices:p1:c1"
       ],
       "tool_calls": [],
-      "latency_s": 51.132,
+      "latency_s": 0.007,
       "judgement": {
         "case_id": "c26",
         "passed": false,
@@ -964,7 +964,7 @@
       "best_dense": 0.6911,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 52.353,
+      "latency_s": 0.006,
       "judgement": {
         "case_id": "c27",
         "passed": true,
@@ -1098,6 +1098,6 @@
     },
     "judge_canary_accuracy": 1.0,
     "judge_trusted": true,
-    "mean_latency_s": 23.56
+    "mean_latency_s": 0.01
   }
 }

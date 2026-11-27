@@ -1,8 +1,8 @@
 {
   "max_tokens": 400000,
   "max_calls": 5000,
-  "used_tokens": 141668,
-  "used_calls": 101,
+  "used_tokens": 0,
+  "used_calls": 0,
   "by_stage": {
     "intake": {
       "calls": 3,
@@ -30,21 +30,21 @@
     },
     "judge": {
       "calls": 15,
-      "cached_calls": 12,
-      "prompt_tokens": 1250,
-      "completion_tokens": 188
+      "cached_calls": 15,
+      "prompt_tokens": 0,
+      "completion_tokens": 0
     },
     "agent": {
       "calls": 276,
-      "cached_calls": 179,
-      "prompt_tokens": 127631,
-      "completion_tokens": 12043
+      "cached_calls": 276,
+      "prompt_tokens": 0,
+      "completion_tokens": 0
     },
     "critic": {
       "calls": 3,
-      "cached_calls": 2,
-      "prompt_tokens": 503,
-      "completion_tokens": 53
+      "cached_calls": 3,
+      "prompt_tokens": 0,
+      "completion_tokens": 0
     }
   }
 }

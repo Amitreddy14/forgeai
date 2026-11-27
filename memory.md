@@ -10,8 +10,9 @@ Newest first. Decisions, bugs, changes, and anything the next session must know.
 - Bug found by the UI: `RunStore.write_json` used `json.dumps(default=str)`, so lists of
   models (changelog.json, canaries.json) were saved as Python reprs. Now converted
   recursively; anything non-JSON raises. Demo runs must be regenerated.
-- Hosting: HF rejects un-LFS binaries (our PDFs), so the Space holds only a Dockerfile
-  that clones the public GitHub repo, plus a README with Space metadata.
+- Hosting: Hugging Face made Docker/Gradio Spaces paid (Amit's account shows it), and
+  Koyeb now needs a card, so the app is hosted on Render's free web service (Docker,
+  no card, 512 MB, sleeps after 15 idle minutes) via `render.yaml`.
 - Groq free tier (llama-3.1-8b-instant ~6k TPM, 30 RPM): chat is fine; hosted builds are
   slow and capped (1 iteration, 150k tokens). Judge on Groq: openai/gpt-oss-20b.
 - CSP forbids inline styles, so progress uses <progress>, not a styled width.

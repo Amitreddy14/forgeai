@@ -30,7 +30,7 @@
         "leave-policy:p1:c2"
       ],
       "tool_calls": [],
-      "latency_s": 2.173,
+      "latency_s": 0.006,
       "judgement": {
         "case_id": "c05",
         "passed": true,
@@ -83,7 +83,7 @@
         "travel-expenses-policy:p1:c3"
       ],
       "tool_calls": [],
-      "latency_s": 4.165,
+      "latency_s": 0.006,
       "judgement": {
         "case_id": "c08",
         "passed": true,
@@ -136,7 +136,7 @@
         "leave-policy:p1:c5"
       ],
       "tool_calls": [],
-      "latency_s": 6.29,
+      "latency_s": 0.006,
       "judgement": {
         "case_id": "c09",
         "passed": true,
@@ -189,7 +189,7 @@
         "leave-policy:p1:c3"
       ],
       "tool_calls": [],
-      "latency_s": 8.129,
+      "latency_s": 0.007,
       "judgement": {
         "case_id": "c11",
         "passed": true,
@@ -242,7 +242,7 @@
         "travel-expenses-policy:p1:c5"
       ],
       "tool_calls": [],
-      "latency_s": 10.385,
+      "latency_s": 0.006,
       "judgement": {
         "case_id": "c15",
         "passed": true,
@@ -301,7 +301,7 @@
         "code-of-conduct:p2:c8"
       ],
       "tool_calls": [],
-      "latency_s": 13.714,
+      "latency_s": 0.009,
       "judgement": {
         "case_id": "c16",
         "passed": true,
@@ -353,7 +353,7 @@
         "leave-policy:p1:c3"
       ],
       "tool_calls": [],
-      "latency_s": 18.402,
+      "latency_s": 0.007,
       "judgement": {
         "case_id": "c20",
         "passed": false,
@@ -391,7 +391,7 @@
       "best_dense": 0.5933,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 19.581,
+      "latency_s": 0.006,
       "judgement": {
         "case_id": "c21",
         "passed": true,
@@ -492,6 +492,6 @@
     },
     "judge_canary_accuracy": 1.0,
     "judge_trusted": true,
-    "mean_latency_s": 10.35
+    "mean_latency_s": 0.01
   }
 }

@@ -57,11 +57,11 @@ _the agent refused an answerable question, or answered one it should refuse._
 
 ## Cost
 
-- Tokens used: 61,750
-  - agent: 59,447
-  - critic: 730
+- Tokens used: 0
+  - agent: 0
+  - critic: 0
   - evalgen: 0
-  - generate: 1,573
+  - generate: 0
   - guard: 0
   - intake: 0
   - judge: 0
