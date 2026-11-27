@@ -272,3 +272,31 @@ async def test_client_still_raises_on_other_400s() -> None:
     async with client:
         with pytest.raises(ModelUnavailable, match="400"):
             await client.complete(user("hi"), model="m")
+
+
+async def test_client_gives_reasoning_models_headroom() -> None:
+    seen: list[dict[str, Any]] = []
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(json.loads(request.content))
+        return httpx.Response(200, json=completion("ok"))
+
+    client = OpenAICompatClient("http://x/v1", transport=httpx.MockTransport(handler))
+    async with client:
+        await client.complete(user("hi"), model="openai/gpt-oss-20b", max_tokens=500)
+        await client.complete(user("hi"), model="qwen2.5-8k", max_tokens=500)
+    assert seen[0]["reasoning_effort"] == "low"
+    assert seen[0]["max_tokens"] > 500
+    assert "reasoning_effort" not in seen[1]
+    assert seen[1]["max_tokens"] == 500
+
+
+async def test_client_strips_inline_thinking() -> None:
+    text = '<think>the user wants {"x": 1}</think>\n{"answer": "20 days"}'
+    client = OpenAICompatClient(
+        "http://x/v1",
+        transport=httpx.MockTransport(lambda _r: httpx.Response(200, json=completion(text))),
+    )
+    async with client:
+        out = await client.complete(user("hi"), model="qwen/qwen3.8-27b")
+    assert out.text == '{"answer": "20 days"}'
