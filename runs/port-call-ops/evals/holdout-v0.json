@@ -34,7 +34,7 @@
         "PlannedCall:failed",
         "max_length_of_vessel:failed"
       ],
-      "latency_s": 31.886,
+      "latency_s": 2.062,
       "judgement": {
         "case_id": "c01",
         "passed": true,
@@ -87,7 +87,7 @@
         "port-tariff-schedule:p1:c6"
       ],
       "tool_calls": [],
-      "latency_s": 10.443,
+      "latency_s": 4.798,
       "judgement": {
         "case_id": "c05",
         "passed": true,
@@ -142,7 +142,7 @@
       "tool_calls": [
         "calculator:ok"
       ],
-      "latency_s": 22.894,
+      "latency_s": 6.696,
       "judgement": {
         "case_id": "c08",
         "passed": true,
@@ -199,7 +199,7 @@
         "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 34.428,
+      "latency_s": 9.259,
       "judgement": {
         "case_id": "c11",
         "passed": true,
@@ -252,7 +252,7 @@
         "port-notices:p1:c6"
       ],
       "tool_calls": [],
-      "latency_s": 13.789,
+      "latency_s": 11.018,
       "judgement": {
         "case_id": "c13",
         "passed": true,
@@ -314,7 +314,7 @@
         "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 37.249,
+      "latency_s": 13.841,
       "judgement": {
         "case_id": "c19",
         "passed": false,
@@ -365,7 +365,7 @@
       "tool_calls": [
         "weather:ok"
       ],
-      "latency_s": 42.024,
+      "latency_s": 28.091,
       "judgement": {
         "case_id": "c22",
         "passed": false,
@@ -403,7 +403,7 @@
       "best_dense": 0.7034,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 16.452,
+      "latency_s": 14.763,
       "judgement": {
         "case_id": "c23",
         "passed": true,
@@ -435,7 +435,7 @@
         "origin": "llm",
         "split": "holdout"
       },
-      "answer": "The recent changes in port rules are not mentioned in the provided passages. The documents focus on berth details and security measures but do not contain information on recent rule changes.",
+      "answer": "The recent changes in port rules are not mentioned in the provided passages. The documents focus on berth details and security measures. For specific port rule changes, please refer to the latest official notices from the respective port authorities.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.7134,
@@ -443,7 +443,7 @@
         "port-notices:p2:c8"
       ],
       "tool_calls": [],
-      "latency_s": 19.361,
+      "latency_s": 17.879,
       "judgement": {
         "case_id": "c25",
         "passed": false,
@@ -539,6 +539,6 @@
     },
     "judge_canary_accuracy": 1.0,
     "judge_trusted": true,
-    "mean_latency_s": 25.39
+    "mean_latency_s": 12.05
   }
 }

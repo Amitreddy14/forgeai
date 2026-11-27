@@ -30,7 +30,7 @@
         "leave-policy:p1:c2"
       ],
       "tool_calls": [],
-      "latency_s": 2.16,
+      "latency_s": 3.72,
       "judgement": {
         "case_id": "c05",
         "passed": true,
@@ -83,7 +83,7 @@
         "travel-expenses-policy:p1:c3"
       ],
       "tool_calls": [],
-      "latency_s": 3.996,
+      "latency_s": 1.956,
       "judgement": {
         "case_id": "c08",
         "passed": true,
@@ -136,7 +136,7 @@
         "leave-policy:p1:c5"
       ],
       "tool_calls": [],
-      "latency_s": 6.067,
+      "latency_s": 5.731,
       "judgement": {
         "case_id": "c09",
         "passed": true,
@@ -189,7 +189,7 @@
         "leave-policy:p1:c3"
       ],
       "tool_calls": [],
-      "latency_s": 8.679,
+      "latency_s": 8.34,
       "judgement": {
         "case_id": "c11",
         "passed": true,
@@ -242,7 +242,7 @@
         "travel-expenses-policy:p1:c5"
       ],
       "tool_calls": [],
-      "latency_s": 10.948,
+      "latency_s": 10.578,
       "judgement": {
         "case_id": "c15",
         "passed": true,
@@ -292,23 +292,22 @@
         "origin": "llm",
         "split": "holdout"
       },
-      "answer": "Employees receive 12 days of paid sick leave per calendar year. The Head of HR must hold a meeting within 10 working days after receiving an escalated grievance.",
+      "answer": "Employees receive 12 days of paid sick leave per calendar year.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.8196,
       "citations": [
-        "leave-policy:p1:c4",
-        "code-of-conduct:p2:c8"
+        "leave-policy:p1:c4"
       ],
       "tool_calls": [],
-      "latency_s": 14.271,
+      "latency_s": 12.489,
       "judgement": {
         "case_id": "c16",
-        "passed": true,
+        "passed": false,
         "checks": {
           "refusal_ok": true,
           "grounded": true,
-          "source_cited": true,
+          "source_cited": false,
           "source_retrieved": true,
           "unsupported_numbers": [],
           "tool_ok": null,
@@ -322,13 +321,13 @@
           },
           {
             "fact": "within 10 working days",
-            "status": "present",
-            "by": "string"
+            "status": "contradicted",
+            "by": "judge"
           }
         ],
-        "failure": null,
-        "reason": "",
-        "judge_used": false
+        "failure": "hallucination",
+        "reason": "facts not stated correctly: within 10 working days",
+        "judge_used": true
       }
     },
     {
@@ -344,7 +343,7 @@
         "origin": "llm",
         "split": "holdout"
       },
-      "answer": "To determine the status of your leave balance this year, please refer to the leave policy document. Shore staff earn 24 working days of paid annual leave per calendar year, accruing at 2 days for each completed month of service. Unused annual leave up to 10 days may be carried forward into the next calendar year, but must be used by 31 March or they lapse. On resignation or retirement, unused annual leave up to a maximum of 30 days is paid out at the employee's basic daily salary.",
+      "answer": "To check your leave balance, please log into the HR portal and review your leave summary. The leave accrues at 2 days for each completed month of service, and up to 10 unused annual leave days may be carried forward into the next calendar year. Unused annual leave up to a maximum of 30 days is paid out at the employee's basic daily salary upon resignation or retirement.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.7223,
@@ -353,7 +352,7 @@
         "leave-policy:p1:c3"
       ],
       "tool_calls": [],
-      "latency_s": 20.85,
+      "latency_s": 16.77,
       "judgement": {
         "case_id": "c20",
         "passed": false,
@@ -391,7 +390,7 @@
       "best_dense": 0.5933,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 22.039,
+      "latency_s": 17.953,
       "judgement": {
         "case_id": "c21",
         "passed": true,
@@ -474,24 +473,25 @@
     "splits": {
       "holdout": {
         "cases": 8,
-        "passed": 7,
-        "pass_rate": 0.875,
+        "passed": 6,
+        "pass_rate": 0.75,
         "by_category": {
           "ambiguous": 1.0,
           "answerable": 1.0,
-          "multi_doc": 1.0,
+          "multi_doc": 0.0,
           "out_of_scope": 0.5
         },
         "failures": {
+          "hallucination": 1,
           "wrong_refusal": 1
         },
         "refusal_accuracy": 0.875,
         "groundedness": 1.0,
-        "fact_recall": 1.0
+        "fact_recall": 0.9167
       }
     },
     "judge_canary_accuracy": 1.0,
     "judge_trusted": true,
-    "mean_latency_s": 11.13
+    "mean_latency_s": 9.69
   }
 }

@@ -30,7 +30,7 @@
         "code-of-conduct:p1:c5"
       ],
       "tool_calls": [],
-      "latency_s": 2.288,
+      "latency_s": 12.707,
       "judgement": {
         "case_id": "c01",
         "passed": true,
@@ -83,7 +83,7 @@
         "leave-policy:p1:c6"
       ],
       "tool_calls": [],
-      "latency_s": 4.626,
+      "latency_s": 10.966,
       "judgement": {
         "case_id": "c02",
         "passed": true,
@@ -136,7 +136,7 @@
         "travel-expenses-policy:p2:c9"
       ],
       "tool_calls": [],
-      "latency_s": 7.244,
+      "latency_s": 15.217,
       "judgement": {
         "case_id": "c03",
         "passed": true,
@@ -189,7 +189,7 @@
         "code-of-conduct:p1:c2"
       ],
       "tool_calls": [],
-      "latency_s": 9.293,
+      "latency_s": 17.262,
       "judgement": {
         "case_id": "c04",
         "passed": true,
@@ -242,7 +242,7 @@
         "travel-expenses-policy:p1:c6"
       ],
       "tool_calls": [],
-      "latency_s": 11.543,
+      "latency_s": 19.479,
       "judgement": {
         "case_id": "c06",
         "passed": true,
@@ -295,7 +295,7 @@
         "code-of-conduct:p1:c3"
       ],
       "tool_calls": [],
-      "latency_s": 13.835,
+      "latency_s": 21.681,
       "judgement": {
         "case_id": "c07",
         "passed": true,
@@ -348,7 +348,7 @@
         "travel-expenses-policy:p1:c8"
       ],
       "tool_calls": [],
-      "latency_s": 15.732,
+      "latency_s": 23.584,
       "judgement": {
         "case_id": "c10",
         "passed": true,
@@ -401,7 +401,7 @@
         "travel-expenses-policy:p1:c7"
       ],
       "tool_calls": [],
-      "latency_s": 17.589,
+      "latency_s": 25.437,
       "judgement": {
         "case_id": "c12",
         "passed": true,
@@ -446,7 +446,7 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "The maximum value of a gift from a business partner that employees may accept is INR 3,000, no more than once per calendar year from the same partner.",
+      "answer": "The maximum value of a gift from a business partner that an employee may accept is INR 3,000, no more than once per calendar year from the same partner.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.7612,
@@ -454,7 +454,7 @@
         "code-of-conduct:p1:c4"
       ],
       "tool_calls": [],
-      "latency_s": 20.034,
+      "latency_s": 27.912,
       "judgement": {
         "case_id": "c13",
         "passed": true,
@@ -507,7 +507,7 @@
         "leave-policy:p1:c8"
       ],
       "tool_calls": [],
-      "latency_s": 22.137,
+      "latency_s": 30.027,
       "judgement": {
         "case_id": "c14",
         "passed": true,
@@ -566,7 +566,7 @@
         "leave-policy:p1:c7"
       ],
       "tool_calls": [],
-      "latency_s": 24.575,
+      "latency_s": 32.499,
       "judgement": {
         "case_id": "c17",
         "passed": true,
@@ -630,7 +630,7 @@
         "travel-expenses-policy:p1:c8"
       ],
       "tool_calls": [],
-      "latency_s": 27.384,
+      "latency_s": 35.446,
       "judgement": {
         "case_id": "c18",
         "passed": true,
@@ -679,7 +679,7 @@
       "best_dense": 0.621,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 28.498,
+      "latency_s": 36.563,
       "judgement": {
         "case_id": "c19",
         "passed": true,
@@ -711,19 +711,19 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "I'm sorry, but I can't provide a list of all shore staff who have taken leave this month. The provided passages do not contain information about individual leave records or usage.",
-      "refused": false,
-      "refused_by": null,
+      "answer": "I'm sorry, but I can't provide personal salary information or specific employee records. Please contact HR for such details.",
+      "refused": true,
+      "refused_by": "grounding",
       "best_dense": 0.7747,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 34.065,
+      "latency_s": 42.363,
       "judgement": {
         "case_id": "c22",
-        "passed": false,
+        "passed": true,
         "checks": {
-          "refusal_ok": false,
-          "grounded": false,
+          "refusal_ok": true,
+          "grounded": true,
           "source_cited": null,
           "source_retrieved": null,
           "unsupported_numbers": [],
@@ -731,8 +731,8 @@
           "contract_error": null
         },
         "facts": [],
-        "failure": "wrong_refusal",
-        "reason": "answered a question it must refuse",
+        "failure": null,
+        "reason": "",
         "judge_used": false
       }
     },
@@ -757,7 +757,7 @@
         "travel-expenses-policy:p1:c7"
       ],
       "tool_calls": [],
-      "latency_s": 32.73,
+      "latency_s": 40.818,
       "judgement": {
         "case_id": "c23",
         "passed": false,
@@ -840,24 +840,24 @@
     "splits": {
       "dev": {
         "cases": 15,
-        "passed": 13,
-        "pass_rate": 0.8667,
+        "passed": 14,
+        "pass_rate": 0.9333,
         "by_category": {
           "ambiguous": 1.0,
           "answerable": 1.0,
           "multi_doc": 1.0,
-          "out_of_scope": 0.3333
+          "out_of_scope": 0.6667
         },
         "failures": {
-          "wrong_refusal": 2
+          "wrong_refusal": 1
         },
-        "refusal_accuracy": 0.8667,
+        "refusal_accuracy": 0.9333,
         "groundedness": 1.0,
         "fact_recall": 1.0
       }
     },
     "judge_canary_accuracy": 1.0,
     "judge_trusted": true,
-    "mean_latency_s": 18.1
+    "mean_latency_s": 26.13
   }
 }

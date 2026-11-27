@@ -4,12 +4,12 @@
   "iterations": [
     {
       "version": 0,
-      "dev_pass_rate": 0.7368,
-      "dev_passed": 14,
+      "dev_pass_rate": 0.7895,
+      "dev_passed": 15,
       "dev_cases": 19,
       "failures": {
         "hallucination": 1,
-        "prompt_defect": 2,
+        "prompt_defect": 1,
         "wrong_refusal": 2
       }
     }
@@ -25,16 +25,16 @@
   "judge_canary_accuracy": 1.0,
   "judge_trusted": true,
   "stop_reason": "iteration 1 found no patch that improved dev without regressions",
-  "tokens_used": 216588,
-  "model_calls": 337,
-  "cached_calls": 172,
+  "tokens_used": 143771,
+  "model_calls": 335,
+  "cached_calls": 232,
   "by_stage_tokens": {
     "intake": 0,
     "guard": 0,
-    "generate": 1898,
+    "generate": 0,
     "evalgen": 0,
-    "judge": 895,
-    "agent": 212141,
-    "critic": 1654
+    "judge": 484,
+    "agent": 142451,
+    "critic": 836
   }
 }

@@ -10,7 +10,7 @@ The holdout cases were never shown to the optimizer; it tuned the agent on the d
 
 | Agent version | Dev passed | Dev pass rate | Failures |
 |---|---|---|---|
-| v0 | 14/19 | 74% | hallucination 1, prompt_defect 2, wrong_refusal 2 |
+| v0 | 15/19 | 79% | hallucination 1, prompt_defect 1, wrong_refusal 2 |
 
 Stopped because: iteration 1 found no patch that improved dev without regressions.
 
@@ -18,15 +18,15 @@ Stopped because: iteration 1 found no patch that improved dev without regression
 
 | Iter | Category | Change | Targets | Dev before -> after | Decision |
 |---|---|---|---|---|---|
-| 1 | wrong_refusal | add refuse topic: "Real-time operational queries" | c26, c27 | 74% -> 68% | reverted: 0 fixed, 1 broken (no net gain) |
-| 1 | wrong_refusal | add rule: "Refuse questions that require personal information or violate privacy policies, and direct users to the appropriate department for such requests." | c26, c27 | 74% -> 74% | reverted: 1 fixed, 1 broken (no net gain) |
-| 1 | prompt_defect | add rule: "Extract and verify all relevant facts from the retrieved passage before providing an answer." | c14, c21 | 74% -> 68% | reverted: 0 fixed, 1 broken (no net gain) |
+| 1 | wrong_refusal | add refuse topic: "Real-time operational queries" | c26, c27 | 79% -> 79% | reverted: 1 fixed, 1 broken (no net gain) |
+| 1 | wrong_refusal | add rule: "Refuse questions that require personal information or violate privacy policies, and direct users to the appropriate department for such requests." | c26, c27 | 79% -> 74% | reverted: 0 fixed, 1 broken (no net gain) |
+| 1 | hallucination | add rule: "Ensure all numerical answers are directly supported by the document content." | c21 | 79% -> 74% | reverted: 0 fixed, 1 broken (no net gain) |
 
 Why each change was tried:
 
 - iter 1: Involves specific vessel or port operations that should be handled by the relevant stakeholders.
 - iter 1: This rule ensures privacy is maintained and directs users to the correct department for sensitive information.
-- iter 1: Ensures all pertinent details are captured and accurately conveyed, preventing omissions or misstatements.
+- iter 1: This prevents the assistant from making up numbers not found in the documents.
 
 ## What still fails, and why
 
@@ -34,9 +34,9 @@ Why each change was tried:
 
 _the answer stated something not supported by the passages._
 
-- **c06** (dev, answerable): What percentage of the foreign-going rate do coastal vessels pay for port dues and pilotage?
-  - judge: facts not stated correctly: 60 percent of the foreign-going rate
-  - agent said: Coastal vessels pay 40 percent of the foreign-going rate for port dues and pilotage.
+- **c21** (dev, tool): What is the total daily berth hire usd for 3 days at berth id KOC-CR1?
+  - judge: citations not verified
+  - agent said: The total daily berth hire USD for 3 days at berth id KOC-CR1 is 13500.
 - **c19** (holdout, multi_doc): How many hours before arrival must the pre-arrival notification be submitted? Also, how long is this tariff schedule valid from?
   - judge: facts not stated correctly: Valid from 1 April 2026 to 31 March 2027
   - agent said: The pre-arrival notification must be submitted at least 72 hours before the estimated time of arrival, or on departure from the last port if the voyage is shorter than 72 hours.
@@ -44,15 +44,13 @@ _the answer stated something not supported by the passages._
   - judge: citations not verified
   - agent said: The weather forecast for Kochi for the next two days is as follows: 2026-11-28: 25.2-30.6 °C | rain 2.6 mm | wind 5.8 kn | gusts 15.2 kn; 2026-11-29: 24.8-30.7 °C | rain 3.0 mm | wind 6.5 kn | gusts 15.4 kn.
 
-### prompt_defect (2)
+### prompt_defect (1)
 
 _the right passage was retrieved, but the answer missed or garbled the facts._
 
 - **c14** (dev, ambiguous): What must the ship's agent do before docking?
   - judge: facts not stated correctly: deposit 100 percent of the estimated port charges
   - agent said: The ship's agent must submit the pre-arrival notification at least 72 hours before the estimated time of arrival, or on departure from the last port if the voyage is shorter than 72 hours. The notification includes the c
-- **c21** (dev, tool): What is the total daily berth hire usd for 3 days at berth id KOC-CR1?
-  - judge: output contract error: AgentAnswer: model output invalid after 2 attempts (validation failed: citations.1.chunk_id: Field required); citations not verified
 
 ### wrong_refusal (3)
 
@@ -65,7 +63,7 @@ _the agent refused an answerable question, or answered one it should refuse._
   - judge: answered a question it must refuse
 - **c25** (holdout, out_of_scope): Could you tell me about the recent changes in port rules?
   - judge: answered a question it must refuse
-  - agent said: The recent changes in port rules are not mentioned in the provided passages. The documents focus on berth details and security measures but do not contain information on recent rule changes.
+  - agent said: The recent changes in port rules are not mentioned in the provided passages. The documents focus on berth details and security measures. For specific port rule changes, please refer to the latest official notices from th
 
 ## How far to trust these numbers
 
@@ -84,12 +82,12 @@ _the agent refused an answerable question, or answered one it should refuse._
 
 ## Cost
 
-- Tokens used: 216,588 (live calls only)
-- Model calls: 337, of which 172 were replayed from the response cache (identical temperature-0 requests from an earlier run; same output, no tokens spent)
-  - agent: 212,141
-  - critic: 1,654
+- Tokens used: 143,771 (live calls only)
+- Model calls: 335, of which 232 were replayed from the response cache (identical temperature-0 requests from an earlier run; same output, no tokens spent)
+  - agent: 142,451
+  - critic: 836
   - evalgen: 0
-  - generate: 1,898
+  - generate: 0
   - guard: 0
   - intake: 0
-  - judge: 895
+  - judge: 484

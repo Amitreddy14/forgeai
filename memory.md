@@ -2,6 +2,16 @@
 
 Newest first. Decisions, bugs, changes, and anything the next session must know.
 
+## 2026-11-28 — Phase 6.4 (fourth demo runs)
+
+HR: optimizer kept "future financial forecasts" refuse topic (87% -> 93% dev). Port: Kochi
+weather now resolves to India (25-31 °C); dev 74%. Two more runtime gaps fixed:
+- Citation.chunk_id is optional: a missing id failed schema validation and discarded a
+  correct answer; quotes are verified by words anyway.
+- Ship evidence or nothing: after the repair, an unrefused answer with no verified quote
+  and no tool result is withdrawn and replaced by the refusal message
+  (refused_by="grounding").
+
 ## 2026-11-28 — Phase 6.3 (third demo runs, merged as PR #7)
 
 Third runs (mostly cache replays): HR dev 93% (14/15), holdout 7/8, trap handled, no

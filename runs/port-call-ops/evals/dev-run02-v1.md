@@ -1,10 +1,10 @@
 # Scorecard: agent v1 (dev)
 
-## dev: 13/19 passed (68%)
+## dev: 15/19 passed (79%)
 
-- refusal accuracy 84%, groundedness 93%, fact recall 87%
-- by category: ambiguous 50%, answerable 88%, multi_doc 100%, out_of_scope 25%, tool 50%
-- failures: hallucination 2, prompt_defect 1, wrong_refusal 3
+- refusal accuracy 95%, groundedness 93%, fact recall 87%
+- by category: ambiguous 50%, answerable 88%, multi_doc 100%, out_of_scope 75%, tool 50%
+- failures: hallucination 2, prompt_defect 1, wrong_refusal 1
 
 Judge canary accuracy 100% (trusted).
 
@@ -25,7 +25,7 @@ Judge canary accuracy 100% (trusted).
 | c18 | dev | multi_doc | pass |  |  |
 | c20 | dev | tool | pass |  |  |
 | c21 | dev | tool | **fail** | hallucination | citations not verified |
-| c24 | dev | out_of_scope | **fail** | wrong_refusal | answered a question it must refuse |
+| c24 | dev | out_of_scope | pass |  |  |
 | c26 | dev | out_of_scope | **fail** | wrong_refusal | answered a question it must refuse |
-| c27 | dev | out_of_scope | **fail** | wrong_refusal | answered a question it must refuse |
+| c27 | dev | out_of_scope | pass |  |  |
 | c28 | dev | out_of_scope | pass |  |  |

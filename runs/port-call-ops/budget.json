@@ -1,8 +1,8 @@
 {
   "max_tokens": 400000,
   "max_calls": 5000,
-  "used_tokens": 216588,
-  "used_calls": 165,
+  "used_tokens": 143771,
+  "used_calls": 103,
   "by_stage": {
     "intake": {
       "calls": 3,
@@ -18,9 +18,9 @@
     },
     "generate": {
       "calls": 1,
-      "cached_calls": 0,
-      "prompt_tokens": 1642,
-      "completion_tokens": 256
+      "cached_calls": 1,
+      "prompt_tokens": 0,
+      "completion_tokens": 0
     },
     "evalgen": {
       "calls": 30,
@@ -29,22 +29,22 @@
       "completion_tokens": 0
     },
     "judge": {
-      "calls": 17,
-      "cached_calls": 15,
-      "prompt_tokens": 807,
-      "completion_tokens": 88
+      "calls": 15,
+      "cached_calls": 14,
+      "prompt_tokens": 440,
+      "completion_tokens": 44
     },
     "agent": {
       "calls": 281,
-      "cached_calls": 123,
-      "prompt_tokens": 200029,
-      "completion_tokens": 12112
+      "cached_calls": 181,
+      "prompt_tokens": 132451,
+      "completion_tokens": 10000
     },
     "critic": {
       "calls": 4,
-      "cached_calls": 0,
-      "prompt_tokens": 1478,
-      "completion_tokens": 176
+      "cached_calls": 2,
+      "prompt_tokens": 750,
+      "completion_tokens": 86
     }
   }
 }
