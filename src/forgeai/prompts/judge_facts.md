@@ -11,10 +11,14 @@ $facts
 ANSWER TO GRADE:
 $answer
 
-For each required fact, return its status:
-- "present": the answer states this fact (wording may differ; numbers must be equal).
-- "contradicted": the answer states something incompatible (a different number, the
-  opposite rule).
-- "missing": the answer does not state it.
-Length earns nothing: a long or confident answer is not better. Extra information is
-fine unless it contradicts a required fact. Return the facts in the order given.
+For each required fact, in the order given, return:
+- `status`:
+  - "present": the answer states this fact (wording may differ; every number must be equal).
+  - "contradicted": the answer states something incompatible (a different number, the
+    opposite rule).
+  - "missing": the answer does not state it.
+- `evidence`: for "present" or "contradicted", the exact words from the ANSWER that state
+  it, copied character for character. For "missing", an empty string.
+
+Your evidence is checked against the answer. A long or confident answer is not better:
+if you cannot copy words from the answer that state the fact, it is missing.

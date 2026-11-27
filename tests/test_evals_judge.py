@@ -307,16 +307,49 @@ async def test_good_judge_passes_canaries(ctx: ForgeContext) -> None:
     assert all(r.correct for r in results)
 
 
-async def test_lenient_judge_fails_canaries_and_is_distrusted(tmp_path: Path) -> None:
+async def test_lenient_judge_is_corrected_by_evidence_check() -> None:
+    """The real llama judge on hr-mini passed a confident omission and a wrong number.
+    Making it quote the answer, and checking that quote in code, catches both."""
     import json
 
-    lenient = FakeLLM(
-        responder=lambda m: json.dumps({"facts": [{"fact": "x", "status": "present"}]})
+    def lenient(messages):  # type: ignore[no-untyped-def]
+        answer = (
+            messages[-1].content.split("ANSWER TO GRADE:", 1)[1].split("For each", 1)[0].strip()
+        )
+        # Always "present"; quotes the first words of the answer as evidence.
+        return json.dumps({"facts": [{"fact": "x", "status": "present", "evidence": answer[:40]}]})
+
+    ctx = ForgeContext(
+        llm=FakeLLM(responder=lenient), models=ModelRoles("gen", "judge"), embedder=HashEmbedder()
     )
-    ctx = ForgeContext(llm=lenient, models=ModelRoles("gen", "judge"), embedder=HashEmbedder())
-    results = await run_canaries(ctx, [CASE])
-    accuracy = sum(r.correct for r in results) / len(results)
-    assert accuracy == 0.5  # it passes the two answers it should fail
+    results = {r.kind: r for r in await run_canaries(ctx, [CASE])}
+    assert not results["confident_omission"].judge_passed
+    assert not results["wrong_number"].judge_passed
+
+
+@pytest.mark.parametrize(
+    ("fact", "status", "evidence", "answer", "expected"),
+    [
+        ("24 days", "present", "24 days a year", "You get 24 days a year.", "present"),
+        ("24 days", "present", "24 days a year", "You get a generous allowance.", "missing"),
+        (
+            "6 hours",
+            "present",
+            "under 19 hours",
+            "Economy for flights under 19 hours.",
+            "contradicted",
+        ),
+        ("24 days", "present", "", "You get 24 days.", "missing"),
+        ("Economy class", "present", "economy class", "Book economy class.", "present"),
+        ("24 days", "contradicted", "30 days", "You get 30 days.", "contradicted"),
+    ],
+)
+def test_judge_evidence_check(
+    fact: str, status: str, evidence: str, answer: str, expected: str
+) -> None:
+    from forgeai.stages.judge import check_judge_evidence
+
+    assert check_judge_evidence(fact, status, evidence, answer) == expected  # type: ignore[arg-type]
 
 
 # ---------- End to end ----------------------------------------------------------------
@@ -356,3 +389,101 @@ def test_evalset_helpers() -> None:
     assert len(evals.split("dev")) == 1
     assert len(evals.split("all")) == 2
     assert evals.counts() == {"answerable": 2}
+
+
+# ---------- Phase 4.1: fixes found on the first real-model run ---------------------------
+
+
+@pytest.mark.parametrize(
+    ("question", "facts", "kept"),
+    [
+        # Direct answer kept; an unrelated rule the question never asked about is dropped.
+        (
+            "What is the daily meal allowance for domestic travel?",
+            ["INR 1,500", "Receipts are required for any single expense above INR 2,000"],
+            ["INR 1,500"],
+        ),
+        # A second fact the question does ask about is kept.
+        (
+            "How many unused annual leave days can be carried forward, and how many are earned?",
+            ["24 days", "5 unused days may be carried forward"],
+            ["24 days", "5 unused days may be carried forward"],
+        ),
+        # Whole sentences are not key facts.
+        (
+            "How do I apply for leave?",
+            [
+                "Apply through the HR portal at least 10 working days before planned leave in all cases"
+            ],
+            [],
+        ),
+        ("How many days?", ["24 days."], ["24 days"]),
+    ],
+)
+def test_clean_facts(question: str, facts: list[str], kept: list[str]) -> None:
+    from forgeai.stages.evalgen import clean_facts
+
+    assert clean_facts(question, facts) == kept
+
+
+def test_context_dependent_question_rejected() -> None:
+    reason = validate_candidate(
+        "answerable",
+        "What does this policy explain?",
+        ["leave"],
+        [("d", "This policy explains leave for staff.", "This policy explains leave for staff.")],
+    )
+    assert reason is not None
+    assert "unseen context" in reason
+
+
+async def test_in_scope_question_cannot_pose_as_out_of_scope(tmp_path: Path) -> None:
+    """On hr-mini the generator wrote 'What are the leave entitlements for a new employee?'
+    as out-of-scope. The answerability check now rejects such questions."""
+    import json
+
+    from forgeai.ingest import chunk_corpus
+    from forgeai.schemas.corpus import ChunkingConfig
+    from forgeai.stages.evalgen import _refusal_cases
+    from tests import scripted
+
+    def handler(messages):  # type: ignore[no-untyped-def]
+        task = scripted._task(messages)
+        if task == "evals.out_of_scope":
+            return json.dumps(
+                {
+                    "questions": [
+                        {
+                            "question": "How many days of annual leave do shore staff get?",
+                            "topic": "x",
+                        },
+                        {"question": "What is the CEO's home address?", "topic": "privacy"},
+                    ]
+                }
+            )
+        if task == "guard.topic":
+            if "annual leave" in messages[-1].content.split("PASSAGES:")[0]:
+                return json.dumps(
+                    {
+                        "status": "supported",
+                        "chunk_id": "?",
+                        "quote": "Shore staff earn 24 days of annual leave per calendar year",
+                    }
+                )
+            return json.dumps({"status": "unsupported"})
+        raise AssertionError(task)
+
+    ctx = ForgeContext(
+        llm=FakeLLM(responder=handler), models=ModelRoles("gen", "judge"), embedder=HashEmbedder()
+    )
+    docs = build_docs_folder(tmp_path)
+    chunks = chunk_corpus(load_folder(docs), ChunkingConfig())
+    from forgeai.schemas.requirements import Requirements
+
+    req = Requirements.model_validate(
+        {**__import__("tests.scripted", fromlist=["x"]).REQUIREMENTS, "brief": BRIEF}
+    )
+    rejected: list = []  # type: ignore[type-arg]
+    kept = await _refusal_cases(ctx, req, chunks, 2, rejected)
+    assert [c.case.question for c in kept] == ["What is the CEO's home address?"]
+    assert "answerable from the documents" in rejected[0].reason

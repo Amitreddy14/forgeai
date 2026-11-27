@@ -132,7 +132,9 @@ def judge(prompt: str) -> str:
     return json.dumps(
         {
             "facts": [
-                {"fact": f, "status": "present" if normalize(f) in answer else "missing"}
+                {"fact": f, "status": "present", "evidence": f}
+                if normalize(f) in answer
+                else {"fact": f, "status": "missing", "evidence": ""}
                 for f in facts
             ]
         }

@@ -2,6 +2,24 @@
 
 Newest first. Decisions, bugs, changes, and anything the next session must know.
 
+## 2026-11-27 — Phase 4.1 (fixes from the first real eval run)
+
+First real `forge evaluate` on hr-mini: dev 46%, holdout 40%, judge canaries 62% (judge
+distrusted). Reading the cases showed most failures were the factory's own defects:
+- Out-of-scope generator wrote in-scope questions (leave entitlements). Fix: every
+  out-of-scope candidate goes through the groundability check; if the documents answer
+  it (verified quote), it is rejected as "answerable from the documents".
+- Key facts were whole sentences or rules the question never asked ("receipts above INR
+  2,000" on a meal-allowance question). Fix: facts ≤ 10 words; the first fact is the
+  answer, later facts must share ≥ 2 content words with the question; prompt example.
+- Questions like "What does this policy explain?" depend on unseen context. Fix: rejected.
+- Multi-doc pairs were random (leave + flights). Fix: pair by embedding similarity.
+- llama3.1 judge passed a confident omission and a wrong number (6 h -> 19 h). Fix: the
+  judge must quote the answer as evidence; code checks the quote exists in the answer
+  and carries the fact's numbers, else downgrades to missing/contradicted.
+This is the report's headline story: the canaries caught the judge, the guard caught
+the eval generator.
+
 ## 2026-11-27 — Phase 4
 
 - Real run of Phase 3 on hr-mini: generator proposed csv_lookup + calculator for an HR
