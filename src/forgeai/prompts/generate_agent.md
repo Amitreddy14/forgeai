@@ -19,7 +19,9 @@ Return:
 - `rules`: 2 to 6 short, specific behaviour rules for this domain (for example how to
   phrase amounts, which section names to mention, when to ask the user to contact a
   person). No generic rules about citations or refusing; those are already enforced.
-- `refusal_message`: one polite sentence the assistant says when it must decline,
-  pointing the user to the right human contact if the requirements name one.
+- `refusal_message`: one polite sentence the assistant says whenever it must decline,
+  for ANY reason (off-limits topic, or the documents simply do not say), pointing the user
+  to the right human contact if the requirements name one. Do not name a specific topic
+  in it: the same sentence is used for every refusal.
 - `tools`: only the tools some must-answer topic cannot be answered without, each with a
   one-sentence `justification` naming that topic. An empty list is a valid answer.

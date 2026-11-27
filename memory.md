@@ -31,6 +31,18 @@ htmx indicator styles disabled via htmx-config (our CSS has them; CSP blocked th
 copy and left a console error). Committed demos were built locally with qwen2.5-8k, so
 hosted chat runs a different model than the certificates measured; README must say so.
 
+Phase 7.4: hosted HR chat verified (24 days, quote verified, 0.1 s). Port weather failed on
+Render with "weather service unavailable (HTTPStatusError)" x3 (works locally). Open-meteo's
+free tier limits by IP and Render's free egress is shared; the error hid the status, so:
+- Errors now name host + HTTP status; 429/5xx retried twice with backoff.
+- Fallback: geocoding via OSM Nominatim, forecast via MET Norway (both keyless, need a
+  User-Agent, which every request now sends). Output names the source and why.
+- Marine wave failure is a note, not a failed forecast.
+- The generated refusal message named one topic ("can't give legal or customs advice")
+  and was used for every refusal, including the weather outage. Runtime: when every
+  tool call failed, the refusal says the service did not respond. Generate prompt: the
+  refusal sentence must fit any refusal (future builds; committed demos keep theirs).
+
 ## 2026-11-28 — Phase 6.4 (fourth demo runs)
 
 HR: optimizer kept "future financial forecasts" refuse topic (87% -> 93% dev). Port: Kochi

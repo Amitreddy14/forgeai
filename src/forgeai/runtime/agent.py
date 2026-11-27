@@ -152,6 +152,28 @@ def contract_problems(
     return ""
 
 
+def _explain_tool_outage(turn: AgentTurn) -> None:
+    """A refusal caused by a live tool failing should say so, not recite the policy line.
+
+    The agent's refusal message is written for refusals in general ("I can't give legal
+    advice..."); when every tool call failed, the honest answer is that the service did
+    not respond, so the user knows to retry instead of thinking the topic is off-limits.
+    """
+    calls = turn.tool_calls
+    if not turn.answer.refused or not calls or any(r.ok for r in calls):
+        return
+    names = ", ".join(sorted({r.name for r in calls}))
+    turn.answer = turn.answer.model_copy(
+        update={
+            "answer": (
+                f"I couldn't get a live answer: the {names} service did not respond. "
+                "Please try again in a minute."
+            ),
+            "refusal_reason": f"every tool call failed ({calls[-1].output[:160]})",
+        }
+    )
+
+
 class AgentRuntime:
     def __init__(
         self,
@@ -305,5 +327,6 @@ class AgentRuntime:
             turn.error = str(exc)
             turn.answer = AgentAnswer(answer="", refused=False)
         finally:
+            _explain_tool_outage(turn)
             turn.latency_s = round(time.perf_counter() - started, 3)
         return turn

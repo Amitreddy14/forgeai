@@ -201,6 +201,67 @@ async def test_weather_geocodes_then_forecasts_with_marine() -> None:
     ]
 
 
+@pytest.fixture(autouse=True)
+def _fast_weather_retries(monkeypatch: pytest.MonkeyPatch) -> None:
+    monkeypatch.setattr("forgeai.tools.weather.RETRY_DELAY_S", 0.0)
+
+
+async def test_weather_falls_back_to_met_norway_when_open_meteo_refuses() -> None:
+    seen: list[str] = []
+    metno = {
+        "properties": {
+            "timeseries": [
+                {
+                    "time": "2026-11-28T06:00:00Z",
+                    "data": {
+                        "instant": {"details": {"air_temperature": 25.0, "wind_speed": 5.0}},
+                        "next_1_hours": {"details": {"precipitation_amount": 0.4}},
+                    },
+                },
+                {
+                    "time": "2026-11-28T09:00:00Z",
+                    "data": {
+                        "instant": {"details": {"air_temperature": 30.5, "wind_speed": 6.0}},
+                        "next_1_hours": {"details": {"precipitation_amount": 1.1}},
+                    },
+                },
+            ]
+        }
+    }
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        seen.append(request.url.host)
+        assert request.headers["user-agent"].startswith("ForgeAI/")
+        if request.url.host.endswith("open-meteo.com"):
+            return httpx.Response(429)
+        if request.url.host == "nominatim.openstreetmap.org":
+            assert request.url.params["q"] == "Kochi, india"
+            return httpx.Response(
+                200, json=[{"lat": "9.93", "lon": "76.26", "address": {"country": "India"}}]
+            )
+        return httpx.Response(200, json=metno)
+
+    async with httpx.AsyncClient(transport=httpx.MockTransport(handler)) as client:
+        result = await call_tool(
+            REGISTRY["weather"],
+            {"location": "Kochi, India", "days": 1, "marine": True},
+            env(http=client),
+        )
+    assert result.ok, result.output
+    assert "Kochi, India (9.93, 76.26), source MET Norway" in result.output
+    assert "2026-11-28: 25.0-30.5 °C | rain 1.5 mm | wind 11.7 kn" in result.output
+    assert "HTTP 429" in result.output  # the note says why the fallback was used
+    assert "api.met.no" in seen
+
+
+async def test_weather_outage_names_host_and_status() -> None:
+    down = httpx.MockTransport(lambda _r: httpx.Response(403))
+    async with httpx.AsyncClient(transport=down) as client:
+        out = await call_tool(REGISTRY["weather"], {"location": "Kochi, India"}, env(http=client))
+    assert not out.ok
+    assert "HTTP 403" in out.output
+
+
 async def test_weather_unknown_place_and_outage() -> None:
     async with httpx.AsyncClient(transport=weather_transport([])) as client:
         missing = await call_tool(REGISTRY["weather"], {"location": "Atlantis"}, env(http=client))
