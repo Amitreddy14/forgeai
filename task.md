@@ -13,13 +13,15 @@ Legend: `[x]` done · `[ ]` open · `(S)` stretch.
 - [x] GitHub Actions CI, Dockerfile, `.env.example`
 
 ## Phase 1 — Foundations (branch `phase-1-foundations`)
-- [ ] OpenAI-compatible async client: JSON-schema output, validate-and-repair retry
-- [ ] Response cache (SQLite) + token budget + per-call usage log
-- [ ] Ingest loaders: PDF, DOCX, CSV (row-as-record), MD, TXT → `Corpus`
-- [ ] Chunker (size/overlap configurable, keeps page + heading metadata)
-- [ ] Hybrid retrieval: BM25 + fastembed, reciprocal-rank fusion, scores normalised
-- [ ] `contains_quote` + text normalisation utilities
-- [ ] `RunStore` (run folder, artifact write/read, run ID validation)
+- [x] OpenAI-compatible async client: retries, Retry-After, typed errors, JSON mode
+- [x] Structured output: schema in prompt, JSON extraction, Pydantic validation, repair retry
+- [x] Response cache (SQLite, temperature-0 only) + token budget attributed per stage
+- [x] Ingest loaders: PDF, DOCX, CSV (row-as-record), MD, TXT → `Corpus` (skips reported)
+- [x] Chunker (size/overlap, page + heading kept, chunks are verbatim document spans)
+- [x] Hybrid retrieval: BM25 + fastembed (hash embedder offline), RRF, `min_score`
+- [x] `contains_quote` / `normalize` / `extract_numbers`
+- [x] `RunStore` (run folder, artifact write/read, traversal-safe names)
+- [x] CLI: `forge ingest`, `forge search`, `forge smoke`; CI matrix adds Python 3.13
 
 ## Phase 2 — Requirements (branch `phase-2-requirements`)
 - [ ] Corpus summary for the interviewer (titles, headings, CSV columns, sizes)
@@ -58,7 +60,7 @@ Legend: `[x]` done · `[ ]` open · `(S)` stretch.
 - [ ] Builds list, new build (upload + brief), live survey log, certificate page
 - [ ] Chat page for any definition
 - [ ] Security headers, upload checks, rate limit
-- [ ] Deploy to Hugging Face Spaces (Groq key as a Space secret)
+- [ ] Deploy to Hugging Face Spaces (Groq key as a Space secret; bake the bge-small model into the image)
 
 ## Phase 8 — Ship (branch `phase-8-ship`)
 - [ ] README: quick start, architecture, results tables from the committed runs

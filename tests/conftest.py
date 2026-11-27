@@ -16,6 +16,7 @@ def isolated_settings(
         monkeypatch.delenv(key, raising=False)
     root = tmp_path_factory.mktemp("forge")
     monkeypatch.setenv("FORGE_ENV", "test")
+    monkeypatch.setenv("FORGE_EMBEDDER", "hash")
     monkeypatch.setenv("FORGE_RUNS_DIR", str(root / "runs"))
     monkeypatch.setenv("FORGE_CACHE_PATH", str(root / "cache.sqlite"))
     monkeypatch.chdir(root)  # so a developer's .env is never picked up

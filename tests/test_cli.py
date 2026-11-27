@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import Any
 
 import httpx
@@ -8,6 +9,7 @@ from typer.testing import CliRunner
 
 from forgeai import __version__, cli
 from forgeai.config import Settings
+from tests.fixtures import build_docs_folder
 
 runner = CliRunner()
 
@@ -71,3 +73,60 @@ def test_doctor_exits_nonzero_when_endpoint_down(monkeypatch: pytest.MonkeyPatch
     result = runner.invoke(cli.app, ["doctor"])
     assert result.exit_code == 1
     assert "FAIL" in result.stdout
+
+
+def test_ingest_lists_documents_and_skips(tmp_path: Path) -> None:
+    folder = build_docs_folder(tmp_path)
+    result = runner.invoke(cli.app, ["ingest", str(folder)])
+    assert result.exit_code == 0, result.stdout
+    assert "leave-policy" in result.stdout
+    assert "malware.exe" in result.stdout
+
+
+def test_ingest_empty_folder_fails(tmp_path: Path) -> None:
+    result = runner.invoke(cli.app, ["ingest", str(tmp_path)])
+    assert result.exit_code == 1
+
+
+def test_search_prints_ranked_citations(tmp_path: Path) -> None:
+    folder = build_docs_folder(tmp_path)
+    result = runner.invoke(cli.app, ["search", str(folder), "sick leave certificate", "-k", "2"])
+    assert result.exit_code == 0, result.stdout
+    assert "1. leave-policy p.2" in result.stdout
+
+
+def test_search_rejects_bad_mode(tmp_path: Path) -> None:
+    folder = build_docs_folder(tmp_path)
+    result = runner.invoke(cli.app, ["search", str(folder), "x", "--mode", "magic"])
+    assert result.exit_code != 0
+
+
+class _FakeStack:
+    def __init__(self, replies: list[str]) -> None:
+        from forgeai.llm import Budget, BudgetedLLM, FakeLLM
+
+        self.budget = Budget(max_tokens=10_000)
+        self.llm = BudgetedLLM(FakeLLM(replies), self.budget)
+
+    async def aclose(self) -> None:
+        return None
+
+
+def test_smoke_reports_each_model(monkeypatch: pytest.MonkeyPatch) -> None:
+    import forgeai.llm.factory as factory
+
+    reply = '{"capital": "Thiruvananthapuram", "confidence": 0.9}'
+    monkeypatch.setattr(factory, "build_llm", lambda _s: _FakeStack([reply, reply]))
+    result = runner.invoke(cli.app, ["smoke"])
+    assert result.exit_code == 0, result.stdout
+    assert result.stdout.count("OK") == 2
+    assert "llama3.1:8b" in result.stdout
+
+
+def test_smoke_fails_cleanly_on_bad_json(monkeypatch: pytest.MonkeyPatch) -> None:
+    import forgeai.llm.factory as factory
+
+    monkeypatch.setattr(factory, "build_llm", lambda _s: _FakeStack(["nope", "still nope"]))
+    result = runner.invoke(cli.app, ["smoke"])
+    assert result.exit_code == 1
+    assert "ModelOutputError" in result.stdout

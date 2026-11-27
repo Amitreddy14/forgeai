@@ -2,13 +2,22 @@
 
 from __future__ import annotations
 
+import asyncio
+import time
+from pathlib import Path
+
 import httpx
 import typer
+from pydantic import BaseModel, Field
 from rich.console import Console
 from rich.table import Table
 
 from forgeai import __version__
 from forgeai.config import Settings, get_settings
+from forgeai.errors import ForgeError
+from forgeai.ingest import chunk_corpus, load_folder
+from forgeai.retrieval import HybridIndex, RetrievalConfig, make_embedder
+from forgeai.schemas import ChunkingConfig
 
 app = typer.Typer(
     name="forge",
@@ -69,6 +78,109 @@ def doctor(
     else:
         console.print(f"[red]FAIL[/red]  {detail}")
         raise typer.Exit(code=1)
+
+
+class _SmokeAnswer(BaseModel):
+    capital: str
+    confidence: float = Field(ge=0, le=1)
+
+
+async def _smoke(settings: Settings) -> list[tuple[str, str, float, int]]:
+    from forgeai.llm import ChatMessage, complete_json
+    from forgeai.llm.factory import build_llm
+
+    stack = build_llm(settings)
+    results: list[tuple[str, str, float, int]] = []
+    prompt = [ChatMessage(role="user", content="What is the capital of Kerala, India?")]
+    try:
+        for model in (settings.generator_model, settings.judge_model):
+            started = time.perf_counter()
+            before = stack.budget.used_tokens
+            answer = await complete_json(stack.llm, prompt, _SmokeAnswer, model=model)
+            results.append(
+                (
+                    model,
+                    answer.capital,
+                    time.perf_counter() - started,
+                    stack.budget.used_tokens - before,
+                )
+            )
+    finally:
+        await stack.aclose()
+    return results
+
+
+@app.command()
+def smoke() -> None:
+    """Make one structured-JSON call to each configured model and time it."""
+    settings = get_settings()
+    try:
+        results = asyncio.run(_smoke(settings))
+    except ForgeError as exc:
+        console.print(f"[red]FAIL[/red]  {type(exc).__name__}: {exc}")
+        raise typer.Exit(code=1) from exc
+    for model, capital, seconds, tokens in results:
+        console.print(f"[green]OK[/green]  {model}: {capital!r} in {seconds:.1f}s, {tokens} tokens")
+
+
+DocsArg = typer.Argument(..., exists=True, file_okay=False, help="Folder of documents.")
+
+
+@app.command()
+def ingest(
+    docs: Path = DocsArg,
+    chunk_words: int = typer.Option(180, help="Words per chunk."),
+    overlap_words: int = typer.Option(30, help="Words carried into the next chunk."),
+) -> None:
+    """Read a documents folder and show what ForgeAI extracted and how it chunks."""
+    corpus = load_folder(docs)
+    chunks = chunk_corpus(
+        corpus, ChunkingConfig(chunk_words=chunk_words, overlap_words=overlap_words)
+    )
+    table = Table(title=f"Corpus: {docs}")
+    for column in ("Document", "Type", "Title", "Pages/rows", "Words", "Chunks"):
+        table.add_column(column)
+    for doc in corpus.documents:
+        n_chunks = sum(1 for c in chunks if c.doc_id == doc.doc_id)
+        table.add_row(
+            doc.doc_id,
+            doc.kind,
+            doc.title,
+            str(len(doc.pages)),
+            str(doc.words),
+            str(n_chunks),
+        )
+    console.print(table)
+    for skip in corpus.skipped:
+        console.print(f"[yellow]Skipped[/yellow] {skip.filename}: {skip.reason}")
+    if not corpus.documents:
+        console.print("[red]No readable documents found.[/red]")
+        raise typer.Exit(code=1)
+
+
+@app.command()
+def search(
+    docs: Path = DocsArg,
+    query: str = typer.Argument(..., help="What to look for."),
+    top_k: int = typer.Option(5, "--top-k", "-k", min=1, max=20),
+    mode: str = typer.Option("hybrid", help="hybrid, bm25 or dense."),
+) -> None:
+    """Search a documents folder with the same retriever the generated agents use."""
+    if mode not in ("hybrid", "bm25", "dense"):
+        raise typer.BadParameter("mode must be hybrid, bm25 or dense")
+    corpus = load_folder(docs)
+    chunks = chunk_corpus(corpus)
+    if not chunks:
+        console.print("[red]No readable documents found.[/red]")
+        raise typer.Exit(code=1)
+    index = HybridIndex(chunks, make_embedder(get_settings().embedder))
+    config = RetrievalConfig.model_validate({"top_k": top_k, "mode": mode})
+    for hit in index.search(query, config):
+        console.print(
+            f"[bold]{hit.rank}. {hit.chunk.citation}[/bold]  "
+            f"rrf={hit.score:.4f} bm25={hit.bm25:.2f} dense={hit.dense:.2f}"
+        )
+        console.print(f"   {hit.chunk.text[:240]}{'…' if len(hit.chunk.text) > 240 else ''}")
 
 
 if __name__ == "__main__":  # pragma: no cover

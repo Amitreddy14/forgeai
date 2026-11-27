@@ -1,0 +1,6 @@
+# Normalise line endings: LF in the repo and in working copies (VS Code handles LF fine).
+* text=auto eol=lf
+*.pdf binary
+*.docx binary
+*.png binary
+*.sqlite binary

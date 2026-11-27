@@ -2,6 +2,20 @@
 
 Newest first. Decisions, bugs, changes, and anything the next session must know.
 
+## 2026-11-27 — Phase 1
+
+- Amit's venv is Python 3.13 (no 3.11 on his laptop); CI matrix now 3.11/3.12/3.13.
+- JSON mode uses `response_format: json_object` + schema in the system prompt, because
+  json_schema support differs across Ollama/Groq models. Validation is always ours.
+- Cache only stores temperature-0 calls; cache hits do not count against the budget.
+- Chunks keep heading lines inside their text so every chunk is a verbatim span of the
+  document; a title line shorter than 8 words is folded into the next section.
+- CSV pages are "Row N: col: val; ..." so row citations are quotable.
+- `contains_quote` requires every `...`-fragment to have ≥ 3 words (blocks "proof" by
+  one-word quotes) and matches on word boundaries (USD 60 ≠ USD 600).
+- Embedder: `FORGE_EMBEDDER=fastembed` (default, bge-small, ~130 MB download once) or
+  `hash` (tests/CI, offline). Real-embedding test is opt-in: `FORGE_TEST_FASTEMBED=1`.
+
 ## 2026-11-27 — Phase 0
 
 **Context.** OceanAI Jr. GenAI Engineer assignment (elimination round). Build ForgeAI,
