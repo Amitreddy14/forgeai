@@ -7,6 +7,7 @@ from __future__ import annotations
 import asyncio
 import json
 import time
+from collections.abc import Sequence
 from typing import Any, Literal
 
 from pydantic import BaseModel, Field
@@ -103,13 +104,22 @@ def _passages(hits: list[Hit], limit: int | None = None) -> str:
 
 
 def verify_citations(
-    citations: list[Citation], hits: list[Hit]
+    citations: list[Citation], hits: list[Hit], tool_outputs: Sequence[str] = ()
 ) -> tuple[list[Citation], list[Citation]]:
     """Split citations into those whose quote really is in the cited (or any retrieved)
-    passage, and those that are not. A wrong chunk id with a real quote is corrected."""
+    passage, and those that are not. A wrong chunk id with a real quote is corrected.
+
+    A quote copied from a successful tool result ("Saturday, 28 November 2026") is tool
+    evidence, not a broken document citation: it is dropped from both lists, and the
+    answer is grounded by the tool call itself. A quote found nowhere stays invalid.
+    """
     valid: list[Citation] = []
     invalid: list[Citation] = []
+    tool_text = [normalize(o) for o in tool_outputs]
     for citation in citations:
+        quote = normalize(citation.quote)
+        if quote and any(quote in t for t in tool_text):
+            continue
         ordered = sorted(hits, key=lambda h: h.chunk.chunk_id != citation.chunk_id)
         match = next((h for h in ordered if contains_quote(h.chunk.text, citation.quote)), None)
         if match is None:
@@ -274,6 +284,7 @@ class AgentRuntime:
                 return turn
 
             tool_text = "\n".join(f"[{r.name}] {r.output}" for r in turn.tool_calls) or "(none)"
+            tool_outputs = [r.output for r in turn.tool_calls if r.ok]
             messages = [
                 ChatMessage(role="system", content=self._system),
                 ChatMessage(
@@ -289,7 +300,7 @@ class AgentRuntime:
             answer = await complete_json(
                 self.llm, messages, AgentAnswer, model=self.model, max_tokens=1200
             )
-            valid, invalid = verify_citations(answer.citations, hits)
+            valid, invalid = verify_citations(answer.citations, hits, tool_outputs)
 
             problems = contract_problems(
                 answer, defn.refusal.message, valid, invalid, tool_evidence
@@ -302,7 +313,7 @@ class AgentRuntime:
                 answer = await complete_json(
                     self.llm, messages, AgentAnswer, model=self.model, max_tokens=1200
                 )
-                valid, invalid = verify_citations(answer.citations, hits)
+                valid, invalid = verify_citations(answer.citations, hits, tool_outputs)
                 turn.repaired = True
 
             if not answer.refused and not valid and not tool_evidence:

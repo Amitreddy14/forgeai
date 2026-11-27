@@ -23,11 +23,12 @@ from forgeai.schemas.requirements import (
     RefuseTopic,
     Requirements,
     RequirementsDraft,
+    ToolHint,
     Topic,
 )
 from forgeai.stages.context import ForgeContext
 from forgeai.textutil import normalize
-from forgeai.tools.registry import infer_tool_hints
+from forgeai.tools.registry import brief_asks_for, infer_tool_hints
 
 MAX_HEADINGS = 12
 SAMPLE_ROWS = 3
@@ -249,6 +250,63 @@ def _dedupe_refusals(topics: list[RefuseTopic]) -> list[RefuseTopic]:
     return out
 
 
+# Live capabilities the brief can ask for in plain words, and how a refusal that
+# contradicts them tends to be phrased ("Live data access", "Weather forecasts").
+_LIVE: dict[ToolHint, tuple[str, re.Pattern[str]]] = {
+    "current_date": (
+        "Dates counted from today",
+        re.compile(r"\b(live|real[- ]?time|today'?s?|current date|dates?)\b", re.I),
+    ),
+    "weather": (
+        "Weather forecast",
+        re.compile(r"\b(live|real[- ]?time|weather|forecasts?)\b", re.I),
+    ),
+}
+
+
+def _clause_with(text: str, phrase: str) -> str:
+    """The comma- or sentence-delimited piece of the brief that contains `phrase`."""
+    for piece in re.split(r"[.;:]\s+|,\s+", text):
+        if re.search(rf"\b{re.escape(phrase)}\b", piece, re.I):
+            return re.sub(r"^(and|or|also)\s+", "", piece.strip(), flags=re.I).rstrip(".")
+    return phrase
+
+
+def keep_brief_capabilities(
+    must_answer: list[Topic],
+    must_refuse: list[RefuseTopic],
+    brief: str,
+    corpus: Corpus | None,
+) -> tuple[list[Topic], list[RefuseTopic]]:
+    """The brief's own words outrank the model's draft.
+
+    If the brief asks for a live capability ("...if the order is placed today") but no
+    must-answer topic carries it, add the topic; and drop any must-refuse topic that
+    contradicts it (a stand-in answer of "no live data needed" once turned the ask
+    into a refusal). Attaching the tool is still decided by the tool contract.
+    """
+    answer, refuse = list(must_answer), list(must_refuse)
+    for capability, (label, conflict) in _LIVE.items():
+        phrase = brief_asks_for(capability, brief)
+        if phrase is None:
+            continue
+        dropped = [r.topic for r in refuse if conflict.search(r.topic)]
+        refuse = [r for r in refuse if not conflict.search(r.topic)]
+        if any(capability in t.tool_hints for t in answer):
+            continue
+        clause = _clause_with(brief, phrase)
+        hints: list[ToolHint] = [capability]
+        if corpus is not None:
+            hints += [h for h in infer_tool_hints(clause, corpus) if h not in hints]
+        note = f'added in code: the brief says "{phrase}"'
+        if dropped:
+            note += "; replaced the refusal " + ", ".join(f'"{d}"' for d in dropped)
+        answer.append(
+            Topic(topic=label, detail=f"{clause} ({note})", answered_from="tool", tool_hints=hints)
+        )
+    return answer, refuse
+
+
 _SOURCE_LABEL = {"brief": "inferred from the brief", "default": "interviewer default"}
 
 
@@ -278,10 +336,16 @@ async def write_requirements(
         for a in answers
         if a.source != "requester"
     ]
+    must_answer, must_refuse = keep_brief_capabilities(
+        _dedupe_topics(draft.must_answer, corpus),
+        _dedupe_refusals(draft.must_refuse),
+        brief,
+        corpus,
+    )
     return Requirements(
         **draft.model_dump(exclude={"must_answer", "must_refuse"}),
-        must_answer=_dedupe_topics(draft.must_answer, corpus),
-        must_refuse=_dedupe_refusals(draft.must_refuse),
+        must_answer=must_answer,
+        must_refuse=must_refuse,
         brief=brief,
         assumptions=assumptions,
     )

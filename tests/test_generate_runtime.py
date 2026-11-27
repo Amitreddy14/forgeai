@@ -14,6 +14,7 @@ from forgeai.runtime import AgentRuntime, load_definition, load_runtime, system_
 from forgeai.runtime.agent import verify_citations
 from forgeai.runtime.loader import changed_documents
 from forgeai.schemas.agent import AgentDefinition, Citation
+from forgeai.schemas.corpus import ChunkingConfig
 from forgeai.stages.context import ForgeContext, ModelRoles
 from forgeai.stages.generate import calibrate_threshold, choose_chunking, choose_retrieval
 from forgeai.stages.intake import AutoAnswerer
@@ -192,6 +193,17 @@ async def test_runtime_plans_and_uses_tools(tmp_path: Path, docs: Path) -> None:
     assert names == [("csv_lookup", True), ("weather", False)]  # weather not attached
     assert "not available to this agent" in turn.tool_calls[1].output
     assert turn.grounded  # tool evidence counts
+
+
+def test_quote_copied_from_a_tool_result_is_tool_evidence(tmp_path: Path, docs: Path) -> None:
+    chunks = chunk_corpus(load_folder(docs), ChunkingConfig())
+    hits = HybridIndex(chunks, HashEmbedder()).search("annual leave", RetrievalConfig(top_k=3))
+    output = "Today is Saturday, 28 November 2026, 09:00 (Asia/Kolkata)."
+    from_tool = Citation(chunk_id="current_date", quote="Saturday, 28 November 2026")
+    made_up = Citation(chunk_id="current_date", quote="Sunday, 29 November 2026")
+    valid, invalid = verify_citations([from_tool, made_up], hits, [output])
+    assert valid == []
+    assert invalid == [made_up]  # a quote found nowhere is still a broken citation
 
 
 async def test_refusal_after_tool_outage_says_so(tmp_path: Path, docs: Path) -> None:

@@ -120,6 +120,7 @@ async def evaluate(
             refused_by=turn.refused_by,
             best_dense=turn.best_dense,
             citations=[c.chunk_id for c in turn.valid_citations],
+            invalid_quotes=[c.quote[:200] for c in turn.invalid_citations],
             tool_calls=[f"{t.name}:{'ok' if t.ok else 'failed'}" for t in turn.tool_calls],
             latency_s=turn.latency_s,
             judgement=judgement,

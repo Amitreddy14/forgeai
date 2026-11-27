@@ -2,6 +2,38 @@
 
 Newest first. Decisions, bugs, changes, and anything the next session must know.
 
+## 2026-11-28 — Phase 8.1 (dry run on an unseen brief)
+
+Dry run `_dryrun/spares` (ship-spares procurement: catalogue CSV, supplier-terms PDF,
+procurement-policy DOCX; git-ignored). Ran end to end in 5.5 min: tools csv_lookup +
+calculator, weather correctly absent, stock-on-board trap flagged, dev 15/16, holdout
+6/8. Three factory defects found and fixed:
+- Brief asked for a delivery date "if the order is placed today"; the stand-in answerer
+  said "no live data needed", requirements dropped the ask and added a refusal "Live
+  data access", so current_date was never attached. Now `keep_brief_capabilities`: if
+  the brief's words ask for a live capability (today/weather) and no topic carries it,
+  add the topic; drop refusals that contradict it (recorded in the topic detail). The
+  auto-answer prompt must never contradict the brief.
+- Guard model called "Splitting orders" unsupported although a DOCX section has that
+  title; it became a refuse topic and a correct answer was scored a failure. Now an
+  honest "unsupported" gets a second look: a retrieved section whose heading names the
+  topic (>= 2 content words) supports it, quoted by its first sentence. A fabricated
+  quote never gets the second look.
+- Must-refuse test "How do we handle dangerous goods during procurement?" is answered by
+  section "7. Dangerous goods". Now rejected when it names a section heading and all its
+  other content words occur in the documents ("seafarers ... parental leave" stays a
+  refusal: "seafarers" is not in the documents).
+Checked: neither committed demo's refusals or topics change.
+
+Re-run `scratch-dryrun-spares-2` after the fixes: tools calculator + csv_lookup +
+current_date (evidence "today"), "Splitting orders" rescued by its section, stock trap
+still flagged, optimizer KEPT a threshold patch (dev 88% -> 94%), holdout 9/9 (CI
+70-100%). Last failure c20 "What is today's date?": correct tool answer, "citations not
+verified". Cause: verify_citations checked quotes against passages only, so a quote
+copied from a tool result could never verify (likely also port c21/c22). Now a quote
+found in an ok tool output is tool evidence (dropped from both lists); a quote found
+nowhere stays invalid. CaseResult records `invalid_quotes` for diagnosis.
+
 ## 2026-11-28 — Phase 8 (README)
 
 README rewritten for reviewers: results table from the committed runs, the 4.1 "factory

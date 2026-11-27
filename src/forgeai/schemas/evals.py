@@ -94,6 +94,7 @@ class CaseResult(BaseModel):
     refused_by: Literal["model", "threshold", "grounding"] | None = None
     best_dense: float = 0.0
     citations: list[str] = Field(default_factory=list)
+    invalid_quotes: list[str] = Field(default_factory=list)  # quotes found in no passage
     tool_calls: list[str] = Field(default_factory=list)
     latency_s: float = 0.0
     judgement: Judgement

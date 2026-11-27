@@ -100,3 +100,42 @@ def word_jaccard(a: str, b: str) -> float:
     if not wa or not wb:
         return 0.0
     return len(wa & wb) / len(wa | wb)
+
+
+# ---------- Content words (shared by the guard and the eval generator) ----------------
+
+STOPWORDS = frozenset(
+    (
+        "the a an and or of for to in on at by with from is are be can may must what which "
+        "who how many much does do per any all this that these those it its our your their "
+        "we you they i about into than then there when where why will would should could during"
+    ).split()
+)
+
+
+def stem(word: str) -> str:
+    """A deliberately small stemmer: plurals and -ing/-ed, so that 'Splitting orders' and
+    'split an order' share their words. Applied the same way on both sides of a match."""
+    w = word.lower()
+    if w.endswith("ing") and len(w) > 5:
+        w = w[:-3]
+        if len(w) > 3 and w[-1] == w[-2]:
+            w = w[:-1]
+    elif w.endswith("ed") and len(w) > 4:
+        w = w[:-2]
+        if len(w) > 3 and w[-1] == w[-2]:
+            w = w[:-1]
+    elif w.endswith("ies") and len(w) > 4:
+        w = w[:-3] + "y"
+    elif w.endswith("s") and len(w) > 3 and not w.endswith("ss"):
+        w = w[:-1]
+    return w
+
+
+def content_stems(text: str, *, extra_stopwords: frozenset[str] = frozenset()) -> set[str]:
+    """Stemmed content words, ignoring numbering ('7. Dangerous goods') and stopwords."""
+    return {
+        stem(w)
+        for w in normalize(text).split()
+        if not w.isdigit() and w not in STOPWORDS and w not in extra_stopwords
+    }

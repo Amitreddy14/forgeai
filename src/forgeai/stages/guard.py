@@ -23,7 +23,7 @@ from forgeai.schemas.requirements import (
     TopicJudgement,
 )
 from forgeai.stages.context import ForgeContext
-from forgeai.textutil import contains_quote
+from forgeai.textutil import contains_quote, content_stems
 
 GUARD_TOP_K = 5
 PASSAGE_CHARS = 1200
@@ -71,6 +71,44 @@ def verify_judgement(topic: Topic, judgement: TopicJudgement, hits: list[Hit]) -
     )
 
 
+_GENERIC_TOPIC_WORDS = frozenset(
+    "policy policies process procedure procedures rule rules information general guideline "
+    "guidelines detail details".split()
+)
+_SENTENCE = re.compile(r"[^.!?]+[.!?]")
+
+
+def section_support(topic: Topic, hits: list[Hit]) -> GroundingCheck | None:
+    """Second look at a topic the model called unsupported: a retrieved passage whose
+    section heading names the topic ('Splitting orders') does support it. Needs at least
+    two content words on the matching side, so one generic word never decides it. The
+    quote is the section's first sentence, so it is verbatim by construction."""
+    wanted = content_stems(topic.topic, extra_stopwords=_GENERIC_TOPIC_WORDS)
+    for hit in hits:
+        heading = hit.chunk.heading or ""
+        have = content_stems(heading, extra_stopwords=_GENERIC_TOPIC_WORDS)
+        matched = (len(wanted) >= 2 and wanted <= have) or (len(have) >= 2 and have <= wanted)
+        if not matched:
+            continue
+        body = hit.chunk.text.lstrip("# ")
+        if body.startswith(heading):
+            body = body[len(heading) :]
+        first = _SENTENCE.search(body)
+        quote = first.group(0).strip() if first else ""
+        if quote and contains_quote(hit.chunk.text, quote):
+            return GroundingCheck(
+                topic=topic.topic,
+                claimed="unsupported",
+                verdict="supported",
+                chunk_id=hit.chunk.chunk_id,
+                quote=quote,
+                quote_verified=True,
+                retrieved=[h.chunk.chunk_id for h in hits],
+                note=f'the guard model said unsupported, but section "{heading}" covers it',
+            )
+    return None
+
+
 async def check_topic(ctx: ForgeContext, index: HybridIndex, topic: Topic) -> GroundingCheck:
     query = f"{topic.topic}. {topic.detail}".strip()
     hits = index.search(query, RetrievalConfig(top_k=GUARD_TOP_K))
@@ -90,7 +128,14 @@ async def check_topic(ctx: ForgeContext, index: HybridIndex, topic: Topic) -> Gr
         TopicJudgement,
         model=ctx.models.generator,
     )
-    return verify_judgement(topic, judgement, hits)
+    check = verify_judgement(topic, judgement, hits)
+    # Only an honest "unsupported" gets the second look. A claimed quote that is not in
+    # the passages is a fabrication, and the topic stays flagged.
+    if judgement.status == "unsupported":
+        rescued = section_support(topic, hits)
+        if rescued is not None:
+            return rescued
+    return check
 
 
 def _tool_checks(req: Requirements, corpus: Corpus) -> list[GroundingCheck]:
