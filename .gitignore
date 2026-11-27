@@ -29,4 +29,5 @@ Thumbs.db
 runs/scratch-*/
 
 # Local scratch
+_dryrun/
 _to_delete/
