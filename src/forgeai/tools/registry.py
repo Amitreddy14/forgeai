@@ -55,6 +55,8 @@ EVIDENCE: dict[ToolHint, tuple[str, ...]] = {
         "expiry",
         "expires",
         "due date",
+        "delivery date",
+        "arrival date",
         "this week",
         "this month",
         "how long until",
@@ -120,6 +122,15 @@ def _evidence_for(capability: ToolHint, text: str, corpus: Corpus) -> str | None
     for phrase in EVIDENCE[capability]:
         if re.search(rf"\b{re.escape(phrase)}\b", text):
             return f'requester wrote "{phrase}"'
+    return None
+
+
+def brief_asks_for(capability: ToolHint, text: str) -> str | None:
+    """The phrase in the requester's own words that asks for a live capability, if any."""
+    lowered = text.lower()
+    for phrase in EVIDENCE[capability]:
+        if re.search(rf"\b{re.escape(phrase)}\b", lowered):
+            return phrase
     return None
 
 

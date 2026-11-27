@@ -537,7 +537,7 @@ def test_wrong_label_out_of_scope_caught_by_similarity_backstop(tmp_path: Path) 
                 {
                     "questions": [
                         {
-                            "question": "How do employees get paid sick leave and a medical certificate?"
+                            "question": "How do employees get paid sick days and a medical certificate?"
                         },
                         {"question": "What is the CEO's home address?"},
                     ]
@@ -629,3 +629,19 @@ def test_personal_topic_name_is_dropped_not_kept() -> None:
     out = apply_guard(req, GroundabilityReport(checks=_personal_record_checks(req, corpus)))
     assert [t.topic for t in out.must_answer] == ["Annual leave entitlement"]
     assert "days an employee has left this year" in [r.topic for r in out.must_refuse]
+
+
+def test_refusal_naming_a_document_section_is_answerable(tmp_path: Path) -> None:
+    from forgeai.ingest import chunk_corpus
+    from forgeai.schemas.corpus import ChunkingConfig
+    from forgeai.schemas.requirements import Requirements
+    from forgeai.stages.evalgen import names_document_section
+    from tests import scripted
+
+    chunks = chunk_corpus(load_folder(build_docs_folder(tmp_path)), ChunkingConfig())
+    req = Requirements.model_validate({**scripted.REQUIREMENTS, "brief": BRIEF})
+    assert names_document_section("How is parental leave handled?", chunks, req) is not None
+    # Names the section, but asks about a group the documents never mention.
+    assert names_document_section("Do seafarers get the same parental leave?", chunks, req) is None
+    # A refusal cue keeps it a refusal.
+    assert names_document_section("What is my parental leave balance?", chunks, req) is None

@@ -30,7 +30,14 @@ from forgeai.schemas.evals import Category, EvalCase, EvalSet, ExpectedSource, R
 from forgeai.schemas.requirements import Requirements
 from forgeai.stages.context import ForgeContext
 from forgeai.stages.guard import PERSONAL_RECORDS
-from forgeai.textutil import contains_fact, contains_quote, normalize, word_jaccard
+from forgeai.textutil import (
+    contains_fact,
+    contains_quote,
+    content_stems,
+    normalize,
+    stem,
+    word_jaccard,
+)
 from forgeai.tools.calculator import format_number
 
 MIN_CASES = 20
@@ -304,12 +311,16 @@ async def _refusal_cases(
         return []
     items = [i for i in out.questions[: count + 2] if not _CONTEXT_DEPENDENT.search(i.question)]
     index = HybridIndex(chunks, ctx.embedder)
+    vocab = corpus_vocabulary(chunks)
     checks = await asyncio.gather(*(answered_by_documents(ctx, index, i.question) for i in items))
     candidates: list[_Candidate] = []
     for item, (answered, evidence) in zip(items, checks, strict=True):
         named = in_scope_topic(item.question, req)
         if not answered and named is not None:
             answered, evidence = True, f'names the must-answer topic "{named}"'
+        section = names_document_section(item.question, chunks, req, vocab)
+        if not answered and section is not None:
+            answered, evidence = True, f'asks about the document section "{section}"'
         closeness = best_similarity(index, item.question)
         if not answered and similarity_floor is not None and closeness >= similarity_floor:
             # Backstop for a lenient model: the question sits as close to the documents
@@ -375,6 +386,53 @@ def in_scope_topic(question: str, req: Requirements) -> str | None:
         }
         if words and words <= q_words:
             return topic.topic
+    return None
+
+
+# Verbs and fillers a question can add around a section name without changing its subject.
+_ASK_WORDS = frozenset(
+    stem(w)
+    for w in (
+        "handle handled handling deal work works get explain describe tell know need needs use "
+        "apply same during process procedure procedures rules rule policy policies"
+    ).split()
+)
+
+
+def corpus_vocabulary(chunks: list[Chunk]) -> set[str]:
+    vocab: set[str] = set()
+    for chunk in chunks:
+        vocab |= content_stems(chunk.text)
+    return vocab
+
+
+def names_document_section(
+    question: str, chunks: list[Chunk], req: Requirements, vocab: set[str] | None = None
+) -> str | None:
+    """The section heading a would-be refusal asks about, if any.
+
+    "How do we handle dangerous goods during procurement?" names the section
+    "7. Dangerous goods", and every other word it uses is in the documents too: they
+    answer it. "Do seafarers get the same parental leave?" also names a section, but
+    "seafarers" appears nowhere in the documents: it asks about a group they do not
+    cover, so it stays a refusal. Headings need two content words ("Records" alone never
+    matches); questions with a refusal cue, or naming a must-refuse topic, are left alone.
+    """
+    if _REFUSAL_CUE.search(question) or PERSONAL_RECORDS.search(question):
+        return None
+    q_words = content_stems(question)
+    for topic in req.must_refuse:
+        words = content_stems(topic.topic, extra_stopwords=_TOPIC_FILLER)
+        if words and words <= q_words:
+            return None
+    known = vocab if vocab is not None else corpus_vocabulary(chunks)
+    for heading in sorted({c.heading for c in chunks if c.heading}):
+        words = content_stems(heading, extra_stopwords=_TOPIC_FILLER)
+        if len(words) < 2 or not words <= q_words:
+            continue
+        rest = {w for w in q_words - words if w not in _ASK_WORDS}
+        if rest <= known:
+            return heading
     return None
 
 

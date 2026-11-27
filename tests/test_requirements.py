@@ -11,6 +11,7 @@ from forgeai.llm import FakeLLM
 from forgeai.pipeline import build_requirements
 from forgeai.prompts import render
 from forgeai.retrieval import HashEmbedder
+from forgeai.schemas.corpus import ChunkingConfig
 from forgeai.schemas.requirements import (
     GroundabilityReport,
     GroundingCheck,
@@ -312,3 +313,60 @@ def test_personal_records_pattern(text: str, personal: bool) -> None:
     from forgeai.stages.guard import PERSONAL_RECORDS
 
     assert bool(PERSONAL_RECORDS.search(text)) is personal
+
+
+# ---------- The brief's own words outrank the draft (dry-run findings) -----------------
+
+
+def test_brief_asking_for_today_keeps_a_date_topic_and_drops_contradicting_refusal(
+    tmp_path: Path,
+) -> None:
+    from forgeai.schemas.requirements import RefuseTopic, Topic
+    from forgeai.stages.intake import keep_brief_capabilities
+
+    corpus = load_folder(build_docs_folder(tmp_path))
+    brief = (
+        "Find parts in the catalogue, work out order totals, and estimate the delivery "
+        "date if the order is placed today."
+    )
+    answer, refuse = keep_brief_capabilities(
+        [Topic(topic="Catalogue lookup", tool_hints=["table_lookup"])],
+        [RefuseTopic(topic="Live data access"), RefuseTopic(topic="Legal advice")],
+        brief,
+        corpus,
+    )
+    added = answer[-1]
+    assert "current_date" in added.tool_hints
+    assert added.answered_from == "tool"
+    assert "estimate the delivery date if the order is placed today" in added.detail
+    assert '"Live data access"' in added.detail  # the replacement is recorded
+    assert [r.topic for r in refuse] == ["Legal advice"]
+
+
+def test_brief_without_live_asks_is_left_alone(tmp_path: Path) -> None:
+    from forgeai.schemas.requirements import RefuseTopic, Topic
+    from forgeai.stages.intake import keep_brief_capabilities
+
+    corpus = load_folder(build_docs_folder(tmp_path))
+    topics = [Topic(topic="Annual leave")]
+    refusals = [RefuseTopic(topic="Live data access")]
+    assert keep_brief_capabilities(topics, refusals, BRIEF, corpus) == (topics, refusals)
+
+
+def test_guard_second_look_finds_a_section_named_by_the_topic(tmp_path: Path) -> None:
+    from forgeai.retrieval import HybridIndex, RetrievalConfig
+    from forgeai.schemas.requirements import Topic
+    from forgeai.stages.guard import section_support
+
+    chunks = chunk_corpus(load_folder(build_docs_folder(tmp_path)), ChunkingConfig())
+    index = HybridIndex(chunks, HashEmbedder())
+    hits = index.search("Parental leave", RetrievalConfig(top_k=5))
+    check = section_support(Topic(topic="Parental leave rules"), hits)
+    assert check is not None
+    assert check.verdict == "supported"
+    assert check.claimed == "unsupported"
+    assert check.quote_verified
+    assert "Parental leave" in check.note
+    # One shared generic word is not enough, and an absent subject is never rescued.
+    assert section_support(Topic(topic="Leave"), hits) is None
+    assert section_support(Topic(topic="Stock on board vessels"), hits) is None

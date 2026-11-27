@@ -188,9 +188,11 @@ uvicorn forgeai.web.app:app --reload    # http://localhost:8000
   passing case. The loop worked as designed (earlier runs did keep refuse-topic patches,
   see [`memory.md`](memory.md)), but the committed agents are their first versions.
 - In the port run, two tool answers (berth hire total 13,500 USD, the Kochi forecast) had
-  the right content but failed: the agent also attached a document quote that was not in
-  the cited passage, and the judge fails any answer carrying an unverifiable quote. That
-  rule is strict on purpose; the scores were left as measured.
+  the right content but failed as "citations not verified". A dry run on a third brief
+  showed why: the agent quotes the tool result as its citation, and the runtime checked
+  quotes against documents only. Since then a quote found in a successful tool result
+  counts as tool evidence (a quote found nowhere still fails); the committed scores were
+  left as measured.
 
 ## Development
 
