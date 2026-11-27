@@ -65,18 +65,27 @@ class HashEmbedder:
 
 
 class FastEmbedEmbedder:
-    """BAAI/bge-small-en-v1.5 via fastembed. Downloads ~130 MB on first use, then cached."""
+    """BAAI/bge-small-en-v1.5 via fastembed. Downloads ~130 MB on first use, then cached.
 
-    def __init__(self, model_name: str = "BAAI/bge-small-en-v1.5") -> None:
+    Small batches on purpose: fastembed's default batch of 256 passages builds attention
+    tensors of several GB, which kills a 512 MB host. Vectors are identical either way.
+    """
+
+    def __init__(
+        self, model_name: str = "BAAI/bge-small-en-v1.5", *, batch_size: int = 8, threads: int = 1
+    ) -> None:
         from fastembed import TextEmbedding
 
-        self._model: Any = TextEmbedding(model_name=model_name)
+        self._model: Any = TextEmbedding(model_name=model_name, threads=threads)
+        self._batch_size = batch_size
         self.name = model_name
 
     def embed_documents(self, texts: Sequence[str]) -> Vector:
         if not texts:
             return np.zeros((0, 384), dtype=np.float32)
-        stacked: Vector = np.stack(list(self._model.passage_embed(list(texts)))).astype(np.float32)
+        stacked: Vector = np.stack(
+            list(self._model.passage_embed(list(texts), batch_size=self._batch_size))
+        ).astype(np.float32)
         return _l2(stacked)
 
     def embed_query(self, text: str) -> Vector:

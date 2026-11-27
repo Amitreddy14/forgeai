@@ -2,6 +2,18 @@
 
 Newest first. Decisions, bugs, changes, and anything the next session must know.
 
+## 2026-11-28 — Phase 7.1 (first hosted run on Render)
+
+Live at https://forgeai-524s.onrender.com. Pages served; the first chat returned 503 and
+the instance then failed twice (Render events "Instance failed"). Two causes fixed:
+- Memory: fastembed's default batch of 256 passages builds multi-GB attention tensors on
+  first index build; 512 MB instance died. Now batch_size=8, threads=1 (same vectors).
+- Groq JSON mode answers malformed JSON with HTTP 400 `json_validate_failed`, which the
+  client treated as "endpoint down". The rejected text is now handed back to the
+  structured layer's repair loop. Other 400s still raise.
+- Chat errors are now logged; a broken-format reply gets its own message (502).
+- `HEAD /` answers 200 (Render's uptime probe got 405).
+
 ## 2026-11-28 — Phase 6.4 (fourth demo runs)
 
 HR: optimizer kept "future financial forecasts" refuse topic (87% -> 93% dev). Port: Kochi

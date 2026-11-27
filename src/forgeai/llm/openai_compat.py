@@ -98,6 +98,12 @@ class OpenAICompatClient:
                     except json.JSONDecodeError as exc:
                         raise ModelOutputError("endpoint returned non-JSON body") from exc
                     return body
+                failed = _failed_json_generation(response)
+                if failed is not None:
+                    # Groq's JSON mode rejects malformed output with a 400 and hands back
+                    # the text. Pass it on so the structured layer's repair loop sees it.
+                    log.info("endpoint rejected JSON output; passing it to repair")
+                    return {"choices": [{"message": {"content": failed}}]}
                 if response.status_code not in RETRYABLE_STATUS:
                     raise ModelUnavailable(
                         f"model endpoint answered {response.status_code}: {response.text[:300]}"
@@ -115,6 +121,19 @@ class OpenAICompatClient:
                 )
                 await asyncio.sleep(delay)
         raise ModelUnavailable(f"model endpoint failed after retries: {last_error}")
+
+
+def _failed_json_generation(response: httpx.Response) -> str | None:
+    """The rejected text from a JSON-mode validation 400 (Groq), or None."""
+    if response.status_code != 400:
+        return None
+    try:
+        error = response.json().get("error") or {}
+    except (json.JSONDecodeError, AttributeError):
+        return None
+    if not isinstance(error, dict) or error.get("code") != "json_validate_failed":
+        return None
+    return str(error.get("failed_generation") or "")
 
 
 def _retry_after_seconds(response: httpx.Response) -> float | None:
