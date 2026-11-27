@@ -6,7 +6,11 @@ groundability guard should flag it.
 
 ```bash
 forge intake --brief data/examples/hr-mini/brief.md --docs data/examples/hr-mini/docs --answers auto --run-id scratch-hr-mini
+forge generate --run-id scratch-hr-mini --docs data/examples/hr-mini/docs
+forge chat runs/scratch-hr-mini/agent.v0.json
 ```
+
+The generated HR agent should have no tools.
 
 Use `--answers interactive` to answer the questions yourself, or
 `--answers data/examples/hr-mini/answers.json` for scripted answers.

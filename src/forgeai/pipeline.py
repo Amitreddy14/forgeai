@@ -9,8 +9,11 @@ from pathlib import Path
 from forgeai.errors import GroundingError
 from forgeai.ingest import chunk_corpus, load_folder
 from forgeai.retrieval import HybridIndex
+from forgeai.runtime.agent import system_prompt
+from forgeai.schemas.agent import AgentDefinition
 from forgeai.schemas.requirements import GroundabilityReport, IntakeRecord, Requirements
 from forgeai.stages.context import ForgeContext
+from forgeai.stages.generate import GeneratedAgent, generate_agent
 from forgeai.stages.guard import apply_guard, check_groundability, groundability_markdown
 from forgeai.stages.intake import Answerer, requirements_markdown, run_intake
 from forgeai.store import RunStore
@@ -61,3 +64,64 @@ async def build_requirements(
     store.write_json("requirements.json", requirements)
     store.write_text("requirements.md", requirements_markdown(requirements))
     return RequirementsOutcome(record=record, requirements=requirements, groundability=report)
+
+
+def agent_markdown(gen: GeneratedAgent) -> str:
+    d = gen.definition
+    lines = [
+        f"# Agent definition: {d.name} (v{d.version})",
+        "",
+        "## Tools",
+        "",
+    ]
+    if d.tools:
+        lines += [f"- **{t.name}**: {t.justification} _(evidence: {t.evidence})_" for t in d.tools]
+    else:
+        lines.append("- none attached: no requirement needs a tool")
+    if d.rejected_tools:
+        lines += ["", "Rejected proposals:", ""]
+        lines += [f"- ~~{t.name}~~: {t.reason}" for t in d.rejected_tools]
+    if gen.selection.added:
+        lines += [
+            "",
+            f"Added by contract (generator omitted them): {', '.join(gen.selection.added)}",
+        ]
+    lines += [
+        "",
+        "## Retrieval",
+        "",
+        f"- chunking: {d.chunking.chunk_words} words, overlap {d.chunking.overlap_words}",
+        f"- retrieval: {d.retrieval.mode}, top_k {d.retrieval.top_k}",
+        f"- refusal threshold: {d.refusal.min_evidence_score:.2f}",
+        *[f"- {note}" for note in d.provenance.notes],
+        "",
+        "## Compiled system prompt",
+        "",
+        "```text",
+        system_prompt(d),
+        "```",
+    ]
+    return "\n".join(lines) + "\n"
+
+
+async def build_agent(
+    ctx: ForgeContext,
+    store: RunStore,
+    outcome: RequirementsOutcome,
+    docs_dir: Path,
+) -> AgentDefinition:
+    """Requirements -> agent.v0.json (+ a readable agent.v0.md)."""
+    corpus = load_folder(docs_dir)
+    generated = await generate_agent(ctx, outcome.requirements, outcome.record, corpus, docs_dir)
+    store.write_json("agent.v0.json", generated.definition)
+    store.write_json("tool_selection.json", generated.selection)
+    store.write_text("agent.v0.md", agent_markdown(generated))
+    return generated.definition
+
+
+def load_requirements_outcome(store: RunStore) -> RequirementsOutcome:
+    return RequirementsOutcome(
+        record=store.read_json("intake.json", IntakeRecord),
+        requirements=store.read_json("requirements.json", Requirements),
+        groundability=store.read_json("groundability.json", GroundabilityReport),
+    )

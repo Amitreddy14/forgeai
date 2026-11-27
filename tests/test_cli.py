@@ -183,3 +183,68 @@ def test_intake_rejects_bad_answers_option(tmp_path: Path, monkeypatch: pytest.M
         cli.app, ["intake", "--brief", str(brief), "--docs", str(folder), "--answers", "nope.json"]
     )
     assert result.exit_code != 0
+
+
+def _scripted_stack(handler: Any) -> Any:
+    from forgeai.llm import Budget, BudgetedLLM, FakeLLM
+
+    class Stack:
+        def __init__(self) -> None:
+            self.budget = Budget(max_tokens=100_000)
+            self.llm = BudgetedLLM(FakeLLM(responder=handler), self.budget)
+
+        async def aclose(self) -> None:
+            return None
+
+    return Stack()
+
+
+def test_generate_then_chat(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    import json as _json
+
+    from tests import scripted
+
+    def handler(messages: list[Any]) -> str:
+        task = scripted._task(messages)
+        if task == "agent.plan":
+            return '{"calls": []}'
+        if task == "agent.answer":
+            return _json.dumps(
+                {
+                    "answer": "24 days a year.",
+                    "citations": [
+                        {
+                            "chunk_id": "?",
+                            "quote": "Shore staff earn 24 days of annual leave per calendar year",
+                        }
+                    ],
+                    "refused": False,
+                }
+            )
+        return scripted.generator_responder(messages)
+
+    monkeypatch.setattr(cli, "build_llm", lambda _s: _scripted_stack(handler))
+    folder = build_docs_folder(tmp_path)
+    brief = tmp_path / "hr.md"
+    brief.write_text("I need an assistant that answers HR policy questions.", encoding="utf-8")
+    common = ["--docs", str(folder)]
+    result = runner.invoke(
+        cli.app,
+        ["intake", "--brief", str(brief), *common, "--answers", "auto", "--run-id", "cli-gen"],
+    )
+    assert result.exit_code == 0, result.stdout
+    result = runner.invoke(cli.app, ["generate", "--run-id", "cli-gen", *common])
+    assert result.exit_code == 0, result.stdout
+    assert "Rejected weather" in result.stdout
+
+    definition = cli.get_settings().runs_dir / "cli-gen" / "agent.v0.json"
+    result = runner.invoke(cli.app, ["chat", str(definition), *common, "-q", "Annual leave?"])
+    assert result.exit_code == 0, result.stdout
+    assert "24 days a year." in result.stdout
+    assert "verified" in result.stdout
+
+
+def test_generate_without_requirements_fails(tmp_path: Path) -> None:
+    folder = build_docs_folder(tmp_path)
+    result = runner.invoke(cli.app, ["generate", "--run-id", "no-such-run", "--docs", str(folder)])
+    assert result.exit_code == 1

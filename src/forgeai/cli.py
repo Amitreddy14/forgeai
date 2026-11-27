@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import time
 from pathlib import Path
+from typing import Any
 
 import click
 import httpx
@@ -19,9 +20,16 @@ from forgeai.config import Settings, get_settings
 from forgeai.errors import ForgeError
 from forgeai.ingest import chunk_corpus, load_folder
 from forgeai.llm.factory import build_llm
-from forgeai.pipeline import RequirementsOutcome, build_requirements
+from forgeai.pipeline import (
+    RequirementsOutcome,
+    build_agent,
+    build_requirements,
+    load_requirements_outcome,
+)
 from forgeai.retrieval import HybridIndex, RetrievalConfig, make_embedder
+from forgeai.runtime import AgentTurn, load_definition, load_runtime
 from forgeai.schemas import ChunkingConfig
+from forgeai.schemas.agent import AgentDefinition
 from forgeai.schemas.requirements import Requirements
 from forgeai.stages.context import ForgeContext, ModelRoles
 from forgeai.stages.intake import (
@@ -228,12 +236,7 @@ async def _intake(
     brief_text: str, docs: Path, answers: str, approve: bool, run_id: str
 ) -> RequirementsOutcome:
     settings = get_settings()
-    stack = build_llm(settings)
-    ctx = ForgeContext(
-        llm=stack.llm,
-        models=ModelRoles(generator=settings.generator_model, judge=settings.judge_model),
-        embedder=make_embedder(settings.embedder),
-    )
+    ctx, stack = _context(settings)
     store = RunStore(settings.runs_dir, run_id)
     try:
         return await build_requirements(
@@ -276,6 +279,103 @@ def intake(
     )
     for gap in req.flagged_gaps:
         console.print(f"  [yellow]Flagged[/yellow] {gap.topic}")
+
+
+def _context(settings: Settings) -> tuple[ForgeContext, Any]:
+    stack = build_llm(settings)
+    ctx = ForgeContext(
+        llm=stack.llm,
+        models=ModelRoles(generator=settings.generator_model, judge=settings.judge_model),
+        embedder=make_embedder(settings.embedder),
+    )
+    return ctx, stack
+
+
+async def _generate(run_id: str, docs: Path) -> AgentDefinition:
+    settings = get_settings()
+    ctx, stack = _context(settings)
+    store = RunStore(settings.runs_dir, run_id)
+    try:
+        outcome = load_requirements_outcome(store)
+        return await build_agent(ctx, store, outcome, docs)
+    finally:
+        store.write_json("budget.generate.json", stack.budget.report())
+        await stack.aclose()
+
+
+@app.command()
+def generate(
+    run_id: str = typer.Option(..., help="Run folder that already has requirements.json."),
+    docs: Path = typer.Option(..., exists=True, file_okay=False, help="Documents folder."),
+) -> None:
+    """Generate the agent definition (agent.v0.json) from a run's requirements."""
+    rid = validate_run_id(run_id)
+    try:
+        definition = asyncio.run(_generate(rid, docs))
+    except (ForgeError, FileNotFoundError, ValidationError) as exc:
+        console.print(f"[red]Stopped:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    tools = ", ".join(definition.tool_names) or "none"
+    console.print(f"[green]Agent generated[/green]: {definition.name} (tools: {tools})")
+    for rejected in definition.rejected_tools:
+        console.print(f"  [yellow]Rejected[/yellow] {rejected.name}: {rejected.reason}")
+
+
+def print_turn(turn: AgentTurn) -> None:
+    if turn.error:
+        console.print(f"[red]Agent error:[/red] {turn.error}")
+        return
+    label = "[yellow]Refused[/yellow]" if turn.answer.refused else "[bold]Answer[/bold]"
+    console.print(f"{label}: {turn.answer.answer}")
+    if turn.answer.refused and turn.answer.refusal_reason:
+        console.print(f"  reason: {turn.answer.refusal_reason}")
+    for c in turn.valid_citations:
+        console.print(f'  [green]verified[/green] [{c.chunk_id}] "{c.quote}"')
+    for c in turn.invalid_citations:
+        console.print(f'  [red]not in source[/red] [{c.chunk_id}] "{c.quote}"')
+    for call in turn.tool_calls:
+        status = "[green]ok[/green]" if call.ok else "[red]failed[/red]"
+        console.print(f"  tool {call.name} {status}: {call.output[:200]}")
+    console.print(
+        f"  [dim]{turn.latency_s:.1f}s, best passage similarity {turn.best_dense:.2f}[/dim]"
+    )
+
+
+async def _chat(definition_path: Path, docs: Path | None, question: str | None) -> None:
+    settings = get_settings()
+    stack = build_llm(settings)
+    try:
+        runtime = load_runtime(
+            load_definition(definition_path),
+            stack.llm,
+            settings.generator_model,
+            make_embedder(settings.embedder),
+            docs_dir=docs,
+        )
+        console.print(f"[bold]{runtime.definition.name}[/bold] is ready. Empty line to quit.")
+        while True:
+            q = question or typer.prompt("You", default="", show_default=False)
+            if not q.strip():
+                break
+            print_turn(await runtime.answer(q.strip()))
+            if question:
+                break
+    finally:
+        await stack.aclose()
+
+
+@app.command()
+def chat(
+    definition: Path = typer.Argument(..., exists=True, dir_okay=False, help="agent.vN.json"),
+    docs: Path | None = typer.Option(None, file_okay=False, help="Override the documents folder."),
+    question: str | None = typer.Option(None, "--question", "-q", help="Ask once and exit."),
+) -> None:
+    """Chat with any generated agent definition."""
+    try:
+        asyncio.run(_chat(definition, docs, question))
+    except (ForgeError, FileNotFoundError, ValidationError) as exc:
+        console.print(f"[red]Stopped:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
 
 
 if __name__ == "__main__":  # pragma: no cover
