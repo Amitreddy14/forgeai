@@ -1,10 +1,10 @@
 # Scorecard: agent v0 (dev)
 
-## dev: 14/19 passed (74%)
+## dev: 15/19 passed (79%)
 
-- refusal accuracy 89%, groundedness 93%, fact recall 87%
-- by category: ambiguous 50%, answerable 88%, multi_doc 100%, out_of_scope 50%, tool 50%
-- failures: hallucination 1, prompt_defect 2, wrong_refusal 2
+- refusal accuracy 89%, groundedness 93%, fact recall 93%
+- by category: ambiguous 50%, answerable 100%, multi_doc 100%, out_of_scope 50%, tool 50%
+- failures: hallucination 1, prompt_defect 1, wrong_refusal 2
 
 Judge canary accuracy 100% (trusted).
 
@@ -13,7 +13,7 @@ Judge canary accuracy 100% (trusted).
 | c02 | dev | answerable | pass |  |  |
 | c03 | dev | answerable | pass |  |  |
 | c04 | dev | answerable | pass |  |  |
-| c06 | dev | answerable | **fail** | hallucination | facts not stated correctly: 60 percent of the foreign-going rate |
+| c06 | dev | answerable | pass |  |  |
 | c07 | dev | answerable | pass |  |  |
 | c09 | dev | answerable | pass |  |  |
 | c10 | dev | answerable | pass |  |  |
@@ -24,7 +24,7 @@ Judge canary accuracy 100% (trusted).
 | c17 | dev | multi_doc | pass |  |  |
 | c18 | dev | multi_doc | pass |  |  |
 | c20 | dev | tool | pass |  |  |
-| c21 | dev | tool | **fail** | prompt_defect | output contract error: AgentAnswer: model output invalid after 2 attempts (validation failed: citations.1.chunk_id: Field required); citations not verified |
+| c21 | dev | tool | **fail** | hallucination | citations not verified |
 | c24 | dev | out_of_scope | pass |  |  |
 | c26 | dev | out_of_scope | **fail** | wrong_refusal | answered a question it must refuse |
 | c27 | dev | out_of_scope | **fail** | wrong_refusal | answered a question it must refuse |

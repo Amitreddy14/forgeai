@@ -14,7 +14,9 @@ from forgeai.tools.registry import RejectedTool, ToolChoice
 
 
 class Citation(BaseModel):
-    chunk_id: str
+    # Optional on purpose: the quote's words are verified against every retrieved passage
+    # and the id corrected, so a missing id must not throw away an otherwise good answer.
+    chunk_id: str = ""
     quote: str = Field(description="Exact words copied from that passage.")
 
 

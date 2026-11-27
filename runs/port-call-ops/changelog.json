@@ -17,14 +17,16 @@
     "from_version": 0,
     "to_version": null,
     "accepted": false,
-    "dev_before": 0.7368,
-    "dev_after": 0.6842,
-    "fixed": [],
-    "broke": [
-      "c24"
+    "dev_before": 0.7895,
+    "dev_after": 0.7895,
+    "fixed": [
+      "c27"
     ],
-    "decision": "reverted: 0 fixed, 1 broken (no net gain)",
-    "tokens": 32496
+    "broke": [
+      "c06"
+    ],
+    "decision": "reverted: 1 fixed, 1 broken (no net gain)",
+    "tokens": 30261
   },
   {
     "iteration": 1,
@@ -44,42 +46,39 @@
     "from_version": 0,
     "to_version": null,
     "accepted": false,
-    "dev_before": 0.7368,
+    "dev_before": 0.7895,
     "dev_after": 0.7368,
-    "fixed": [
-      "c27"
-    ],
+    "fixed": [],
     "broke": [
-      "c24"
+      "c06"
     ],
-    "decision": "reverted: 1 fixed, 1 broken (no net gain)",
-    "tokens": 31491
+    "decision": "reverted: 0 fixed, 1 broken (no net gain)",
+    "tokens": 31546
   },
   {
     "iteration": 1,
     "patch": {
       "op": {
         "op": "add_rule",
-        "text": "Extract and verify all relevant facts from the retrieved passage before providing an answer."
+        "text": "Ensure all numerical answers are directly supported by the document content."
       },
-      "category": "prompt_defect",
+      "category": "hallucination",
       "targets": [
-        "c14",
         "c21"
       ],
-      "why": "Ensures all pertinent details are captured and accurately conveyed, preventing omissions or misstatements.",
+      "why": "This prevents the assistant from making up numbers not found in the documents.",
       "source": "critic"
     },
     "from_version": 0,
     "to_version": null,
     "accepted": false,
-    "dev_before": 0.7368,
-    "dev_after": 0.6842,
+    "dev_before": 0.7895,
+    "dev_after": 0.7368,
     "fixed": [],
     "broke": [
       "c24"
     ],
     "decision": "reverted: 0 fixed, 1 broken (no net gain)",
-    "tokens": 32744
+    "tokens": 34337
   }
 ]

@@ -32,7 +32,7 @@
       "tool_calls": [
         "csv_lookup:failed"
       ],
-      "latency_s": 2.584,
+      "latency_s": 2.072,
       "judgement": {
         "case_id": "c02",
         "passed": true,
@@ -89,7 +89,7 @@
         "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 4.695,
+      "latency_s": 4.291,
       "judgement": {
         "case_id": "c03",
         "passed": true,
@@ -142,7 +142,7 @@
         "port-notices:p1:c2"
       ],
       "tool_calls": [],
-      "latency_s": 6.118,
+      "latency_s": 5.801,
       "judgement": {
         "case_id": "c04",
         "passed": true,
@@ -187,7 +187,7 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "Coastal vessels pay 40 percent of the foreign-going rate for port dues and pilotage.",
+      "answer": "Coastal vessels pay 60 percent of the foreign-going rate for port dues and pilotage.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.7967,
@@ -197,10 +197,10 @@
       "tool_calls": [
         "calculator:ok"
       ],
-      "latency_s": 7.843,
+      "latency_s": 47.01,
       "judgement": {
         "case_id": "c06",
-        "passed": false,
+        "passed": true,
         "checks": {
           "refusal_ok": true,
           "grounded": true,
@@ -213,13 +213,13 @@
         "facts": [
           {
             "fact": "60 percent of the foreign-going rate",
-            "status": "contradicted",
-            "by": "judge"
+            "status": "present",
+            "by": "string"
           }
         ],
-        "failure": "hallucination",
-        "reason": "facts not stated correctly: 60 percent of the foreign-going rate",
-        "judge_used": true
+        "failure": null,
+        "reason": "",
+        "judge_used": false
       }
     },
     {
@@ -252,7 +252,7 @@
       "tool_calls": [
         "calculator:ok"
       ],
-      "latency_s": 10.309,
+      "latency_s": 11.947,
       "judgement": {
         "case_id": "c07",
         "passed": true,
@@ -307,7 +307,7 @@
       "tool_calls": [
         "csv_lookup:failed"
       ],
-      "latency_s": 12.564,
+      "latency_s": 13.703,
       "judgement": {
         "case_id": "c09",
         "passed": true,
@@ -360,7 +360,7 @@
         "port-tariff-schedule:p1:c0"
       ],
       "tool_calls": [],
-      "latency_s": 14.237,
+      "latency_s": 15.361,
       "judgement": {
         "case_id": "c10",
         "passed": true,
@@ -405,7 +405,7 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "During the monsoon season, from 1 June to 30 September, the Kochi approach channel is restricted to vessels with a draft of no more than 12.5 metres, regardless of berth depth.",
+      "answer": "During the monsoon season (1 June to 30 September), the Kochi approach channel is restricted to vessels with a draft of no more than 12.5 metres, regardless of berth depth.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.9129,
@@ -417,7 +417,7 @@
         "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 17.06,
+      "latency_s": 18.149,
       "judgement": {
         "case_id": "c12",
         "passed": true,
@@ -474,7 +474,7 @@
         "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 21.643,
+      "latency_s": 22.534,
       "judgement": {
         "case_id": "c14",
         "passed": false,
@@ -530,7 +530,7 @@
         "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 24.09,
+      "latency_s": 24.589,
       "judgement": {
         "case_id": "c15",
         "passed": true,
@@ -593,7 +593,7 @@
         "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 28.151,
+      "latency_s": 28.649,
       "judgement": {
         "case_id": "c16",
         "passed": true,
@@ -663,7 +663,7 @@
         "csv_lookup:failed",
         "csv_lookup:ok"
       ],
-      "latency_s": 32.243,
+      "latency_s": 32.712,
       "judgement": {
         "case_id": "c17",
         "passed": true,
@@ -734,7 +734,7 @@
         "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 36.165,
+      "latency_s": 36.62,
       "judgement": {
         "case_id": "c18",
         "passed": true,
@@ -796,7 +796,7 @@
         "PlannedCall:failed",
         "max_loa_m_for_berth_id_KOC-CR1:failed"
       ],
-      "latency_s": 37.774,
+      "latency_s": 37.969,
       "judgement": {
         "case_id": "c20",
         "passed": true,
@@ -841,17 +841,19 @@
         "origin": "template",
         "split": "dev"
       },
-      "answer": "",
+      "answer": "The total daily berth hire USD for 3 days at berth id KOC-CR1 is 13500.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.7648,
-      "citations": [],
+      "citations": [
+        "berths:r8"
+      ],
       "tool_calls": [
         "csv_lookup:failed",
         "csv_lookup:ok",
         "calculator:ok"
       ],
-      "latency_s": 46.768,
+      "latency_s": 48.864,
       "judgement": {
         "case_id": "c21",
         "passed": false,
@@ -862,11 +864,17 @@
           "source_retrieved": true,
           "unsupported_numbers": [],
           "tool_ok": true,
-          "contract_error": "AgentAnswer: model output invalid after 2 attempts (validation failed: citations.1.chunk_id: Field required)"
+          "contract_error": null
         },
-        "facts": [],
-        "failure": "prompt_defect",
-        "reason": "output contract error: AgentAnswer: model output invalid after 2 attempts (validation failed: citations.1.chunk_id: Field required); citations not verified",
+        "facts": [
+          {
+            "fact": "13500",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": "hallucination",
+        "reason": "citations not verified",
         "judge_used": false
       }
     },
@@ -889,7 +897,7 @@
       "best_dense": 0.6946,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 47.982,
+      "latency_s": 50.063,
       "judgement": {
         "case_id": "c24",
         "passed": false,
@@ -929,7 +937,7 @@
         "port-notices:p1:c1"
       ],
       "tool_calls": [],
-      "latency_s": 43.607,
+      "latency_s": 43.907,
       "judgement": {
         "case_id": "c26",
         "passed": false,
@@ -967,7 +975,7 @@
       "best_dense": 0.6911,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 48.343,
+      "latency_s": 50.433,
       "judgement": {
         "case_id": "c27",
         "passed": false,
@@ -1005,7 +1013,7 @@
       "best_dense": 0.6172,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 0.006,
+      "latency_s": 0.007,
       "judgement": {
         "case_id": "c28",
         "passed": true,
@@ -1081,27 +1089,27 @@
     "splits": {
       "dev": {
         "cases": 19,
-        "passed": 13,
-        "pass_rate": 0.6842,
+        "passed": 14,
+        "pass_rate": 0.7368,
         "by_category": {
           "ambiguous": 0.5,
-          "answerable": 0.875,
+          "answerable": 1.0,
           "multi_doc": 1.0,
           "out_of_scope": 0.25,
           "tool": 0.5
         },
         "failures": {
           "hallucination": 1,
-          "prompt_defect": 2,
+          "prompt_defect": 1,
           "wrong_refusal": 3
         },
         "refusal_accuracy": 0.8421,
         "groundedness": 0.9333,
-        "fact_recall": 0.8667
+        "fact_recall": 0.9333
       }
     },
     "judge_canary_accuracy": 1.0,
     "judge_trusted": true,
-    "mean_latency_s": 23.27
+    "mean_latency_s": 26.04
   }
 }

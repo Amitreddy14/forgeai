@@ -57,7 +57,7 @@ class AgentTurn(BaseModel):
     valid_citations: list[Citation] = Field(default_factory=list)
     invalid_citations: list[Citation] = Field(default_factory=list)
     grounded: bool = False
-    refused_by: Literal["model", "threshold"] | None = None
+    refused_by: Literal["model", "threshold", "grounding"] | None = None
     repaired: bool = False
     error: str | None = None
     latency_s: float = 0.0
@@ -281,6 +281,19 @@ class AgentRuntime:
                 )
                 valid, invalid = verify_citations(answer.citations, hits)
                 turn.repaired = True
+
+            if not answer.refused and not valid and not tool_evidence:
+                # Ship evidence or nothing: after the repair, an answer with no verified
+                # quote and no tool result is withdrawn rather than shown to the user.
+                turn.answer = AgentAnswer(
+                    answer=defn.refusal.message,
+                    refused=True,
+                    refusal_reason="the answer could not be grounded in the documents or tools",
+                )
+                turn.refused_by = "grounding"
+                turn.invalid_citations = invalid
+                turn.grounded = True
+                return turn
 
             turn.answer = answer
             turn.valid_citations = valid

@@ -2,7 +2,7 @@
 
 ## Headline
 
-**Holdout: 7/8 passed (88%)**, 95% interval 53%-98%. Before optimization: 88%.
+**Holdout: 6/8 passed (75%)**, 95% interval 41%-93%. Before optimization: 75%.
 
 The holdout cases were never shown to the optimizer; it tuned the agent on the dev cases only. With this few cases the interval is wide: treat the number as a range.
 
@@ -10,26 +10,31 @@ The holdout cases were never shown to the optimizer; it tuned the agent on the d
 
 | Agent version | Dev passed | Dev pass rate | Failures |
 |---|---|---|---|
-| v0 | 13/15 | 87% | wrong_refusal 2 |
-| v1 | 14/15 | 93% | wrong_refusal 1 |
+| v0 | 14/15 | 93% | wrong_refusal 1 |
 
-Stopped because: iteration 2 found no patch that improved dev without regressions.
+Stopped because: iteration 1 found no patch that improved dev without regressions.
 
 ## Change log
 
 | Iter | Category | Change | Targets | Dev before -> after | Decision |
 |---|---|---|---|---|---|
-| 1 | wrong_refusal | add refuse topic: "future financial forecasts" | c22, c23 | 87% -> 93% | kept: +1 fixed, none broken |
-| 2 | wrong_refusal | add refuse topic: "company-specific financial strategies" | c23 | 93% -> 87% | reverted: 0 fixed, 1 broken (no net gain) |
-| 2 | wrong_refusal | add rule: "Evaluate the question's context and ensure it aligns with the document's scope before answering or refusing." | c23 | 93% -> 87% | reverted: 0 fixed, 1 broken (no net gain) |
+| 1 | wrong_refusal | add refuse topic: "company's financial forecasts" | c23 | 93% -> 93% | reverted: 0 fixed, 0 broken (no net gain) |
+| 1 | wrong_refusal | add rule: "Evaluate the question against the document's content and context before answering or refusing." | c23 | 93% -> 93% | reverted: 0 fixed, 0 broken (no net gain) |
 
 Why each change was tried:
 
-- iter 1: Involves predictive financial data that could impact budgeting and financial planning processes.
-- iter 2: Involves detailed financial planning and could include future projections or sensitive data.
-- iter 2: This rule ensures the AI considers the question's context, preventing both incorrect answers and unjustified refusals.
+- iter 1: Involves sensitive and proprietary information about the company's future financial plans.
+- iter 1: This ensures the assistant considers the specific details of each query, avoiding incorrect refusals or answers.
 
 ## What still fails, and why
+
+### hallucination (1)
+
+_the answer stated something not supported by the passages._
+
+- **c16** (holdout, multi_doc): How many days of paid sick leave do employees receive per year? Also, how long does the Head of HR have to hold a meeting after receiving an escalated grievance?
+  - judge: facts not stated correctly: within 10 working days
+  - agent said: Employees receive 12 days of paid sick leave per calendar year.
 
 ### wrong_refusal (2)
 
@@ -37,10 +42,10 @@ _the agent refused an answerable question, or answered one it should refuse._
 
 - **c23** (dev, out_of_scope): What are the plans for travel advances in the next quarter?
   - judge: answered a question it must refuse
-  - agent said: The plans for travel advances in the next quarter are as follows: Employees may request a travel advance of up to 75 percent of the estimated trip cost. Advances must be settled by submitting the expense claim within 15 
+  - agent said: Travel advances may be requested for up to 75 percent of the estimated trip cost. These advances must be settled by submitting the expense claim within 15 days of returning. A new advance is not issued while a previous a
 - **c20** (holdout, out_of_scope): I want to know the status of my leave balance this year.
   - judge: answered a question it must refuse
-  - agent said: To determine the status of your leave balance this year, please refer to the HR portal or contact HR. According to the leave policy, shore staff earn 24 working days of paid annual leave per calendar year, accruing at 2 
+  - agent said: To check your leave balance, please log into the HR portal and review your leave summary. The leave accrues at 2 days for each completed month of service, and up to 10 unused annual leave days may be carried forward into
 
 ## How far to trust these numbers
 
@@ -55,17 +60,17 @@ _the agent refused an answerable question, or answered one it should refuse._
 
 - Tools: none (rejected: csv_lookup, calculator)
 - Retrieval: hybrid, top_k 5; chunks of 120 words; refusal threshold 0.00
-- Rules: 3; refuse topics: 4
-- Definition: `agent.v1.json`
+- Rules: 3; refuse topics: 3
+- Definition: `agent.v0.json`
 
 ## Cost
 
-- Tokens used: 93,791 (live calls only)
-- Model calls: 138, of which 54 were replayed from the response cache (identical temperature-0 requests from an earlier run; same output, no tokens spent)
-  - agent: 91,169
-  - critic: 985
+- Tokens used: 64,331 (live calls only)
+- Model calls: 114, of which 56 were replayed from the response cache (identical temperature-0 requests from an earlier run; same output, no tokens spent)
+  - agent: 63,478
+  - critic: 415
   - evalgen: 0
-  - generate: 1,637
+  - generate: 0
   - guard: 0
   - intake: 0
-  - judge: 0
+  - judge: 438

@@ -21,6 +21,6 @@
       </ul>
       {% endif %}
     {% endif %}
-    <small>{{ "%.1f"|format(turn.latency_s) }}s, best passage similarity {{ "%.2f"|format(turn.best_dense) }}{% if turn.refused_by == "threshold" %}, refused by the evidence threshold without asking the model{% endif %}</small>
+    <small>{{ "%.1f"|format(turn.latency_s) }}s, best passage similarity {{ "%.2f"|format(turn.best_dense) }}{% if turn.refused_by == "threshold" %}, refused by the evidence threshold without asking the model{% elif turn.refused_by == "grounding" %}, answer withdrawn because no quote or tool result supported it{% endif %}</small>
   </div>
 </div>

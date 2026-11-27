@@ -152,7 +152,10 @@ async def test_runtime_repairs_a_fabricated_citation_once(tmp_path: Path, docs: 
     runtime, llm = runtime_for(definition, docs, lambda _m: next(replies))
     turn = await runtime.answer("How much sick leave?")
     assert turn.repaired
-    assert not turn.grounded
+    # Still fabricated after the repair: the answer is withdrawn, never shown as fact.
+    assert turn.answer.refused
+    assert turn.refused_by == "grounding"
+    assert "30 days" not in turn.answer.answer
     assert len(turn.invalid_citations) == 1
     assert "not in the cited passage" in llm.calls[1].messages[-1].content
 
@@ -302,3 +305,36 @@ def test_plain_refusal_is_not_a_contract_problem() -> None:
     assert contract_problems(ok, msg, [], [], False) == ""
     short = AgentAnswer(answer="Sorry, I cannot answer that.", refused=True)
     assert contract_problems(short, msg, [], [], False) == ""
+
+
+async def test_citation_without_chunk_id_is_still_verified(tmp_path: Path, docs: Path) -> None:
+    """Real port run: one citation lacked chunk_id and the whole answer failed validation."""
+    definition, _ = await _generated(tmp_path, docs)
+    definition = definition.model_copy(update={"tools": []})
+    reply = json.dumps(
+        {
+            "answer": "24 days a year.",
+            "refused": False,
+            "citations": [{"quote": "Shore staff earn 24 days of annual leave per calendar year"}],
+        }
+    )
+    runtime, _ = runtime_for(definition, docs, lambda _m: reply)
+    turn = await runtime.answer("How many days of annual leave?")
+    assert turn.error is None
+    assert turn.grounded
+    assert turn.valid_citations[0].chunk_id.startswith("leave-policy")
+
+
+async def test_unsupported_non_answer_becomes_a_refusal(tmp_path: Path, docs: Path) -> None:
+    """Real port run: 'the recent changes are not mentioned in the passages', unrefused,
+    uncited. With no evidence at all it must not ship as an answer."""
+    definition, _ = await _generated(tmp_path, docs)
+    definition = definition.model_copy(update={"tools": []})
+    no_threshold = definition.refusal.model_copy(update={"min_evidence_score": 0.0})
+    definition = definition.model_copy(update={"refusal": no_threshold})
+    reply = answer_json(answer="The recent changes are not mentioned in the provided passages.")
+    runtime, _ = runtime_for(definition, docs, lambda _m: reply)
+    turn = await runtime.answer("What changed in the rules recently?")
+    assert turn.answer.refused
+    assert turn.refused_by == "grounding"
+    assert turn.answer.answer == definition.refusal.message
