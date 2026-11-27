@@ -1,0 +1,58 @@
+[
+  {
+    "kind": "correct_terse",
+    "case_id": "c01",
+    "answer": "within 30 days of arising.",
+    "should_pass": true,
+    "judge_passed": true
+  },
+  {
+    "kind": "correct_padded",
+    "case_id": "c01",
+    "answer": "This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. In short: within 30 days of arising. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+    "should_pass": true,
+    "judge_passed": true
+  },
+  {
+    "kind": "confident_omission",
+    "case_id": "c01",
+    "answer": "Yes, absolutely. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+    "should_pass": false,
+    "judge_passed": false
+  },
+  {
+    "kind": "wrong_number",
+    "case_id": "c01",
+    "answer": "According to the policy: within 67 days of arising.",
+    "should_pass": false,
+    "judge_passed": false
+  },
+  {
+    "kind": "correct_terse",
+    "case_id": "c02",
+    "answer": "5 working days.",
+    "should_pass": true,
+    "judge_passed": true
+  },
+  {
+    "kind": "correct_padded",
+    "case_id": "c02",
+    "answer": "This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. In short: 5 working days. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+    "should_pass": true,
+    "judge_passed": true
+  },
+  {
+    "kind": "confident_omission",
+    "case_id": "c02",
+    "answer": "Yes, absolutely. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+    "should_pass": false,
+    "judge_passed": false
+  },
+  {
+    "kind": "wrong_number",
+    "case_id": "c02",
+    "answer": "According to the policy: 17 working days.",
+    "should_pass": false,
+    "judge_passed": false
+  }
+]

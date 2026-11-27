@@ -1,0 +1,26 @@
+<div class="turn">
+  <div class="ask">{{ turn.question }}</div>
+  <div class="reply{% if turn.answer.refused %} refused{% endif %}">
+    {% if turn.error %}
+      <p class="status fail">The agent's reply was not valid output: {{ turn.error[:200] }}</p>
+    {% else %}
+      {% if turn.answer.refused %}<p class="status hold">Refused</p>{% endif %}
+      <p>{{ turn.answer.answer }}</p>
+      {% if turn.answer.refused and turn.answer.refusal_reason %}<small>Reason: {{ turn.answer.refusal_reason }}</small>{% endif %}
+      {% if turn.valid_citations or turn.invalid_citations or turn.tool_calls %}
+      <ul class="evidence">
+        {% for c in turn.valid_citations %}
+        <li><span class="status pass">Quote verified</span> <code>{{ c.chunk_id }}</code><blockquote>{{ c.quote }}</blockquote></li>
+        {% endfor %}
+        {% for c in turn.invalid_citations %}
+        <li><span class="status fail">Quote not in source</span> <code>{{ c.chunk_id }}</code><blockquote>{{ c.quote }}</blockquote></li>
+        {% endfor %}
+        {% for t in turn.tool_calls %}
+        <li><span class="status {{ 'pass' if t.ok else 'fail' }}">Tool {{ t.name }}</span><pre class="code">{{ t.output[:600] }}</pre></li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    {% endif %}
+    <small>{{ "%.1f"|format(turn.latency_s) }}s, best passage similarity {{ "%.2f"|format(turn.best_dense) }}{% if turn.refused_by == "threshold" %}, refused by the evidence threshold without asking the model{% endif %}</small>
+  </div>
+</div>

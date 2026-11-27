@@ -1,0 +1,21 @@
+{
+  "checks": [
+    {
+      "topic": "Port rules and notices",
+      "kind": "documents",
+      "claimed": "supported",
+      "verdict": "supported",
+      "chunk_id": "port-notices:p1:c1",
+      "quote": "The notification includes the crew list, cargo manifest, dangerous goods declaration, ISPS security information and the last 10 ports of call.",
+      "quote_verified": true,
+      "retrieved": [
+        "port-notices:p1:c0",
+        "port-notices:p1:c1",
+        "port-notices:p2:c8",
+        "berths:r2",
+        "berths:r9"
+      ],
+      "note": ""
+    }
+  ]
+}

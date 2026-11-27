@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% set nav = "builds" %}
+{% block title %}Builds · ForgeAI{% endblock %}
+{% block content %}
+<div class="title-row page-head">
+  <div>
+    <h1>Builds</h1>
+    <p class="quiet">Each build turns a brief and a folder of documents into an agent, then tests it on questions it never trained on.</p>
+  </div>
+  {% if settings.allow_builds %}<a class="button" href="/new">Start a build</a>{% endif %}
+</div>
+{% if runs %}
+<table class="register">
+  <thead>
+    <tr><th>Agent</th><th>Holdout</th><th class="hide-sm">Dev</th><th class="hide-sm">Tools</th><th>Status</th></tr>
+  </thead>
+  <tbody>
+  {% for run in runs %}
+    <tr>
+      <td class="agent"><a href="/runs/{{ run.run_id }}">{{ run.name }}</a><br><small>{{ run.run_id }}</small></td>
+      {% if run.scorecard %}
+      <td class="num">{{ run.scorecard.holdout_passed }}/{{ run.scorecard.holdout_cases }} <small>({{ run.scorecard.holdout_after|pct }})</small></td>
+      <td class="num hide-sm">{{ run.scorecard.iterations[-1].dev_passed }}/{{ run.scorecard.iterations[-1].dev_cases }}</td>
+      {% else %}<td class="num">-</td><td class="num hide-sm">-</td>{% endif %}
+      <td class="hide-sm">{% if run.agent %}{{ run.agent.tool_names|join(", ") or "none" }}{% else %}-{% endif %}</td>
+      <td>
+        {% if run.failed %}<span class="status fail">Stopped</span>
+        {% elif not run.complete %}<span class="status run">Building</span>
+        {% elif run.scorecard.holdout_after is not none and run.scorecard.holdout_after >= settings.pass_mark %}<span class="status pass">Passed</span>
+        {% else %}<span class="status hold">Below pass mark</span>{% endif %}
+      </td>
+    </tr>
+  {% endfor %}
+  </tbody>
+</table>
+{% else %}
+<div class="empty">
+  <h2>No builds yet</h2>
+  <p>Start one from a brief and a folder of documents, or run <code>forge build</code> on your machine.</p>
+</div>
+{% endif %}
+{% endblock %}

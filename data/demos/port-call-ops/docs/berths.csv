@@ -1,0 +1,15 @@
+berth_id,port,terminal,berth_type,max_loa_m,max_draft_m,max_beam_m,max_dwt_t,cargo,daily_berth_hire_usd
+KOC-Q1,Kochi,Ernakulam Wharf,general cargo,185,9.1,30,25000,breakbulk and project cargo,2400
+KOC-Q2,Kochi,Ernakulam Wharf,general cargo,170,8.5,28,18000,bagged cargo and steel,2100
+KOC-Q5,Kochi,Mattancherry Wharf,multipurpose,220,10.4,32,40000,breakbulk and containers,3150
+KOC-CT1,Kochi,Vallarpadam Container Terminal,container,350,14.5,48,110000,containers,6800
+KOC-CT2,Kochi,Vallarpadam Container Terminal,container,300,14.5,45,85000,containers,6200
+KOC-LB1,Kochi,Puthuvype LNG Jetty,liquid bulk,295,13.2,47,120000,LNG,7400
+KOC-OT1,Kochi,Cochin Oil Terminal,liquid bulk,250,12.5,44,90000,crude and products,5600
+KOC-CR1,Kochi,Ernakulam Wharf,cruise,300,10.0,38,0,cruise passengers,4500
+MUM-B3,Mumbai,Indira Dock,general cargo,160,8.0,26,15000,breakbulk,2300
+MUM-B7,Mumbai,Indira Dock,multipurpose,200,9.6,30,30000,steel and project cargo,3000
+MUM-JD4,Mumbai,Jawahar Dweep,liquid bulk,280,13.0,46,125000,crude oil,6900
+MUM-PP1,Mumbai,Pir Pau,liquid bulk,210,11.0,34,45000,chemicals and products,4300
+MUM-OCT1,Mumbai,Offshore Container Terminal,container,330,14.0,48,100000,containers,6600
+MUM-CR2,Mumbai,Ballard Pier,cruise,300,9.5,38,0,cruise passengers,4800

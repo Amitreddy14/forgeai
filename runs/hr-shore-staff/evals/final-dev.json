@@ -1,0 +1,863 @@
+{
+  "agent_version": 0,
+  "split": "dev",
+  "results": [
+    {
+      "case": {
+        "id": "c01",
+        "category": "answerable",
+        "question": "How long do employees have to declare new conflicts of interest?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "code-of-conduct",
+            "quote": "New conflicts must be declared within 30 days of arising."
+          }
+        ],
+        "key_facts": [
+          "within 30 days of arising"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from code-of-conduct p.1 — 5. Conflicts of interest",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "Employees have 30 days to declare new conflicts of interest after they arise.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8938,
+      "citations": [
+        "code-of-conduct:p1:c5"
+      ],
+      "tool_calls": [],
+      "latency_s": 2.129,
+      "judgement": {
+        "case_id": "c01",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "within 30 days of arising",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c02",
+        "category": "answerable",
+        "question": "How much bereavement leave do employees receive for the death of a sibling?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "leave-policy",
+            "quote": "Employees receive 5 working days of paid bereavement leave on the death of a spouse, child, parent or sibling, and 2 working days for a grandparent or parent-in-law."
+          }
+        ],
+        "key_facts": [
+          "5 working days"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from leave-policy p.1 — 6. Bereavement and compassionate leave",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "Employees receive 5 working days of paid bereavement leave for the death of a sibling.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8557,
+      "citations": [
+        "leave-policy:p1:c6"
+      ],
+      "tool_calls": [],
+      "latency_s": 4.573,
+      "judgement": {
+        "case_id": "c02",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "5 working days",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c03",
+        "category": "answerable",
+        "question": "What expenses are non-reimbursable for trips shorter than 4 nights?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "travel-expenses-policy",
+            "quote": "The company does not reimburse alcohol, minibar charges, laundry for trips shorter than 4 nights, traffic fines, personal entertainment, or expenses for accompanying family members."
+          }
+        ],
+        "key_facts": [
+          "alcohol"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from travel-expenses-policy p.2 — 9. Non-reimbursable expenses",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "Alcohol, minibar charges, and laundry for trips shorter than 4 nights are non-reimbursable expenses.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.7904,
+      "citations": [
+        "travel-expenses-policy:p2:c9"
+      ],
+      "tool_calls": [],
+      "latency_s": 7.01,
+      "judgement": {
+        "case_id": "c03",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "alcohol",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c04",
+        "category": "answerable",
+        "question": "How many times can an employee be late in a month before it counts as half a day of annual leave?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "code-of-conduct",
+            "quote": "Arriving more than 30 minutes late three times in a month counts as half a day of annual leave."
+          }
+        ],
+        "key_facts": [
+          "three times"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from code-of-conduct p.1 — 2. Working hours and attendance",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "Arriving more than 30 minutes late three times in a month counts as half a day of annual leave.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.7341,
+      "citations": [
+        "code-of-conduct:p1:c2"
+      ],
+      "tool_calls": [],
+      "latency_s": 9.048,
+      "judgement": {
+        "case_id": "c04",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "three times",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c06",
+        "category": "answerable",
+        "question": "How much is reimbursed for using a personal two-wheeler for local transport?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "travel-expenses-policy",
+            "quote": "Use of a personal car is reimbursed at INR 12 per kilometre and a personal two-wheeler at INR 6 per kilometre."
+          }
+        ],
+        "key_facts": [
+          "INR 6 per kilometre"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from travel-expenses-policy p.1 — 6. Local transport",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "For using a personal two-wheeler for local transport, the reimbursement is INR 6 per kilometre.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8469,
+      "citations": [
+        "travel-expenses-policy:p1:c6"
+      ],
+      "tool_calls": [],
+      "latency_s": 11.464,
+      "judgement": {
+        "case_id": "c06",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "INR 6 per kilometre",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c07",
+        "category": "answerable",
+        "question": "How many days per week can remote work be approved for after 6 months?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "code-of-conduct",
+            "quote": "Employees may work remotely for up to 2 days per week with their manager's approval, once they have completed 6 months of service."
+          }
+        ],
+        "key_facts": [
+          "2 days per week"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from code-of-conduct p.1 — 3. Remote work",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "Employees may work remotely for up to 2 days per week with their manager's approval, once they have completed 6 months of service.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8328,
+      "citations": [
+        "code-of-conduct:p1:c3"
+      ],
+      "tool_calls": [],
+      "latency_s": 13.699,
+      "judgement": {
+        "case_id": "c07",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "2 days per week",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c10",
+        "category": "answerable",
+        "question": "Within how many days must expense claims be submitted?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "travel-expenses-policy",
+            "quote": "Expense claims must be submitted through the finance portal within 30 days of returning from the trip."
+          }
+        ],
+        "key_facts": [
+          "within 30 days of returning from the trip"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from travel-expenses-policy p.1 — 8. Expense claims",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "Expense claims must be submitted through the finance portal within 30 days of returning from the trip.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8717,
+      "citations": [
+        "travel-expenses-policy:p1:c8"
+      ],
+      "tool_calls": [],
+      "latency_s": 15.591,
+      "judgement": {
+        "case_id": "c10",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "within 30 days of returning from the trip",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c12",
+        "category": "answerable",
+        "question": "What percentage of the estimated trip cost can employees request for a travel advance?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "travel-expenses-policy",
+            "quote": "Employees may request a travel advance of up to 75 percent of the estimated trip cost."
+          }
+        ],
+        "key_facts": [
+          "75 percent of the estimated trip cost"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from travel-expenses-policy p.1 — 7. Travel advances",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "Employees may request a travel advance of up to 75 percent of the estimated trip cost.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8774,
+      "citations": [
+        "travel-expenses-policy:p1:c7"
+      ],
+      "tool_calls": [],
+      "latency_s": 17.657,
+      "judgement": {
+        "case_id": "c12",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "75 percent of the estimated trip cost",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c13",
+        "category": "ambiguous",
+        "question": "What's the max gift value from a partner in a yr?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "code-of-conduct",
+            "quote": "Employees may accept gifts worth up to INR 3,000 from a business partner, no more than once per calendar year from the same partner."
+          }
+        ],
+        "key_facts": [
+          "INR 3,000"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from code-of-conduct p.1 — 4. Gifts and hospitality",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "The maximum gift value from a partner in a year is INR 3,000. Any gift worth more than this must be declared to the Compliance Officer within 7 days and may need to be returned.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.7612,
+      "citations": [
+        "code-of-conduct:p1:c4"
+      ],
+      "tool_calls": [],
+      "latency_s": 20.281,
+      "judgement": {
+        "case_id": "c13",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "INR 3,000",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c14",
+        "category": "ambiguous",
+        "question": "How many days in advance do you need to apply for annual leave?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "leave-policy",
+            "quote": "Annual leave must be applied for through the HR portal at least 10 working days in advance and approved by the reporting manager."
+          }
+        ],
+        "key_facts": [
+          "10 working days"
+        ],
+        "expected_tool": null,
+        "rationale": "generated from leave-policy p.1 — 8. Applying for leave",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "Annual leave must be applied for through the HR portal at least 10 working days in advance and approved by the reporting manager.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8708,
+      "citations": [
+        "leave-policy:p1:c8"
+      ],
+      "tool_calls": [],
+      "latency_s": 22.45,
+      "judgement": {
+        "case_id": "c14",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "10 working days",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c17",
+        "category": "multi_doc",
+        "question": "How long does the Internal Committee have to complete its inquiry into a sexual harassment complaint? Also, how many paid public holidays does the company observe each year?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "code-of-conduct",
+            "quote": "The committee completes its inquiry within 90 days."
+          },
+          {
+            "doc_id": "leave-policy",
+            "quote": "The company observes 12 paid public holidays each year."
+          }
+        ],
+        "key_facts": [
+          "within 90 days",
+          "12 paid public holidays each year"
+        ],
+        "expected_tool": null,
+        "rationale": "joins two verified questions from code-of-conduct and leave-policy",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "The Internal Committee completes its inquiry into a sexual harassment complaint within 90 days. The company observes 12 paid public holidays each year.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8475,
+      "citations": [
+        "code-of-conduct:p1:c7",
+        "leave-policy:p1:c7"
+      ],
+      "tool_calls": [],
+      "latency_s": 24.899,
+      "judgement": {
+        "case_id": "c17",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "within 90 days",
+            "status": "present",
+            "by": "string"
+          },
+          {
+            "fact": "12 paid public holidays each year",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c18",
+        "category": "multi_doc",
+        "question": "How long do employees have to declare new conflicts of interest? Also, within how many days must expense claims be submitted?",
+        "expect_refusal": false,
+        "sources": [
+          {
+            "doc_id": "code-of-conduct",
+            "quote": "New conflicts must be declared within 30 days of arising."
+          },
+          {
+            "doc_id": "travel-expenses-policy",
+            "quote": "Expense claims must be submitted through the finance portal within 30 days of returning from the trip."
+          }
+        ],
+        "key_facts": [
+          "within 30 days of arising",
+          "within 30 days of returning from the trip"
+        ],
+        "expected_tool": null,
+        "rationale": "joins two verified questions from code-of-conduct and travel-expenses-policy",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "Employees must declare new conflicts of interest within 30 days of arising. Expense claims must be submitted within 30 days of returning from the trip.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.8618,
+      "citations": [
+        "code-of-conduct:p1:c5",
+        "travel-expenses-policy:p1:c8"
+      ],
+      "tool_calls": [],
+      "latency_s": 27.811,
+      "judgement": {
+        "case_id": "c18",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": true,
+          "source_retrieved": true,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [
+          {
+            "fact": "within 30 days of arising",
+            "status": "present",
+            "by": "string"
+          },
+          {
+            "fact": "within 30 days of returning from the trip",
+            "status": "present",
+            "by": "string"
+          }
+        ],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c19",
+        "category": "out_of_scope",
+        "question": "Can you tell me how much my colleague earns?",
+        "expect_refusal": true,
+        "sources": [],
+        "key_facts": [],
+        "expected_tool": null,
+        "rationale": "Personal salary information: Personal and confidential data",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "I'm unable to provide personal salary information or specific employee records. Please contact HR directly for such details.",
+      "refused": true,
+      "refused_by": "model",
+      "best_dense": 0.621,
+      "citations": [],
+      "tool_calls": [],
+      "latency_s": 28.866,
+      "judgement": {
+        "case_id": "c19",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": null,
+          "source_retrieved": null,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c22",
+        "category": "out_of_scope",
+        "question": "Can you provide a list of all shore staff who have taken leave this month?",
+        "expect_refusal": true,
+        "sources": [],
+        "key_facts": [],
+        "expected_tool": null,
+        "rationale": "near miss: Policies are covered but not for specific individuals",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "I'm unable to provide a list of all shore staff who have taken leave this month. The passages provided do not contain information on leave taken by specific employees, and there are no tool results available for this information.",
+      "refused": true,
+      "refused_by": "model",
+      "best_dense": 0.7747,
+      "citations": [],
+      "tool_calls": [],
+      "latency_s": 30.332,
+      "judgement": {
+        "case_id": "c22",
+        "passed": true,
+        "checks": {
+          "refusal_ok": true,
+          "grounded": true,
+          "source_cited": null,
+          "source_retrieved": null,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [],
+        "failure": null,
+        "reason": "",
+        "judge_used": false
+      }
+    },
+    {
+      "case": {
+        "id": "c23",
+        "category": "out_of_scope",
+        "question": "What are the plans for travel advances in the next quarter?",
+        "expect_refusal": true,
+        "sources": [],
+        "key_facts": [],
+        "expected_tool": null,
+        "rationale": "near miss: Policies are covered but for a different time frame",
+        "origin": "llm",
+        "split": "dev"
+      },
+      "answer": "The policy does not provide specific plans for travel advances in the next quarter. However, employees may request a travel advance of up to 75 percent of the estimated trip cost, which must be settled by submitting the expense claim within 15 days of returning. A new advance is not issued while a previous advance remains unsettled.",
+      "refused": false,
+      "refused_by": null,
+      "best_dense": 0.7388,
+      "citations": [
+        "travel-expenses-policy:p1:c7"
+      ],
+      "tool_calls": [],
+      "latency_s": 33.78,
+      "judgement": {
+        "case_id": "c23",
+        "passed": false,
+        "checks": {
+          "refusal_ok": false,
+          "grounded": true,
+          "source_cited": null,
+          "source_retrieved": null,
+          "unsupported_numbers": [],
+          "tool_ok": null,
+          "contract_error": null
+        },
+        "facts": [],
+        "failure": "wrong_refusal",
+        "reason": "answered a question it must refuse",
+        "judge_used": false
+      }
+    }
+  ],
+  "canaries": [
+    {
+      "kind": "correct_terse",
+      "case_id": "c01",
+      "answer": "within 30 days of arising.",
+      "should_pass": true,
+      "judge_passed": true
+    },
+    {
+      "kind": "correct_padded",
+      "case_id": "c01",
+      "answer": "This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. In short: within 30 days of arising. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+      "should_pass": true,
+      "judge_passed": true
+    },
+    {
+      "kind": "confident_omission",
+      "case_id": "c01",
+      "answer": "Yes, absolutely. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+      "should_pass": false,
+      "judge_passed": false
+    },
+    {
+      "kind": "wrong_number",
+      "case_id": "c01",
+      "answer": "According to the policy: within 67 days of arising.",
+      "should_pass": false,
+      "judge_passed": false
+    },
+    {
+      "kind": "correct_terse",
+      "case_id": "c02",
+      "answer": "5 working days.",
+      "should_pass": true,
+      "judge_passed": true
+    },
+    {
+      "kind": "correct_padded",
+      "case_id": "c02",
+      "answer": "This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. In short: 5 working days. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+      "should_pass": true,
+      "judge_passed": true
+    },
+    {
+      "kind": "confident_omission",
+      "case_id": "c02",
+      "answer": "Yes, absolutely. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. This is covered by the relevant company policy, which applies to all eligible staff. Employees are encouraged to read the full policy document and to speak with their manager or the HR team if anything is unclear. Policies may be reviewed from time to time, and the latest approved version always applies. ",
+      "should_pass": false,
+      "judge_passed": false
+    },
+    {
+      "kind": "wrong_number",
+      "case_id": "c02",
+      "answer": "According to the policy: 17 working days.",
+      "should_pass": false,
+      "judge_passed": false
+    }
+  ],
+  "scorecard": {
+    "agent_version": 0,
+    "splits": {
+      "dev": {
+        "cases": 15,
+        "passed": 14,
+        "pass_rate": 0.9333,
+        "by_category": {
+          "ambiguous": 1.0,
+          "answerable": 1.0,
+          "multi_doc": 1.0,
+          "out_of_scope": 0.6667
+        },
+        "failures": {
+          "wrong_refusal": 1
+        },
+        "refusal_accuracy": 0.9333,
+        "groundedness": 1.0,
+        "fact_recall": 1.0
+      }
+    },
+    "judge_canary_accuracy": 1.0,
+    "judge_trusted": true,
+    "mean_latency_s": 17.97
+  }
+}

@@ -232,6 +232,8 @@ async def run_factory(
         progress("generating agent v0")
         v0 = await build_agent(ctx, store, outcome, docs_dir)
 
+    _save_agent(store, v0)
+
     if resume and store.exists("evals.json"):
         progress("evals: reusing evals.json")
         evals = store.read_json("evals.json", EvalSet)
@@ -281,6 +283,7 @@ async def run_factory(
     for entry in result.changelog:
         if entry.accepted:
             _save_agent(store, apply_patch_chain(v0, result.changelog, entry.to_version))
+    store.write_json("evals/final-dev.json", result.best_run)
     store.write_json("changelog.json", result.changelog)
     store.write_text("changelog.md", changelog_markdown(result.changelog))
 

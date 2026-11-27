@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+{% from "_loadline.html" import loadline %}
+{% set nav = "builds" %}
+{% block title %}{{ run.name }} · ForgeAI{% endblock %}
+{% block content %}
+<div class="survey">
+  <aside class="log" aria-label="Survey log">
+    <h2>Survey log</h2>
+    <ol>
+      {% for s in run.stages %}
+      <li class="{{ 'done' if s.done else ('active' if s.active else 'todo') }}">
+        <span class="stage">{{ s.name }}</span><span class="hint">{{ s.hint }}</span>
+      </li>
+      {% endfor %}
+    </ol>
+  </aside>
+
+  <article class="sheet">
+    <section>
+      <p class="kicker">Certificate of survey &mdash; build {{ run.run_id }}</p>
+      <div class="title-row">
+        <h1>{{ run.name }}</h1>
+        {% if run.agent %}<a class="button" href="/runs/{{ run.run_id }}/chat">Chat with this agent</a>{% endif %}
+      </div>
+      {% if run.requirements %}<p class="quiet">{{ run.requirements.purpose }}</p>{% endif %}
+    </section>
+
+    {% if not run.complete %}
+    <section>
+      <h2>{{ "Build stopped" if run.failed else "Survey in progress" }}</h2>
+      {% include "_progress.html" %}
+    </section>
+    {% else %}
+    {% set sc = run.scorecard %}
+    <section>
+      <div class="loadline">
+        {{ loadline(sc.holdout_after or 0, sc.iterations[-1].dev_pass_rate, settings.pass_mark, sc.holdout_ci95[0], sc.holdout_ci95[1]) }}
+        <div>
+          <p class="kicker">Holdout score, on questions the optimizer never saw</p>
+          <div class="figure">{{ sc.holdout_passed }}/{{ sc.holdout_cases }}</div>
+          <dl>
+            <dt>Pass rate</dt><dd>{{ sc.holdout_after|pct }} &nbsp;<small>95% range {{ sc.holdout_ci95[0]|pct }} to {{ sc.holdout_ci95[1]|pct }} (shaded)</small></dd>
+            <dt>Before optimizing</dt><dd>{{ sc.holdout_before|pct }}</dd>
+            <dt>Dev, by version</dt><dd>{% for it in sc.iterations %}v{{ it.version }} {{ it.dev_passed }}/{{ it.dev_cases }}{% if not loop.last %} &rarr; {% endif %}{% endfor %}</dd>
+            <dt>Judge</dt><dd>{% if sc.judge_canary_accuracy is not none %}{{ sc.judge_canary_accuracy|pct }} of planted answers graded correctly{% if sc.judge_trusted %} <span class="status pass">trusted</span>{% else %} <span class="status fail">not trusted</span>{% endif %}{% else %}no canaries{% endif %}</dd>
+            <dt>Stopped because</dt><dd>{{ sc.stop_reason }}</dd>
+          </dl>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Conditions</h2>
+      {% set fails = run.open_failures %}
+      {% if fails %}
+      <p class="quiet">Every test case the agent still fails, with the judge's reason. These are the open items before this agent should be trusted.</p>
+      <ol class="conditions">
+        {% for r in fails %}
+        <li>
+          <div>
+            <div class="q">{{ r.case.question }}</div>
+            <p><span class="tag">{{ r.case.split }}</span><span class="tag">{{ r.case.category }}</span><span class="tag">{{ r.judgement.failure }}</span></p>
+            <p>{{ r.judgement.reason }}</p>
+            {% if r.answer %}<small>Agent said: {{ r.answer[:260] }}{% if r.answer|length > 260 %}&hellip;{% endif %}</small>{% endif %}
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+      {% else %}
+      <p>No test case fails. Read the eval set's limits in the report before trusting that.</p>
+      {% endif %}
+    </section>
+    {% endif %}
+
+    {% if run.agent %}
+    {% set a = run.agent %}
+    <section>
+      <h2>Particulars</h2>
+      <div class="particulars">
+        <div>
+          <h3>Tools</h3>
+          <ul>
+            {% for t in a.tools %}<li><strong>{{ t.name }}</strong>: {{ t.evidence }}</li>{% else %}<li>None attached. No requirement needs one.</li>{% endfor %}
+            {% for t in a.rejected_tools %}<li><s class="rejected">{{ t.name }}</s>: rejected, {{ t.reason }}</li>{% endfor %}
+          </ul>
+        </div>
+        <div>
+          <h3>Retrieval</h3>
+          <ul>
+            <li>{{ a.retrieval.mode }} search, top {{ a.retrieval.top_k }} passages</li>
+            <li>chunks of {{ a.chunking.chunk_words }} words, {{ a.chunking.overlap_words }} overlap</li>
+            <li>refuses below similarity {{ "%.2f"|format(a.refusal.min_evidence_score) }}</li>
+          </ul>
+        </div>
+        {% if run.requirements %}
+        <div>
+          <h3>Flagged gaps</h3>
+          <ul>{% for g in run.requirements.flagged_gaps %}<li>{{ g.topic }}</li>{% else %}<li>None. The documents cover every topic asked for.</li>{% endfor %}</ul>
+        </div>
+        <div>
+          <h3>Refuses</h3>
+          <ul>{% for t in a.refusal.refuse_topics %}<li>{{ t }}</li>{% endfor %}</ul>
+        </div>
+        {% endif %}
+      </div>
+    </section>
+    {% endif %}
+
+    {% if run.changelog %}
+    <section>
+      <h2>Optimizer log</h2>
+      <table class="data">
+        <thead><tr><th>Iter</th><th>Change</th><th>Fixes</th><th>Dev</th><th>Decision</th></tr></thead>
+        <tbody>
+        {% for e in run.changelog %}
+          <tr class="{{ 'kept' if e.accepted else 'reverted' }}">
+            <td>{{ e.iteration }}</td>
+            <td>{{ e.patch.describe() }}<br><small>{{ e.patch.why }}</small></td>
+            <td>{{ e.patch.category }}<br><small>{{ e.patch.targets|join(", ") }}</small></td>
+            <td class="num">{{ e.dev_before|pct }} &rarr; {{ e.dev_after|pct }}</td>
+            <td>{% if e.accepted %}<span class="status pass">kept</span>{% else %}<span class="status run">reverted</span>{% endif %}<br><small>{{ e.decision }}</small></td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </section>
+    {% endif %}
+
+    {% if run.complete %}
+    <section>
+      <details class="report">
+        <summary>Full report</summary>
+        <div class="prose">{{ run.report_html()|safe }}</div>
+      </details>
+    </section>
+    {% endif %}
+    {% if run.requirements %}
+    <section>
+      <details class="report">
+        <summary>Requirements</summary>
+        <div class="prose">{{ run.requirements_html()|safe }}</div>
+      </details>
+    </section>
+    {% endif %}
+    <section>
+      <details class="report">
+        <summary>All artifacts ({{ run.artifacts()|length }})</summary>
+        <ul class="files">
+          {% for f in run.artifacts() %}{% if f.endswith(".json") or f.endswith(".md") %}<li><a href="/runs/{{ run.run_id }}/files/{{ f }}">{{ f }}</a></li>{% endif %}{% endfor %}
+        </ul>
+      </details>
+    </section>
+  </article>
+</div>
+{% endblock %}

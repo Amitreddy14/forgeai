@@ -1,0 +1,79 @@
+[
+  {
+    "iteration": 1,
+    "patch": {
+      "op": {
+        "op": "add_refuse_topic",
+        "topic": "future operational schedules"
+      },
+      "category": "wrong_refusal",
+      "targets": [
+        "c26"
+      ],
+      "why": "Involves specific vessel's future plans and data, which are proprietary and sensitive.",
+      "source": "critic"
+    },
+    "from_version": 0,
+    "to_version": 1,
+    "accepted": true,
+    "dev_before": 0.8421,
+    "dev_after": 0.8947,
+    "fixed": [
+      "c18"
+    ],
+    "broke": [],
+    "decision": "kept: +1 fixed, none broken",
+    "tokens": 27574
+  },
+  {
+    "iteration": 2,
+    "patch": {
+      "op": {
+        "op": "add_refuse_topic",
+        "topic": "vessel-specific inquiries"
+      },
+      "category": "wrong_refusal",
+      "targets": [
+        "c26"
+      ],
+      "why": "covers questions about specific vessels, their status, or schedules",
+      "source": "critic"
+    },
+    "from_version": 1,
+    "to_version": null,
+    "accepted": false,
+    "dev_before": 0.8947,
+    "dev_after": 0.8947,
+    "fixed": [],
+    "broke": [],
+    "decision": "reverted: 0 fixed, 0 broken (no net gain)",
+    "tokens": 27481
+  },
+  {
+    "iteration": 2,
+    "patch": {
+      "op": {
+        "op": "add_rule",
+        "text": "Evaluate the question's intent and context; refuse answers that require external information or actions, and provide accurate, document-based responses for all other questions."
+      },
+      "category": "wrong_refusal",
+      "targets": [
+        "c21",
+        "c26"
+      ],
+      "why": "Clarifies the distinction between refusing questions and providing accurate answers based on available documents.",
+      "source": "critic"
+    },
+    "from_version": 1,
+    "to_version": null,
+    "accepted": false,
+    "dev_before": 0.8947,
+    "dev_after": 0.8421,
+    "fixed": [],
+    "broke": [
+      "c18"
+    ],
+    "decision": "reverted: 0 fixed, 1 broken (no net gain)",
+    "tokens": 28383
+  }
+]

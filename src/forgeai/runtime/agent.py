@@ -72,7 +72,10 @@ def system_prompt(defn: AgentDefinition) -> str:
     refuse = "\n".join(f"- {t}" for t in defn.refusal.refuse_topics) or "- (none listed)"
     tools = [REGISTRY[t.name] for t in defn.tools if t.name in REGISTRY]
     tools_section = (
-        "\nTools were called for you before this answer; their results are in TOOL RESULTS.\n"
+        "\nTOOLS: " + ", ".join(t.name for t in tools) + ". They were called for you before this "
+        "answer and their output is in TOOL RESULTS. Tool results are live, trusted evidence "
+        "(forecasts, table rows, calculations): when a question is about what a tool returned, "
+        "answer from the tool result even if the documents do not cover it, and do not refuse.\n"
         if tools
         else ""
     )

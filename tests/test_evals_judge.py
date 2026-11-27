@@ -152,9 +152,9 @@ def test_template_cases_compute_arithmetic(tmp_path: Path) -> None:
         audience="a",
         tone="t",
         must_answer=[
-            Topic(topic="berths", answered_from="tool", tool_hint="table_lookup"),
-            Topic(topic="dues", answered_from="tool", tool_hint="arithmetic"),
-            Topic(topic="weather", answered_from="tool", tool_hint="weather"),
+            Topic(topic="berths", answered_from="tool", tool_hints=["table_lookup"]),
+            Topic(topic="dues", answered_from="tool", tool_hints=["arithmetic"]),
+            Topic(topic="weather", answered_from="tool", tool_hints=["weather"]),
         ],
         must_refuse=[{"topic": "legal"}],  # type: ignore[list-item]
         brief="b",
@@ -461,16 +461,16 @@ async def test_in_scope_question_cannot_pose_as_out_of_scope(tmp_path: Path) -> 
                     ]
                 }
             )
-        if task == "guard.topic":
+        if task == "evals.answerability":
             if "annual leave" in messages[-1].content.split("PASSAGES:")[0]:
                 return json.dumps(
                     {
-                        "status": "supported",
+                        "answered": True,
                         "chunk_id": "?",
                         "quote": "Shore staff earn 24 days of annual leave per calendar year",
                     }
                 )
-            return json.dumps({"status": "unsupported"})
+            return json.dumps({"answered": False})
         raise AssertionError(task)
 
     ctx = ForgeContext(
@@ -487,3 +487,145 @@ async def test_in_scope_question_cannot_pose_as_out_of_scope(tmp_path: Path) -> 
     kept = await _refusal_cases(ctx, req, chunks, 2, rejected)
     assert [c.case.question for c in kept] == ["What is the CEO's home address?"]
     assert "answerable from the documents" in rejected[0].reason
+
+
+def test_composed_multi_doc_joins_verified_cases_from_two_documents() -> None:
+    from forgeai.stages.evalgen import _Candidate, compose_multi_doc
+
+    def single(doc: str, q: str, fact: str) -> _Candidate:
+        return _Candidate(
+            EvalCase(
+                id="",
+                category="answerable",
+                question=q,
+                key_facts=[fact],
+                sources=[ExpectedSource(doc_id=doc, quote=f"{fact} is the rule here.")],
+            ),
+            [f"{fact} is the rule here."],
+        )
+
+    singles = [
+        single("leave", "How many days of sick leave do staff get?", "12 days"),
+        single("leave", "How many days of annual leave do staff get?", "24 days"),
+        single("travel", "What is the daily allowance for domestic travel?", "INR 1,800"),
+    ]
+    multi, unused = compose_multi_doc(singles, 2, HashEmbedder())
+    assert len(multi) == 1  # only one cross-document pair is possible without reuse
+    case = multi[0].case
+    assert {s.doc_id for s in case.sources} == {"leave", "travel"}
+    assert "? Also, " in case.question
+    assert len(case.key_facts) == 2
+    assert len(unused) == 1
+
+
+def test_wrong_label_out_of_scope_caught_by_similarity_backstop(tmp_path: Path) -> None:
+    """Real HR run: qwen said 'How do we handle sick leave for our shore staff?' was not
+    answered by the documents. Its similarity to the documents gives it away."""
+    import asyncio
+    import json
+
+    from forgeai.ingest import chunk_corpus
+    from forgeai.schemas.corpus import ChunkingConfig
+    from forgeai.schemas.requirements import Requirements
+    from forgeai.stages.evalgen import _refusal_cases
+    from tests import scripted
+
+    def handler(messages):  # type: ignore[no-untyped-def]
+        task = scripted._task(messages)
+        if task == "evals.out_of_scope":
+            return json.dumps(
+                {
+                    "questions": [
+                        {
+                            "question": "How do employees get paid sick leave and a medical certificate?"
+                        },
+                        {"question": "What is the CEO's home address?"},
+                    ]
+                }
+            )
+        return json.dumps({"answered": False})  # a lenient model: says nothing is answered
+
+    ctx = ForgeContext(
+        llm=FakeLLM(responder=handler), models=ModelRoles("gen", "judge"), embedder=HashEmbedder()
+    )
+    chunks = chunk_corpus(load_folder(build_docs_folder(tmp_path)), ChunkingConfig())
+    # No "Sick leave" must-answer topic here, so only the similarity backstop can catch it.
+    topics = [t for t in scripted.REQUIREMENTS["must_answer"] if "sick" not in str(t).lower()]
+    req = Requirements.model_validate(
+        {**scripted.REQUIREMENTS, "must_answer": topics, "brief": BRIEF}
+    )
+    rejected: list = []  # type: ignore[type-arg]
+    kept = asyncio.run(_refusal_cases(ctx, req, chunks, 2, rejected, similarity_floor=0.3))
+    assert [c.case.question for c in kept] == ["What is the CEO's home address?"]
+    assert "answerable-question floor" in rejected[0].reason
+
+
+@pytest.mark.parametrize(
+    ("question", "topic"),
+    [
+        # From the second real HR run: labelled out-of-scope, but plainly in scope.
+        ("What are the HR policies for remote work?", "Remote work policy"),
+        ("How do we handle gifts and hospitality for our clients?", "Gifts and hospitality policy"),
+        # Real refusals that mention an in-scope topic: personal, future, or an action.
+        ("I want to know the status of my leave balance this year.", None),
+        ("What are the plans for travel advances in the next quarter?", None),
+        ("Could you tell me about the recent changes in remote work rules?", None),
+        ("How many days has John taken off this year?", None),
+    ],
+)
+def test_in_scope_topic(question: str, topic: str | None) -> None:
+    from forgeai.schemas.requirements import Requirements, Topic
+    from forgeai.stages.evalgen import in_scope_topic
+
+    req = Requirements(
+        agent_name="HR Desk",
+        purpose="p",
+        scope="s",
+        audience="a",
+        tone="t",
+        must_answer=[
+            Topic(topic="Remote work policy"),
+            Topic(topic="Gifts and hospitality policy"),
+            Topic(topic="Annual leave entitlement"),
+            Topic(topic="Travel advances"),
+        ],
+        must_refuse=[{"topic": "Legal advice"}],  # type: ignore[list-item]
+        brief=BRIEF,
+    )
+    assert in_scope_topic(question, req) == topic
+
+
+def test_personal_topic_name_is_dropped_not_kept() -> None:
+    """Second real HR run: the model made a separate topic 'Remaining leave balance'."""
+    from forgeai.schemas.corpus import Corpus, Document, Page
+    from forgeai.schemas.requirements import GroundabilityReport, Requirements, Topic
+    from forgeai.stages.guard import _personal_record_checks, apply_guard
+
+    req = Requirements(
+        agent_name="HR Desk",
+        purpose="p",
+        scope="s",
+        audience="a",
+        tone="t",
+        must_answer=[
+            Topic(topic="Annual leave entitlement", detail="days earned per year"),
+            Topic(topic="Remaining leave balance", detail="days an employee has left this year"),
+        ],
+        must_refuse=[{"topic": "Legal advice"}],  # type: ignore[list-item]
+        brief=BRIEF,
+    )
+    corpus = Corpus(
+        root=".",
+        documents=[
+            Document(
+                doc_id="l",
+                filename="l.pdf",
+                kind="pdf",
+                title="L",
+                pages=[Page(number=1, text="x")],
+            )
+        ],
+    )
+    out = apply_guard(req, GroundabilityReport(checks=_personal_record_checks(req, corpus)))
+    assert [t.topic for t in out.must_answer] == ["Annual leave entitlement"]
+    assert "days an employee has left this year" in [r.topic for r in out.must_refuse]

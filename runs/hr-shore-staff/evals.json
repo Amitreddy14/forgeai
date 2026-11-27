@@ -1,0 +1,464 @@
+{
+  "cases": [
+    {
+      "id": "c01",
+      "category": "answerable",
+      "question": "How long do employees have to declare new conflicts of interest?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "code-of-conduct",
+          "quote": "New conflicts must be declared within 30 days of arising."
+        }
+      ],
+      "key_facts": [
+        "within 30 days of arising"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from code-of-conduct p.1 — 5. Conflicts of interest",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c02",
+      "category": "answerable",
+      "question": "How much bereavement leave do employees receive for the death of a sibling?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "leave-policy",
+          "quote": "Employees receive 5 working days of paid bereavement leave on the death of a spouse, child, parent or sibling, and 2 working days for a grandparent or parent-in-law."
+        }
+      ],
+      "key_facts": [
+        "5 working days"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from leave-policy p.1 — 6. Bereavement and compassionate leave",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c03",
+      "category": "answerable",
+      "question": "What expenses are non-reimbursable for trips shorter than 4 nights?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "travel-expenses-policy",
+          "quote": "The company does not reimburse alcohol, minibar charges, laundry for trips shorter than 4 nights, traffic fines, personal entertainment, or expenses for accompanying family members."
+        }
+      ],
+      "key_facts": [
+        "alcohol"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from travel-expenses-policy p.2 — 9. Non-reimbursable expenses",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c04",
+      "category": "answerable",
+      "question": "How many times can an employee be late in a month before it counts as half a day of annual leave?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "code-of-conduct",
+          "quote": "Arriving more than 30 minutes late three times in a month counts as half a day of annual leave."
+        }
+      ],
+      "key_facts": [
+        "three times"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from code-of-conduct p.1 — 2. Working hours and attendance",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c05",
+      "category": "answerable",
+      "question": "How many days of annual leave do shore staff earn per year?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "leave-policy",
+          "quote": "Shore staff earn 24 working days of paid annual leave per calendar year."
+        }
+      ],
+      "key_facts": [
+        "24 working days of paid annual leave"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from leave-policy p.1 — 2. Annual leave",
+      "origin": "llm",
+      "split": "holdout"
+    },
+    {
+      "id": "c06",
+      "category": "answerable",
+      "question": "How much is reimbursed for using a personal two-wheeler for local transport?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "travel-expenses-policy",
+          "quote": "Use of a personal car is reimbursed at INR 12 per kilometre and a personal two-wheeler at INR 6 per kilometre."
+        }
+      ],
+      "key_facts": [
+        "INR 6 per kilometre"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from travel-expenses-policy p.1 — 6. Local transport",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c07",
+      "category": "answerable",
+      "question": "How many days per week can remote work be approved for after 6 months?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "code-of-conduct",
+          "quote": "Employees may work remotely for up to 2 days per week with their manager's approval, once they have completed 6 months of service."
+        }
+      ],
+      "key_facts": [
+        "2 days per week"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from code-of-conduct p.1 — 3. Remote work",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c08",
+      "category": "answerable",
+      "question": "For what class of flights can business class be booked?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "travel-expenses-policy",
+          "quote": "Business class may be booked for flights longer than 6 hours with approval from a director."
+        }
+      ],
+      "key_facts": [
+        "flights longer than 6 hours"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from travel-expenses-policy p.1 — 3. Air travel",
+      "origin": "llm",
+      "split": "holdout"
+    },
+    {
+      "id": "c09",
+      "category": "answerable",
+      "question": "How much paid leave do birth mothers receive for their first two children?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "leave-policy",
+          "quote": "Birth mothers receive 26 weeks of paid maternity leave for each of the first two children, and 12 weeks for any later child."
+        }
+      ],
+      "key_facts": [
+        "26 weeks of paid maternity leave"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from leave-policy p.1 — 5. Maternity, paternity and adoption leave",
+      "origin": "llm",
+      "split": "holdout"
+    },
+    {
+      "id": "c10",
+      "category": "answerable",
+      "question": "Within how many days must expense claims be submitted?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "travel-expenses-policy",
+          "quote": "Expense claims must be submitted through the finance portal within 30 days of returning from the trip."
+        }
+      ],
+      "key_facts": [
+        "within 30 days of returning from the trip"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from travel-expenses-policy p.1 — 8. Expense claims",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c11",
+      "category": "answerable",
+      "question": "How many unused annual leave days can be carried forward?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "leave-policy",
+          "quote": "Up to 10 unused annual leave days may be carried forward into the next calendar year."
+        }
+      ],
+      "key_facts": [
+        "Up to 10 unused annual leave days"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from leave-policy p.1 — 3. Carry forward and encashment",
+      "origin": "llm",
+      "split": "holdout"
+    },
+    {
+      "id": "c12",
+      "category": "answerable",
+      "question": "What percentage of the estimated trip cost can employees request for a travel advance?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "travel-expenses-policy",
+          "quote": "Employees may request a travel advance of up to 75 percent of the estimated trip cost."
+        }
+      ],
+      "key_facts": [
+        "75 percent of the estimated trip cost"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from travel-expenses-policy p.1 — 7. Travel advances",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c13",
+      "category": "ambiguous",
+      "question": "What's the max gift value from a partner in a yr?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "code-of-conduct",
+          "quote": "Employees may accept gifts worth up to INR 3,000 from a business partner, no more than once per calendar year from the same partner."
+        }
+      ],
+      "key_facts": [
+        "INR 3,000"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from code-of-conduct p.1 — 4. Gifts and hospitality",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c14",
+      "category": "ambiguous",
+      "question": "How many days in advance do you need to apply for annual leave?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "leave-policy",
+          "quote": "Annual leave must be applied for through the HR portal at least 10 working days in advance and approved by the reporting manager."
+        }
+      ],
+      "key_facts": [
+        "10 working days"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from leave-policy p.1 — 8. Applying for leave",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c15",
+      "category": "ambiguous",
+      "question": "What's the daily allowance for domestic travel in India?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "travel-expenses-policy",
+          "quote": "The daily allowance for domestic travel is INR 1,800 per day and covers meals and incidental expenses."
+        }
+      ],
+      "key_facts": [
+        "INR 1,800 per day"
+      ],
+      "expected_tool": null,
+      "rationale": "generated from travel-expenses-policy p.1 — 5. Daily allowance",
+      "origin": "llm",
+      "split": "holdout"
+    },
+    {
+      "id": "c16",
+      "category": "multi_doc",
+      "question": "How many days of paid sick leave do employees receive per year? Also, how long does the Head of HR have to hold a meeting after receiving an escalated grievance?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "leave-policy",
+          "quote": "Employees receive 12 days of paid sick leave per calendar year."
+        },
+        {
+          "doc_id": "code-of-conduct",
+          "quote": "If the grievance is not resolved, the employee may escalate it in writing to the Head of HR, who must hold a meeting within 10 working days."
+        }
+      ],
+      "key_facts": [
+        "12 days of paid sick leave per calendar year",
+        "within 10 working days"
+      ],
+      "expected_tool": null,
+      "rationale": "joins two verified questions from leave-policy and code-of-conduct",
+      "origin": "llm",
+      "split": "holdout"
+    },
+    {
+      "id": "c17",
+      "category": "multi_doc",
+      "question": "How long does the Internal Committee have to complete its inquiry into a sexual harassment complaint? Also, how many paid public holidays does the company observe each year?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "code-of-conduct",
+          "quote": "The committee completes its inquiry within 90 days."
+        },
+        {
+          "doc_id": "leave-policy",
+          "quote": "The company observes 12 paid public holidays each year."
+        }
+      ],
+      "key_facts": [
+        "within 90 days",
+        "12 paid public holidays each year"
+      ],
+      "expected_tool": null,
+      "rationale": "joins two verified questions from code-of-conduct and leave-policy",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c18",
+      "category": "multi_doc",
+      "question": "How long do employees have to declare new conflicts of interest? Also, within how many days must expense claims be submitted?",
+      "expect_refusal": false,
+      "sources": [
+        {
+          "doc_id": "code-of-conduct",
+          "quote": "New conflicts must be declared within 30 days of arising."
+        },
+        {
+          "doc_id": "travel-expenses-policy",
+          "quote": "Expense claims must be submitted through the finance portal within 30 days of returning from the trip."
+        }
+      ],
+      "key_facts": [
+        "within 30 days of arising",
+        "within 30 days of returning from the trip"
+      ],
+      "expected_tool": null,
+      "rationale": "joins two verified questions from code-of-conduct and travel-expenses-policy",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c19",
+      "category": "out_of_scope",
+      "question": "Can you tell me how much my colleague earns?",
+      "expect_refusal": true,
+      "sources": [],
+      "key_facts": [],
+      "expected_tool": null,
+      "rationale": "Personal salary information: Personal and confidential data",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c20",
+      "category": "out_of_scope",
+      "question": "I want to know the status of my leave balance this year.",
+      "expect_refusal": true,
+      "sources": [],
+      "key_facts": [],
+      "expected_tool": null,
+      "rationale": "Specific employee records: Personal and confidential data",
+      "origin": "llm",
+      "split": "holdout"
+    },
+    {
+      "id": "c21",
+      "category": "out_of_scope",
+      "question": "How many days has John taken off this year?",
+      "expect_refusal": true,
+      "sources": [],
+      "key_facts": [],
+      "expected_tool": null,
+      "rationale": "days an employee has left this year: Needs individual people's records",
+      "origin": "llm",
+      "split": "holdout"
+    },
+    {
+      "id": "c22",
+      "category": "out_of_scope",
+      "question": "Can you provide a list of all shore staff who have taken leave this month?",
+      "expect_refusal": true,
+      "sources": [],
+      "key_facts": [],
+      "expected_tool": null,
+      "rationale": "near miss: Policies are covered but not for specific individuals",
+      "origin": "llm",
+      "split": "dev"
+    },
+    {
+      "id": "c23",
+      "category": "out_of_scope",
+      "question": "What are the plans for travel advances in the next quarter?",
+      "expect_refusal": true,
+      "sources": [],
+      "key_facts": [],
+      "expected_tool": null,
+      "rationale": "near miss: Policies are covered but for a different time frame",
+      "origin": "llm",
+      "split": "dev"
+    }
+  ],
+  "rejected": [
+    {
+      "category": "answerable",
+      "question": "How many days of leave without pay can shore staff request in a year?",
+      "reason": "no short, relevant key fact"
+    },
+    {
+      "category": "answerable",
+      "question": "What does this code set out?",
+      "reason": "no short, relevant key fact"
+    },
+    {
+      "category": "answerable",
+      "question": "What disciplinary actions can be taken for serious misconduct?",
+      "reason": "key fact 'a written warning' is not in the quoted source"
+    },
+    {
+      "category": "answerable",
+      "question": "Which staff are covered by this policy for travel expenses?",
+      "reason": "question depends on unseen context (e.g. 'this policy')"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "What are the HR policies for remote work?",
+      "reason": "answerable from the documents (names the must-answer topic \"Remote work policy\")"
+    },
+    {
+      "category": "out_of_scope",
+      "question": "How do we handle gifts and hospitality for our clients?",
+      "reason": "answerable from the documents (names the must-answer topic \"Gifts and hospitality policy\")"
+    },
+    {
+      "category": "multi_doc",
+      "question": "How many times can an employee be late in a month before it counts as half a day of annual leave? Also, how many unused annual leave days can be carried forward?",
+      "reason": "near-duplicate of another question"
+    }
+  ],
+  "prompts": [
+    "evals_answerable",
+    "evals_ambiguous",
+    "evals_out_of_scope",
+    "evals_answerability"
+  ]
+}

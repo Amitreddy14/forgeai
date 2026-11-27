@@ -27,6 +27,7 @@ from forgeai.schemas.requirements import (
 )
 from forgeai.stages.context import ForgeContext
 from forgeai.textutil import normalize
+from forgeai.tools.registry import infer_tool_hints
 
 MAX_HEADINGS = 12
 SAMPLE_ROWS = 3
@@ -213,19 +214,27 @@ def _answers_text(answers: list[IntakeAnswer]) -> str:
     return "\n".join(f"- {a.question} -> {a.answer}" for a in answers)
 
 
-def _dedupe_topics(topics: list[Topic]) -> list[Topic]:
+def _dedupe_topics(topics: list[Topic], corpus: Corpus | None = None) -> list[Topic]:
+    """Remove duplicates and settle each topic's capabilities in code: the model's own
+    hints plus those inferred from the topic's words and the folder's tables."""
     seen: set[str] = set()
     out: list[Topic] = []
     for topic in topics:
         key = normalize(topic.topic)
-        if key and key not in seen:
-            seen.add(key)
-            # A tool hint only makes sense on a tool topic, and vice versa.
-            if topic.answered_from == "documents" and topic.tool_hint is not None:
-                topic = topic.model_copy(update={"tool_hint": None})
-            if topic.answered_from == "tool" and topic.tool_hint is None:
-                topic = topic.model_copy(update={"answered_from": "documents"})
-            out.append(topic)
+        if not key or key in seen:
+            continue
+        seen.add(key)
+        hints = list(topic.tool_hints)
+        if corpus is not None:
+            hints += [
+                h
+                for h in infer_tool_hints(f"{topic.topic}. {topic.detail}", corpus)
+                if h not in hints
+            ]
+        topic = topic.model_copy(
+            update={"tool_hints": hints, "answered_from": "tool" if hints else "documents"}
+        )
+        out.append(topic)
     return out
 
 
@@ -244,7 +253,11 @@ _SOURCE_LABEL = {"brief": "inferred from the brief", "default": "interviewer def
 
 
 async def write_requirements(
-    ctx: ForgeContext, brief: str, summary: CorpusSummary, answers: list[IntakeAnswer]
+    ctx: ForgeContext,
+    brief: str,
+    summary: CorpusSummary,
+    answers: list[IntakeAnswer],
+    corpus: Corpus | None = None,
 ) -> Requirements:
     prompt = render(
         "intake_requirements",
@@ -267,7 +280,7 @@ async def write_requirements(
     ]
     return Requirements(
         **draft.model_dump(exclude={"must_answer", "must_refuse"}),
-        must_answer=_dedupe_topics(draft.must_answer),
+        must_answer=_dedupe_topics(draft.must_answer, corpus),
         must_refuse=_dedupe_refusals(draft.must_refuse),
         brief=brief,
         assumptions=assumptions,
@@ -283,7 +296,7 @@ async def run_intake(
     record = IntakeRecord(
         brief=brief, corpus=summary, questions=questions, answers=answers, mode=answerer.mode
     )
-    requirements = await write_requirements(ctx, brief, summary, answers)
+    requirements = await write_requirements(ctx, brief, summary, answers, corpus)
     return record, requirements
 
 
@@ -310,7 +323,7 @@ def requirements_markdown(req: Requirements) -> str:
         "|---|---|---|",
     ]
     for t in req.must_answer:
-        source = f"tool: {t.tool_hint}" if t.answered_from == "tool" else "documents"
+        source = "tools: " + ", ".join(t.tool_hints) if t.tool_hints else "documents"
         lines.append(f"| {t.topic} | {_cell(t.detail)} | {source} |")
     lines += ["", "## Must refuse", "", "| Topic | Reason |", "|---|---|"]
     lines += [f"| {t.topic} | {_cell(t.reason)} |" for t in req.must_refuse]

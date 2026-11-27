@@ -80,9 +80,10 @@ forgeai/
 │   ├── prompts/             # every prompt as a versioned .md template (committed)
 │   └── web/                 # FastAPI app, Jinja templates, static CSS
 ├── data/
-│   ├── briefs/              # demo briefs
-│   ├── docs/                # demo document sets
-│   └── synthesis/           # prompts used to synthesize demo documents
+│   ├── demos/<run>/         # brief.md, source/*.md, docs/ (PDF + CSV) for each demo
+│   ├── examples/hr-mini/    # tiny example for quick real-model checks
+│   └── synthesis/           # prompts used to synthesize the demo documents
+├── scripts/                 # render_demo_docs.py (Markdown -> PDF)
 ├── runs/                    # committed artifacts of the two demo runs
 └── tests/                   # pytest, all against the fake LLM
 ```

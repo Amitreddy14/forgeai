@@ -1,0 +1,14 @@
+<div id="progress" {% if not run.complete and not run.failed %}hx-get="/runs/{{ run.run_id }}/progress" hx-trigger="every 3s" hx-swap="outerHTML"{% endif %} aria-live="polite">
+  {% set done = run.stages|selectattr("done")|list|length %}
+  {% if run.failed %}
+    <p class="error">This build stopped: {{ run.error }}</p>
+  {% else %}
+    <p>{{ done }} of {{ run.stages|length }} stages done.</p>
+  {% endif %}
+  <progress class="gauge" value="{{ done }}" max="{{ run.stages|length }}">{{ done }} of {{ run.stages|length }}</progress>
+  {% if run.progress %}
+  <ol class="events">
+    {% for e in run.progress %}<li><span class="t">{{ e.t }}s</span>{{ e.message }}</li>{% endfor %}
+  </ol>
+  {% endif %}
+</div>

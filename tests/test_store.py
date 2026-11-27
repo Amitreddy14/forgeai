@@ -51,3 +51,17 @@ def test_new_run_id_is_valid_and_slugged() -> None:
 
 def test_list_runs_on_missing_dir(tmp_path: Path) -> None:
     assert list_runs(tmp_path / "missing") == []
+
+
+def test_lists_of_models_are_real_json(tmp_path: Path) -> None:
+    """changelog.json and canaries.json were written as Python reprs (str of a model)."""
+    import json
+
+    store = RunStore(tmp_path, "json-run")
+    store.write_json(
+        "list.json", [Thing(name="a", score=1.0), {"nested": [Thing(name="b", score=2)]}]
+    )
+    data = json.loads(store.read_text("list.json"))
+    assert data == [{"name": "a", "score": 1.0}, {"nested": [{"name": "b", "score": 2.0}]}]
+    with pytest.raises(TypeError):
+        store.write_json("bad.json", [object()])

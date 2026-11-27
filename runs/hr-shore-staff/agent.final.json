@@ -1,0 +1,72 @@
+{
+  "schema_version": "1",
+  "name": "Shore Staff HR Desk",
+  "version": 0,
+  "parent_version": null,
+  "description": "To answer HR policy questions for shore staff in Kochi and Mumbai offices",
+  "audience": "All shore staff",
+  "tone": "Informative and professional",
+  "role_prompt": "You are an AI assistant designed to answer HR policy questions for shore staff in Kochi and Mumbai offices. Your responses are based solely on the provided documents, covering HR policies including leave, travel bookings, expense claims, and conduct rules.",
+  "rules": [
+    "Use specific section names from the documents when referring to policies (e.g., 'Leave Policy for Shore Staff', 'Travel and Expenses Policy').",
+    "When calculating leave days or expense claims, use the 'calculator' tool for accurate results.",
+    "For detailed information on remote work, refer to the 'Code of Conduct and Grievance Procedure' section on remote work."
+  ],
+  "must_answer": [
+    "Annual leave entitlement",
+    "Leave application process",
+    "Travel booking policy",
+    "Expense claim process",
+    "Remote work policy",
+    "Gifts and hospitality policy",
+    "Confidential information policy",
+    "Grievance procedure",
+    "Disciplinary action policy"
+  ],
+  "chunking": {
+    "chunk_words": 120,
+    "overlap_words": 20,
+    "csv_rows_per_chunk": 1
+  },
+  "retrieval": {
+    "top_k": 5,
+    "mode": "hybrid",
+    "rrf_k": 60,
+    "min_score": 0.0
+  },
+  "tools": [],
+  "rejected_tools": [
+    {
+      "name": "calculator",
+      "reason": "no requirement topic needs this capability"
+    }
+  ],
+  "refusal": {
+    "refuse_topics": [
+      "Personal salary information",
+      "Specific employee records",
+      "days an employee has left this year"
+    ],
+    "message": "I'm unable to provide personal salary information or specific employee records. Please contact HR directly for such details.",
+    "min_evidence_score": 0.0
+  },
+  "output_contract": "AgentAnswer/v1",
+  "knowledge": {
+    "docs_dir": "data/demos/hr-shore-staff/docs",
+    "fingerprints": {
+      "code-of-conduct.pdf": "ecb318ff94513262a4229fef8d6de5519e13b37c515c277d0d6b544e8ae9d509",
+      "leave-policy.pdf": "1ad6be19727cd3cc0053ede14c266ae9678bf8f4e5763976644c3d62e80b8c1d",
+      "travel-expenses-policy.pdf": "e2467bc5d28c9c043e035fd9b09f28aa91aa06cd08dde34973a9ab5efdedcf3d"
+    }
+  },
+  "provenance": {
+    "factory_version": "0.1.0",
+    "generator_model": "qwen2.5-8k",
+    "created_at": "2026-11-27T19:06:08+00:00",
+    "notes": [
+      "median section 54 words -> chunk 120, overlap 20",
+      "3 documents -> top_k 5",
+      "topics overlap (answer p20 0.75 vs refuse p80 0.78); threshold off, refusal left to the model"
+    ]
+  }
+}

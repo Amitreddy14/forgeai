@@ -12,6 +12,9 @@ $passage
 Rules:
 - The question must make sense on its own: name the subject (for example "sick leave"),
   never "this policy" or "the passage". It must not contain the answer.
+- Ask about the passage's specific detail ("How much of the estimated port charges must
+  be deposited before berthing?"), not a broad question that other sections could also
+  answer ("What must the agent do before berthing?").
 - `key_facts`: 1 or 2 SHORT facts (2 to 8 words), copied word for word from the passage,
   that answer exactly what the question asks. No facts the question does not ask about.
 - `quote`: the sentence(s) from the passage that contain all key facts, copied exactly.

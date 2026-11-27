@@ -333,3 +333,19 @@ async def test_run_factory_end_to_end(tmp_path: Path) -> None:
     assert not any(
         t.startswith(("TASK: intake", "TASK: generate.agent", "TASK: evals")) for t in tasks
     )
+
+
+async def test_refuse_topic_patch_generalises_and_rejects_copies() -> None:
+    from forgeai.stages.optimize import critic_refuse_topic_patch
+
+    answered = [result(case("c9", refuse=True), False, "wrong_refusal", refused=False, answer="x")]
+    answered[0].case.question = "Are there any changes to the payment terms for port services?"
+    good = FakeLLM([json.dumps({"topic": "future or planned changes to rules", "rationale": "r"})])
+    ctx = ForgeContext(llm=good, models=ModelRoles("gen", "judge"), embedder=HashEmbedder())
+    patch = await critic_refuse_topic_patch(ctx, answered, definition())
+    assert patch is not None
+    assert patch.op == AddRefuseTopic(topic="future or planned changes to rules")
+
+    copy = FakeLLM([json.dumps({"topic": "changes to the payment terms for port services"})])
+    ctx = ForgeContext(llm=copy, models=ModelRoles("gen", "judge"), embedder=HashEmbedder())
+    assert await critic_refuse_topic_patch(ctx, answered, definition()) is None

@@ -68,9 +68,11 @@ jobs:
         run: docker build -t forgeai:ci .
       - name: Smoke test /healthz
         run: |
-          docker run -d --name forge -p 7860:7860 forgeai:ci
+          docker run -d --name forge -p 7860:7860 -e FORGE_EMBEDDER=hash forgeai:ci
           for i in $(seq 1 30); do
-            if curl -fsS http://localhost:7860/healthz; then exit 0; fi
+            if curl -fsS http://localhost:7860/healthz; then
+              curl -fsS http://localhost:7860/ > /dev/null && exit 0
+            fi
             sleep 1
           done
           docker logs forge

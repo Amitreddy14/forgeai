@@ -1,0 +1,50 @@
+{
+  "max_tokens": 400000,
+  "max_calls": 5000,
+  "used_tokens": 61750,
+  "used_calls": 56,
+  "by_stage": {
+    "intake": {
+      "calls": 3,
+      "cached_calls": 3,
+      "prompt_tokens": 0,
+      "completion_tokens": 0
+    },
+    "guard": {
+      "calls": 9,
+      "cached_calls": 9,
+      "prompt_tokens": 0,
+      "completion_tokens": 0
+    },
+    "generate": {
+      "calls": 1,
+      "cached_calls": 0,
+      "prompt_tokens": 1371,
+      "completion_tokens": 202
+    },
+    "evalgen": {
+      "calls": 34,
+      "cached_calls": 34,
+      "prompt_tokens": 0,
+      "completion_tokens": 0
+    },
+    "judge": {
+      "calls": 8,
+      "cached_calls": 8,
+      "prompt_tokens": 0,
+      "completion_tokens": 0
+    },
+    "agent": {
+      "calls": 53,
+      "cached_calls": 0,
+      "prompt_tokens": 54069,
+      "completion_tokens": 5378
+    },
+    "critic": {
+      "calls": 2,
+      "cached_calls": 0,
+      "prompt_tokens": 641,
+      "completion_tokens": 89
+    }
+  }
+}

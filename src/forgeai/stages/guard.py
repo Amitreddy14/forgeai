@@ -6,6 +6,7 @@ are flagged and moved to must-refuse, so the generated agent refuses instead of 
 from __future__ import annotations
 
 import asyncio
+import re
 
 from forgeai.errors import GroundingError
 from forgeai.llm import ChatMessage, complete_json, stage
@@ -97,11 +98,12 @@ def _tool_checks(req: Requirements, corpus: Corpus) -> list[GroundingCheck]:
     has_table = any(d.kind == "csv" for d in corpus.documents)
     checks: list[GroundingCheck] = []
     for topic in req.must_answer:
-        if topic.answered_from != "tool" or topic.tool_hint != "table_lookup" or has_table:
+        if "table_lookup" not in topic.tool_hints or has_table:
             continue
         checks.append(
             GroundingCheck(
                 topic=topic.topic,
+                kind="table",
                 claimed="supported",
                 verdict="unsupported",
                 note="needs a table lookup, but the folder contains no CSV table",
@@ -110,33 +112,86 @@ def _tool_checks(req: Requirements, corpus: Corpus) -> list[GroundingCheck]:
     return checks
 
 
+# Asks that need records about individual people. General policy text never answers
+# them, however closely related it sounds ("24 days a year" is not "6 days left").
+PERSONAL_RECORDS = re.compile(
+    r"\b(days?|leave|balance)\s+(left|remaining)\b|\bremaining\s+(leave|days|balance)\b"
+    r"|\b(leave|account|salary|pay)\s+balance\b|\beach employee'?s?\b|\bindividual employee'?s?\b"
+    r"|\bpersonal (record|records|data|history)\b|\b(employee|staff|crew) records?\b"
+    r"|\bhow many .{0,40}\b(left|remaining)\b|\bremaining\b.{0,20}\bbalance\b",
+    re.IGNORECASE,
+)
+
+
+def _personal_record_checks(req: Requirements, corpus: Corpus) -> list[GroundingCheck]:
+    has_people_table = any(
+        d.kind == "csv" and any(re.search(r"employee|staff|name", c, re.I) for c in d.columns or [])
+        for d in corpus.documents
+    )
+    if has_people_table:
+        return []
+    return [
+        GroundingCheck(
+            topic=t.topic,
+            kind="personal_records",
+            claimed="supported",
+            verdict="unsupported",
+            note=(t.detail or t.topic)
+            + " needs records about individual people; the documents contain only general rules",
+        )
+        for t in req.must_answer
+        if PERSONAL_RECORDS.search(f"{t.topic}. {t.detail}")
+    ]
+
+
 async def check_groundability(
     ctx: ForgeContext, req: Requirements, corpus: Corpus, index: HybridIndex
 ) -> GroundabilityReport:
+    personal = _personal_record_checks(req, corpus)
+    personal_topics = {c.topic for c in personal}
+    prose = [t for t in req.document_topics if t.topic not in personal_topics]
     with stage("guard"):
-        checks = await asyncio.gather(*(check_topic(ctx, index, t) for t in req.document_topics))
-    return GroundabilityReport(checks=[*checks, *_tool_checks(req, corpus)])
+        checks = await asyncio.gather(*(check_topic(ctx, index, t) for t in prose))
+    return GroundabilityReport(checks=[*checks, *personal, *_tool_checks(req, corpus)])
 
 
 def apply_guard(req: Requirements, report: GroundabilityReport) -> Requirements:
-    """Move unsupported topics from must-answer to must-refuse and record them as gaps."""
+    """Move unsupported topics from must-answer to must-refuse and record them as gaps.
+
+    A topic flagged for needing personal records is split instead: the general topic
+    stays answerable (its detail is dropped), and the personal ask becomes a refusal.
+    """
     failed = {c.topic: c for c in report.unsupported}
     if not failed:
         return req
-    kept = [t for t in req.must_answer if t.topic not in failed]
+    kept: list[Topic] = []
+    refusals = list(req.must_refuse)
+    known = {r.topic for r in refusals}
+    gaps: list[FlaggedGap] = list(req.flagged_gaps)
+    for topic in req.must_answer:
+        check = failed.get(topic.topic)
+        if check is None:
+            kept.append(topic)
+            continue
+        if check.kind == "personal_records":
+            ask = topic.detail.strip().rstrip(".") or topic.topic
+            gaps.append(FlaggedGap(topic=ask, reason=f"{GAP_REASON} Detail: {check.note}"))
+            if ask not in known:
+                refusals.append(RefuseTopic(topic=ask, reason="needs individual people's records"))
+            # Keep the general topic ("annual leave entitlement") only if its own name is
+            # not itself the personal ask ("remaining leave balance").
+            if topic.detail and not PERSONAL_RECORDS.search(topic.topic):
+                kept.append(topic.model_copy(update={"detail": ""}))
+            continue
+        reason = GAP_REASON if not check.note else f"{GAP_REASON} Detail: {check.note}"
+        gaps.append(FlaggedGap(topic=topic.topic, reason=reason))
+        if topic.topic not in known:
+            refusals.append(RefuseTopic(topic=topic.topic, reason=GAP_REASON))
     if not kept:
         raise GroundingError(
             "the documents support none of the topics the brief asks for; "
             "no agent was generated (see groundability.json)"
         )
-    refusals = list(req.must_refuse)
-    known = {r.topic for r in refusals}
-    gaps: list[FlaggedGap] = list(req.flagged_gaps)
-    for topic, check in failed.items():
-        reason = GAP_REASON if not check.note else f"{GAP_REASON} Detail: {check.note}"
-        gaps.append(FlaggedGap(topic=topic, reason=reason))
-        if topic not in known:
-            refusals.append(RefuseTopic(topic=topic, reason=GAP_REASON))
     return req.model_copy(
         update={"must_answer": kept, "must_refuse": refusals, "flagged_gaps": gaps}
     )

@@ -154,6 +154,8 @@ def respond(messages: list[ChatMessage]) -> str:
         return json.dumps(
             {"questions": [{"question": q, "topic": "x", "why": "y"} for q in REFUSALS]}
         )
+    if task == "evals.answerability":
+        return json.dumps({"answered": False})
     if task == "agent.answer":
         return answer_question(prompt)
     if task == "agent.plan":
@@ -171,6 +173,8 @@ def respond(messages: list[ChatMessage]) -> str:
                 ]
             }
         )
+    if task == "critic.refuse_topic":
+        return json.dumps({"topic": "future or planned policy changes", "rationale": "r"})
     if task == "critic.rule":
         return json.dumps(
             {
