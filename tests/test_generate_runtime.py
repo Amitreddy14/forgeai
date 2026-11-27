@@ -194,6 +194,32 @@ async def test_runtime_plans_and_uses_tools(tmp_path: Path, docs: Path) -> None:
     assert turn.grounded  # tool evidence counts
 
 
+async def test_refusal_after_tool_outage_says_so(tmp_path: Path, docs: Path) -> None:
+    definition, _ = await _generated(tmp_path, docs)
+    refusal = definition.refusal.model_copy(update={"min_evidence_score": 0.0})
+    definition = definition.model_copy(update={"refusal": refusal})
+    plans = iter(
+        [
+            json.dumps({"calls": [{"name": "weather", "args": {"location": "Kochi"}}]}),
+            '{"calls": []}',
+        ]
+    )
+
+    def handler(messages: list[ChatMessage]) -> str:
+        if scripted._task(messages) == "agent.plan":
+            return next(plans)
+        return answer_json(
+            answer=definition.refusal.message, refused=True, refusal_reason="tool failed"
+        )
+
+    runtime, _ = runtime_for(definition, docs, handler)
+    turn = await runtime.answer("What's the weather in Kochi?")
+    assert turn.answer.refused
+    assert all(not c.ok for c in turn.tool_calls)
+    assert "weather service did not respond" in turn.answer.answer
+    assert turn.answer.answer != definition.refusal.message
+
+
 async def test_runtime_threshold_refuses_without_calling_model(tmp_path: Path, docs: Path) -> None:
     definition, _ = await _generated(tmp_path, docs)
     refusal = definition.refusal.model_copy(update={"min_evidence_score": 0.99})
