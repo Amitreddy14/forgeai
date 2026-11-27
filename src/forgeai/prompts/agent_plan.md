@@ -18,3 +18,4 @@ $history
 Return `calls`: a list of {"name": ..., "args": {...}} to run now (at most 3), or an
 empty list if you have everything you need. Do not repeat a call that already succeeded.
 Use the calculator for any arithmetic. Use exact table ids and column names.
+For weather, give the place with its country, e.g. "Kochi, India".

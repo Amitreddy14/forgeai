@@ -48,6 +48,8 @@ class FinalScorecard(BaseModel):
     judge_trusted: bool
     stop_reason: str
     tokens_used: int
+    model_calls: int = 0
+    cached_calls: int = 0
     by_stage_tokens: dict[str, int] = Field(default_factory=dict)
 
 
@@ -86,6 +88,8 @@ def build_final_scorecard(
         judge_trusted=last.judge_trusted,
         stop_reason=stop_reason,
         tokens_used=budget.used_tokens,
+        model_calls=sum(v.calls for v in budget.by_stage.values()),
+        cached_calls=sum(v.cached_calls for v in budget.by_stage.values()),
         by_stage_tokens={k: v.total_tokens for k, v in budget.by_stage.items()},
     )
 
@@ -238,7 +242,12 @@ def report_markdown(
     )
     lines.append(f"- Rules: {len(final.rules)}; refuse topics: {len(final.refusal.refuse_topics)}")
     lines.append(f"- Definition: `agent.v{final.version}.json`")
-    lines += ["", "## Cost", "", f"- Tokens used: {card.tokens_used:,}"]
+    lines += ["", "## Cost", "", f"- Tokens used: {card.tokens_used:,} (live calls only)"]
+    lines.append(
+        f"- Model calls: {card.model_calls:,}, of which {card.cached_calls:,} were replayed from "
+        "the response cache (identical temperature-0 requests from an earlier run; same output, "
+        "no tokens spent)"
+    )
     lines += [f"  - {k}: {v:,}" for k, v in sorted(card.by_stage_tokens.items())]
     return "\n".join(lines) + "\n"
 

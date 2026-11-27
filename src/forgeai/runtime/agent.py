@@ -17,7 +17,7 @@ from forgeai.prompts import render
 from forgeai.retrieval import Embedder, Hit, HybridIndex
 from forgeai.schemas.agent import AgentAnswer, AgentDefinition, Citation
 from forgeai.schemas.corpus import Corpus
-from forgeai.textutil import contains_quote
+from forgeai.textutil import contains_quote, normalize
 from forgeai.tools import REGISTRY, ToolEnv, call_tool, tool_card
 
 MAX_STEPS = 3
@@ -116,6 +116,39 @@ def verify_citations(
         else:
             valid.append(Citation(chunk_id=match.chunk.chunk_id, quote=citation.quote))
     return valid, invalid
+
+
+def _is_refusal_text(answer: str, message: str) -> bool:
+    a, m = normalize(answer), normalize(message)
+    return not a or a == m or (bool(m) and m in a) or len(a.split()) <= 6
+
+
+def contract_problems(
+    answer: AgentAnswer,
+    refusal_message: str,
+    valid: list[Citation],
+    invalid: list[Citation],
+    tool_evidence: bool,
+) -> str:
+    """What is wrong with an answer under the output contract ('' if nothing).
+
+    Besides citations, the refusal flag must agree with the text: a reply that sets
+    refused=true but then gives a real answer is contradictory, and neither a judge nor
+    a user can tell which of the two to believe.
+    """
+    if answer.refused:
+        if not _is_refusal_text(answer.answer, refusal_message):
+            return (
+                "you set refused to true but also gave an answer; if the passages or tool "
+                "results answer the question, set refused to false, otherwise reply with only "
+                "the refusal message"
+            )
+        return ""
+    if invalid:
+        return f"{len(invalid)} citation(s) quote text that is not in the cited passage"
+    if not valid and not tool_evidence:
+        return "no citations were given"
+    return ""
 
 
 class AgentRuntime:
@@ -235,15 +268,10 @@ class AgentRuntime:
             )
             valid, invalid = verify_citations(answer.citations, hits)
 
-            needs_repair = not answer.refused and (
-                bool(invalid) or (not valid and not tool_evidence)
+            problems = contract_problems(
+                answer, defn.refusal.message, valid, invalid, tool_evidence
             )
-            if needs_repair:
-                problems = (
-                    f"{len(invalid)} citation(s) quote text that is not in the cited passage"
-                    if invalid
-                    else "no citations were given"
-                )
+            if problems:
                 messages += [
                     ChatMessage(role="assistant", content=answer.model_dump_json()),
                     ChatMessage(role="user", content=render("agent_repair", problems=problems)),

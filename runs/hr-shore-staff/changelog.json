@@ -4,47 +4,78 @@
     "patch": {
       "op": {
         "op": "add_refuse_topic",
-        "topic": "company's financial forecasts"
+        "topic": "future financial forecasts"
+      },
+      "category": "wrong_refusal",
+      "targets": [
+        "c22",
+        "c23"
+      ],
+      "why": "Involves predictive financial data that could impact budgeting and financial planning processes.",
+      "source": "critic"
+    },
+    "from_version": 0,
+    "to_version": 1,
+    "accepted": true,
+    "dev_before": 0.8667,
+    "dev_after": 0.9333,
+    "fixed": [
+      "c22"
+    ],
+    "broke": [],
+    "decision": "kept: +1 fixed, none broken",
+    "tokens": 18165
+  },
+  {
+    "iteration": 2,
+    "patch": {
+      "op": {
+        "op": "add_refuse_topic",
+        "topic": "company-specific financial strategies"
       },
       "category": "wrong_refusal",
       "targets": [
         "c23"
       ],
-      "why": "Involves sensitive and proprietary information about the company's future financial plans.",
+      "why": "Involves detailed financial planning and could include future projections or sensitive data.",
       "source": "critic"
     },
-    "from_version": 0,
+    "from_version": 1,
     "to_version": null,
     "accepted": false,
     "dev_before": 0.9333,
-    "dev_after": 0.9333,
+    "dev_after": 0.8667,
     "fixed": [],
-    "broke": [],
-    "decision": "reverted: 0 fixed, 0 broken (no net gain)",
-    "tokens": 16775
+    "broke": [
+      "c22"
+    ],
+    "decision": "reverted: 0 fixed, 1 broken (no net gain)",
+    "tokens": 18235
   },
   {
-    "iteration": 1,
+    "iteration": 2,
     "patch": {
       "op": {
         "op": "add_rule",
-        "text": "Assess each question's context and ensure the assistant either answers with certainty or refuses with clarity, without providing partial or incorrect information."
+        "text": "Evaluate the question's context and ensure it aligns with the document's scope before answering or refusing."
       },
       "category": "wrong_refusal",
       "targets": [
         "c23"
       ],
-      "why": "Clarifies the assistant's approach to handling questions, ensuring it neither provides misleading information nor refuses valid queries.",
+      "why": "This rule ensures the AI considers the question's context, preventing both incorrect answers and unjustified refusals.",
       "source": "critic"
     },
-    "from_version": 0,
+    "from_version": 1,
     "to_version": null,
     "accepted": false,
     "dev_before": 0.9333,
-    "dev_after": 0.9333,
+    "dev_after": 0.8667,
     "fixed": [],
-    "broke": [],
-    "decision": "reverted: 0 fixed, 0 broken (no net gain)",
-    "tokens": 17054
+    "broke": [
+      "c22"
+    ],
+    "decision": "reverted: 0 fixed, 1 broken (no net gain)",
+    "tokens": 18453
   }
 ]

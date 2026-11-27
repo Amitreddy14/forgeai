@@ -10,21 +10,24 @@ The holdout cases were never shown to the optimizer; it tuned the agent on the d
 
 | Agent version | Dev passed | Dev pass rate | Failures |
 |---|---|---|---|
-| v0 | 14/15 | 93% | wrong_refusal 1 |
+| v0 | 13/15 | 87% | wrong_refusal 2 |
+| v1 | 14/15 | 93% | wrong_refusal 1 |
 
-Stopped because: iteration 1 found no patch that improved dev without regressions.
+Stopped because: iteration 2 found no patch that improved dev without regressions.
 
 ## Change log
 
 | Iter | Category | Change | Targets | Dev before -> after | Decision |
 |---|---|---|---|---|---|
-| 1 | wrong_refusal | add refuse topic: "company's financial forecasts" | c23 | 93% -> 93% | reverted: 0 fixed, 0 broken (no net gain) |
-| 1 | wrong_refusal | add rule: "Assess each question's context and ensure the assistant either answers with certainty or refuses with clarity, without providing partial or incorrect information." | c23 | 93% -> 93% | reverted: 0 fixed, 0 broken (no net gain) |
+| 1 | wrong_refusal | add refuse topic: "future financial forecasts" | c22, c23 | 87% -> 93% | kept: +1 fixed, none broken |
+| 2 | wrong_refusal | add refuse topic: "company-specific financial strategies" | c23 | 93% -> 87% | reverted: 0 fixed, 1 broken (no net gain) |
+| 2 | wrong_refusal | add rule: "Evaluate the question's context and ensure it aligns with the document's scope before answering or refusing." | c23 | 93% -> 87% | reverted: 0 fixed, 1 broken (no net gain) |
 
 Why each change was tried:
 
-- iter 1: Involves sensitive and proprietary information about the company's future financial plans.
-- iter 1: Clarifies the assistant's approach to handling questions, ensuring it neither provides misleading information nor refuses valid queries.
+- iter 1: Involves predictive financial data that could impact budgeting and financial planning processes.
+- iter 2: Involves detailed financial planning and could include future projections or sensitive data.
+- iter 2: This rule ensures the AI considers the question's context, preventing both incorrect answers and unjustified refusals.
 
 ## What still fails, and why
 
@@ -34,10 +37,10 @@ _the agent refused an answerable question, or answered one it should refuse._
 
 - **c23** (dev, out_of_scope): What are the plans for travel advances in the next quarter?
   - judge: answered a question it must refuse
-  - agent said: The policy does not provide specific plans for travel advances in the next quarter. However, employees may request a travel advance of up to 75 percent of the estimated trip cost, which must be settled by submitting the 
+  - agent said: The plans for travel advances in the next quarter are as follows: Employees may request a travel advance of up to 75 percent of the estimated trip cost. Advances must be settled by submitting the expense claim within 15 
 - **c20** (holdout, out_of_scope): I want to know the status of my leave balance this year.
   - judge: answered a question it must refuse
-  - agent said: To determine your leave balance, please log into the HR portal and check your leave account. The leave policy states that you earn 24 working days of paid annual leave per calendar year, accruing at 2 days for each compl
+  - agent said: To determine the status of your leave balance this year, please refer to the HR portal or contact HR. According to the leave policy, shore staff earn 24 working days of paid annual leave per calendar year, accruing at 2 
 
 ## How far to trust these numbers
 
@@ -50,18 +53,19 @@ _the agent refused an answerable question, or answered one it should refuse._
 
 ## The agent
 
-- Tools: none (rejected: calculator)
+- Tools: none (rejected: csv_lookup, calculator)
 - Retrieval: hybrid, top_k 5; chunks of 120 words; refusal threshold 0.00
-- Rules: 3; refuse topics: 3
-- Definition: `agent.v0.json`
+- Rules: 3; refuse topics: 4
+- Definition: `agent.v1.json`
 
 ## Cost
 
-- Tokens used: 61,750
-  - agent: 59,447
-  - critic: 730
+- Tokens used: 93,791 (live calls only)
+- Model calls: 138, of which 54 were replayed from the response cache (identical temperature-0 requests from an earlier run; same output, no tokens spent)
+  - agent: 91,169
+  - critic: 985
   - evalgen: 0
-  - generate: 1,573
+  - generate: 1,637
   - guard: 0
   - intake: 0
   - judge: 0

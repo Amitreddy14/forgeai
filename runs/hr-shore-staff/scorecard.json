@@ -1,9 +1,18 @@
 {
   "agent": "Shore Staff HR Desk",
-  "final_version": 0,
+  "final_version": 1,
   "iterations": [
     {
       "version": 0,
+      "dev_pass_rate": 0.8667,
+      "dev_passed": 13,
+      "dev_cases": 15,
+      "failures": {
+        "wrong_refusal": 2
+      }
+    },
+    {
+      "version": 1,
       "dev_pass_rate": 0.9333,
       "dev_passed": 14,
       "dev_cases": 15,
@@ -22,15 +31,17 @@
   ],
   "judge_canary_accuracy": 1.0,
   "judge_trusted": true,
-  "stop_reason": "iteration 1 found no patch that improved dev without regressions",
-  "tokens_used": 61750,
+  "stop_reason": "iteration 2 found no patch that improved dev without regressions",
+  "tokens_used": 93791,
+  "model_calls": 138,
+  "cached_calls": 54,
   "by_stage_tokens": {
     "intake": 0,
     "guard": 0,
-    "generate": 1573,
+    "generate": 1637,
     "evalgen": 0,
     "judge": 0,
-    "agent": 59447,
-    "critic": 730
+    "agent": 91169,
+    "critic": 985
   }
 }

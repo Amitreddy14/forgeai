@@ -23,7 +23,11 @@ DAILY = (
 
 
 class WeatherArgs(BaseModel):
-    location: str = Field(min_length=2, max_length=80, description="Place name, e.g. 'Kochi'.")
+    location: str = Field(
+        min_length=2,
+        max_length=80,
+        description="Place name WITH its country, e.g. 'Kochi, India' (many names exist twice).",
+    )
     days: int = Field(default=3, ge=1, le=7, description="Forecast days (1-7).")
     marine: bool = Field(default=False, description="Also return wave height (coastal places).")
 
@@ -50,12 +54,23 @@ class Weather:
         owns_client = env.http is None
         client = env.http or httpx.AsyncClient(timeout=10.0)
         try:
+            name, _, country = args.location.partition(",")
+            name, country = name.strip(), country.strip().lower()
             geo = await _get_json(
-                client, GEOCODE_URL, {"name": args.location, "count": 1, "format": "json"}
+                client, GEOCODE_URL, {"name": name, "count": 10, "format": "json"}
             )
             places = geo.get("results") or []
+            if country:
+                # "Kochi" alone resolves to Kochi, Japan first; the country disambiguates.
+                places = [
+                    p
+                    for p in places
+                    if country
+                    in {str(p.get("country", "")).lower(), str(p.get("country_code", "")).lower()}
+                ]
             if not places:
-                return ToolResult.fail(f"place not found: {args.location!r}")
+                where = f" in {country.title()}" if country else ""
+                return ToolResult.fail(f"place not found: {name!r}{where}")
             place = places[0]
             lat, lon = float(place["latitude"]), float(place["longitude"])
             forecast = await _get_json(

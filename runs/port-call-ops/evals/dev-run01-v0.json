@@ -29,8 +29,10 @@
       "citations": [
         "port-notices:p2:c8"
       ],
-      "tool_calls": [],
-      "latency_s": 3.194,
+      "tool_calls": [
+        "csv_lookup:failed"
+      ],
+      "latency_s": 49.475,
       "judgement": {
         "case_id": "c02",
         "passed": true,
@@ -75,7 +77,7 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "For vessels longer than 250 meters, 3 tugs are required for berthing and unberthing.",
+      "answer": "Vessels longer than 250 meters require 3 tugs for berthing and unberthing.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.8453,
@@ -85,9 +87,9 @@
       "tool_calls": [
         "csv_lookup:failed",
         "csv_lookup:failed",
-        "calculator:ok"
+        "csv_lookup:failed"
       ],
-      "latency_s": 4.91,
+      "latency_s": 69.587,
       "judgement": {
         "case_id": "c03",
         "passed": true,
@@ -140,7 +142,7 @@
         "port-notices:p1:c2"
       ],
       "tool_calls": [],
-      "latency_s": 6.331,
+      "latency_s": 25.742,
       "judgement": {
         "case_id": "c04",
         "passed": true,
@@ -185,7 +187,7 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "Coastal vessels pay 60 percent of the foreign-going rate for port dues and pilotage.",
+      "answer": "Coastal vessels pay 40 percent of the foreign-going rate for port dues and pilotage.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.7967,
@@ -195,10 +197,10 @@
       "tool_calls": [
         "calculator:ok"
       ],
-      "latency_s": 8.054,
+      "latency_s": 52.286,
       "judgement": {
         "case_id": "c06",
-        "passed": true,
+        "passed": false,
         "checks": {
           "refusal_ok": true,
           "grounded": true,
@@ -211,13 +213,13 @@
         "facts": [
           {
             "fact": "60 percent of the foreign-going rate",
-            "status": "present",
-            "by": "string"
+            "status": "contradicted",
+            "by": "judge"
           }
         ],
-        "failure": null,
-        "reason": "",
-        "judge_used": false
+        "failure": "hallucination",
+        "reason": "facts not stated correctly: 60 percent of the foreign-going rate",
+        "judge_used": true
       }
     },
     {
@@ -248,11 +250,9 @@
         "port-notices:p1:c1"
       ],
       "tool_calls": [
-        "csv_lookup:failed",
-        "csv_lookup:failed",
-        "csv_lookup:failed"
+        "calculator:ok"
       ],
-      "latency_s": 10.896,
+      "latency_s": 54.658,
       "judgement": {
         "case_id": "c07",
         "passed": true,
@@ -304,8 +304,10 @@
       "citations": [
         "port-notices:p1:c5"
       ],
-      "tool_calls": [],
-      "latency_s": 13.156,
+      "tool_calls": [
+        "csv_lookup:failed"
+      ],
+      "latency_s": 56.398,
       "judgement": {
         "case_id": "c09",
         "passed": true,
@@ -358,7 +360,7 @@
         "port-tariff-schedule:p1:c0"
       ],
       "tool_calls": [],
-      "latency_s": 15.266,
+      "latency_s": 29.997,
       "judgement": {
         "case_id": "c10",
         "passed": true,
@@ -403,15 +405,19 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "During the monsoon season from 1 June to 30 September, the Kochi approach channel is restricted to vessels with a draft of no more than 12.5 metres, regardless of berth depth. Pilotage at both ports is suspended when the sustained wind speed exceeds 30 knots or the significant wave height exceeds 3.5 metres at the pilot boarding point.",
+      "answer": "During the monsoon season, from 1 June to 30 September, the Kochi approach channel is restricted to vessels with a draft of no more than 12.5 metres, regardless of berth depth.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.9129,
       "citations": [
         "port-notices:p1:c3"
       ],
-      "tool_calls": [],
-      "latency_s": 19.501,
+      "tool_calls": [
+        "port-notices:failed",
+        "csv_lookup:failed",
+        "csv_lookup:failed"
+      ],
+      "latency_s": 72.426,
       "judgement": {
         "case_id": "c12",
         "passed": true,
@@ -456,27 +462,26 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "The ship's agent must submit the pre-arrival notification at least 72 hours before the estimated time of arrival, or on departure from the last port if the voyage is shorter than 72 hours. The notification includes the crew list, cargo manifest, dangerous goods declaration, ISPS security information and the last 10 ports of call. The vessel's agent must also deposit 100 percent of the estimated port charges before berthing.",
+      "answer": "The ship's agent must submit the pre-arrival notification at least 72 hours before the estimated time of arrival, or on departure from the last port if the voyage is shorter than 72 hours. The notification includes the crew list, cargo manifest, dangerous goods declaration, ISPS security information, and the last 10 ports of call. Berth allocation is confirmed only after the notification is accepted.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.7284,
       "citations": [
-        "port-notices:p1:c1",
-        "port-tariff-schedule:p1:c8"
+        "port-notices:p1:c1"
       ],
       "tool_calls": [
         "csv_lookup:failed",
         "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 24.436,
+      "latency_s": 77.025,
       "judgement": {
         "case_id": "c14",
-        "passed": true,
+        "passed": false,
         "checks": {
           "refusal_ok": true,
           "grounded": true,
-          "source_cited": true,
+          "source_cited": false,
           "source_retrieved": true,
           "unsupported_numbers": [],
           "tool_ok": null,
@@ -485,13 +490,13 @@
         "facts": [
           {
             "fact": "deposit 100 percent of the estimated port charges",
-            "status": "present",
-            "by": "string"
+            "status": "missing",
+            "by": "judge"
           }
         ],
-        "failure": null,
-        "reason": "",
-        "judge_used": false
+        "failure": "prompt_defect",
+        "reason": "facts not stated correctly: deposit 100 percent of the estimated port charges",
+        "judge_used": true
       }
     },
     {
@@ -523,10 +528,9 @@
       ],
       "tool_calls": [
         "csv_lookup:failed",
-        "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 26.903,
+      "latency_s": 79.005,
       "judgement": {
         "case_id": "c15",
         "passed": true,
@@ -576,7 +580,7 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "Vessels holding a valid Environmental Ship Index score of 30 or more receive a 10 percent rebate on port dues. Vessels using shore power while at berth receive an additional 5 percent rebate on berth hire. The fixed waste fee per vessel call is USD 350, which covers up to 5 cubic metres of garbage.",
+      "answer": "Vessels using shore power while at berth receive an additional 5 percent rebate on berth hire, in addition to the 10 percent rebate for holding a valid Environmental Ship Index score of 30 or more. The fixed waste fee per vessel call is USD 350, which covers up to 5 cubic metres of garbage.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.8049,
@@ -589,7 +593,7 @@
         "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 31.937,
+      "latency_s": 83.075,
       "judgement": {
         "case_id": "c16",
         "passed": true,
@@ -656,9 +660,10 @@
         "csv_lookup:failed",
         "csv_lookup:failed",
         "csv_lookup:failed",
-        "csv_lookup:failed"
+        "csv_lookup:failed",
+        "csv_lookup:ok"
       ],
-      "latency_s": 35.534,
+      "latency_s": 87.015,
       "judgement": {
         "case_id": "c17",
         "passed": true,
@@ -713,28 +718,30 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "Visitors to a vessel need a port entry pass, applied for by the agent at least 24 hours in advance. Crew shore leave requires a valid shore pass issued by immigration authorities on arrival.",
+      "answer": "Visitors to a vessel need a port entry pass, applied for by the agent at least 24 hours in advance. Vessels calling only for bunkering, crew change or stores, and staying less than 24 hours, pay 50 percent of port dues.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.7803,
       "citations": [
-        "port-notices:p2:c8"
+        "port-notices:p2:c8",
+        "port-tariff-schedule:p1:c2"
       ],
       "tool_calls": [
         "csv_lookup:failed",
         "csv_lookup:failed",
         "csv_lookup:failed",
         "csv_lookup:failed",
+        "csv_lookup:failed",
         "csv_lookup:failed"
       ],
-      "latency_s": 38.409,
+      "latency_s": 90.946,
       "judgement": {
         "case_id": "c18",
-        "passed": false,
+        "passed": true,
         "checks": {
           "refusal_ok": true,
           "grounded": true,
-          "source_cited": false,
+          "source_cited": true,
           "source_retrieved": true,
           "unsupported_numbers": [],
           "tool_ok": null,
@@ -748,13 +755,13 @@
           },
           {
             "fact": "50 percent of port dues",
-            "status": "contradicted",
-            "by": "judge"
+            "status": "present",
+            "by": "string"
           }
         ],
-        "failure": "hallucination",
-        "reason": "facts not stated correctly: 50 percent of port dues",
-        "judge_used": true
+        "failure": null,
+        "reason": "",
+        "judge_used": false
       }
     },
     {
@@ -785,9 +792,11 @@
         "berths:r8"
       ],
       "tool_calls": [
-        "csv_lookup:ok"
+        "csv_lookup:ok",
+        "PlannedCall:failed",
+        "max_loa_m_for_berth_id_KOC-CR1:failed"
       ],
-      "latency_s": 39.709,
+      "latency_s": 92.288,
       "judgement": {
         "case_id": "c20",
         "passed": true,
@@ -832,34 +841,32 @@
         "origin": "template",
         "split": "dev"
       },
-      "answer": "The total daily berth hire USD for 3 days at berth id KOC-CR1 is 13500.",
-      "refused": true,
-      "refused_by": "model",
+      "answer": "",
+      "refused": false,
+      "refused_by": null,
       "best_dense": 0.7648,
-      "citations": [
-        "berths:r8"
-      ],
+      "citations": [],
       "tool_calls": [
         "csv_lookup:failed",
         "csv_lookup:ok",
         "calculator:ok"
       ],
-      "latency_s": 49.52,
+      "latency_s": 96.467,
       "judgement": {
         "case_id": "c21",
         "passed": false,
         "checks": {
-          "refusal_ok": false,
-          "grounded": true,
+          "refusal_ok": true,
+          "grounded": false,
           "source_cited": true,
           "source_retrieved": true,
           "unsupported_numbers": [],
           "tool_ok": true,
-          "contract_error": null
+          "contract_error": "AgentAnswer: model output invalid after 2 attempts (validation failed: citations.1.chunk_id: Field required)"
         },
         "facts": [],
-        "failure": "wrong_refusal",
-        "reason": "refused an answerable question",
+        "failure": "prompt_defect",
+        "reason": "output contract error: AgentAnswer: model output invalid after 2 attempts (validation failed: citations.1.chunk_id: Field required); citations not verified",
         "judge_used": false
       }
     },
@@ -882,7 +889,7 @@
       "best_dense": 0.6946,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 43.019,
+      "latency_s": 66.976,
       "judgement": {
         "case_id": "c24",
         "passed": true,
@@ -914,7 +921,7 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "Based on the provided information, there are several berths available for your vessel next week. However, specific berth allocation requires a pre-arrival notification submitted at least 72 hours before the estimated time of arrival. Please ensure to submit the necessary documents as per the pre-arrival notification requirements.",
+      "answer": "To determine if a specific berth is available for your vessel next week, please submit a pre-arrival notification at least 72 hours before the estimated time of arrival. The berth allocation will be confirmed after the notification is accepted.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.7439,
@@ -922,7 +929,7 @@
         "port-notices:p1:c1"
       ],
       "tool_calls": [],
-      "latency_s": 45.84,
+      "latency_s": 45.984,
       "judgement": {
         "case_id": "c26",
         "passed": false,
@@ -954,28 +961,28 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "I'm sorry, but I can't provide personal contact details of the port agent handling your vessel. Please contact the appropriate department for that information.",
-      "refused": true,
-      "refused_by": "model",
+      "answer": "",
+      "refused": false,
+      "refused_by": null,
       "best_dense": 0.6911,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 47.205,
+      "latency_s": 94.685,
       "judgement": {
         "case_id": "c27",
-        "passed": true,
+        "passed": false,
         "checks": {
-          "refusal_ok": true,
-          "grounded": true,
+          "refusal_ok": false,
+          "grounded": false,
           "source_cited": null,
           "source_retrieved": null,
           "unsupported_numbers": [],
           "tool_ok": null,
-          "contract_error": null
+          "contract_error": "AgentAnswer: model output invalid after 2 attempts (validation failed: answer: Field required)"
         },
         "facts": [],
-        "failure": null,
-        "reason": "",
+        "failure": "wrong_refusal",
+        "reason": "answered a question it must refuse",
         "judge_used": false
       }
     },
@@ -998,7 +1005,7 @@
       "best_dense": 0.6172,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 0.007,
+      "latency_s": 22.497,
       "judgement": {
         "case_id": "c28",
         "passed": true,
@@ -1074,26 +1081,27 @@
     "splits": {
       "dev": {
         "cases": 19,
-        "passed": 16,
-        "pass_rate": 0.8421,
+        "passed": 14,
+        "pass_rate": 0.7368,
         "by_category": {
-          "ambiguous": 1.0,
-          "answerable": 1.0,
-          "multi_doc": 0.6667,
-          "out_of_scope": 0.75,
+          "ambiguous": 0.5,
+          "answerable": 0.875,
+          "multi_doc": 1.0,
+          "out_of_scope": 0.5,
           "tool": 0.5
         },
         "failures": {
           "hallucination": 1,
+          "prompt_defect": 2,
           "wrong_refusal": 2
         },
         "refusal_accuracy": 0.8947,
-        "groundedness": 1.0,
-        "fact_recall": 0.9667
+        "groundedness": 0.9333,
+        "fact_recall": 0.8667
       }
     },
     "judge_canary_accuracy": 1.0,
     "judge_trusted": true,
-    "mean_latency_s": 24.41
+    "mean_latency_s": 65.61
   }
 }

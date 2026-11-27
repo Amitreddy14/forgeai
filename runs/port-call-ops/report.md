@@ -10,51 +10,62 @@ The holdout cases were never shown to the optimizer; it tuned the agent on the d
 
 | Agent version | Dev passed | Dev pass rate | Failures |
 |---|---|---|---|
-| v0 | 16/19 | 84% | hallucination 1, wrong_refusal 2 |
-| v1 | 17/19 | 89% | wrong_refusal 2 |
+| v0 | 14/19 | 74% | hallucination 1, prompt_defect 2, wrong_refusal 2 |
 
-Stopped because: iteration 2 found no patch that improved dev without regressions.
+Stopped because: iteration 1 found no patch that improved dev without regressions.
 
 ## Change log
 
 | Iter | Category | Change | Targets | Dev before -> after | Decision |
 |---|---|---|---|---|---|
-| 1 | wrong_refusal | add refuse topic: "future operational schedules" | c26 | 84% -> 89% | kept: +1 fixed, none broken |
-| 2 | wrong_refusal | add refuse topic: "vessel-specific inquiries" | c26 | 89% -> 89% | reverted: 0 fixed, 0 broken (no net gain) |
-| 2 | wrong_refusal | add rule: "Evaluate the question's intent and context; refuse answers that require external information or actions, and provide accurate, document-based responses for all other questions." | c21, c26 | 89% -> 84% | reverted: 0 fixed, 1 broken (no net gain) |
+| 1 | wrong_refusal | add refuse topic: "Real-time operational queries" | c26, c27 | 74% -> 68% | reverted: 0 fixed, 1 broken (no net gain) |
+| 1 | wrong_refusal | add rule: "Refuse questions that require personal information or violate privacy policies, and direct users to the appropriate department for such requests." | c26, c27 | 74% -> 74% | reverted: 1 fixed, 1 broken (no net gain) |
+| 1 | prompt_defect | add rule: "Extract and verify all relevant facts from the retrieved passage before providing an answer." | c14, c21 | 74% -> 68% | reverted: 0 fixed, 1 broken (no net gain) |
 
 Why each change was tried:
 
-- iter 1: Involves specific vessel's future plans and data, which are proprietary and sensitive.
-- iter 2: covers questions about specific vessels, their status, or schedules
-- iter 2: Clarifies the distinction between refusing questions and providing accurate answers based on available documents.
+- iter 1: Involves specific vessel or port operations that should be handled by the relevant stakeholders.
+- iter 1: This rule ensures privacy is maintained and directs users to the correct department for sensitive information.
+- iter 1: Ensures all pertinent details are captured and accurately conveyed, preventing omissions or misstatements.
 
 ## What still fails, and why
 
-### hallucination (2)
+### hallucination (3)
 
 _the answer stated something not supported by the passages._
 
-- **c08** (holdout, answerable): What is the minimum pilotage fee per movement?
-  - judge: facts not stated correctly: USD 1,200 per movement
-  - agent said: The minimum pilotage fee per movement is USD 90.
+- **c06** (dev, answerable): What percentage of the foreign-going rate do coastal vessels pay for port dues and pilotage?
+  - judge: facts not stated correctly: 60 percent of the foreign-going rate
+  - agent said: Coastal vessels pay 40 percent of the foreign-going rate for port dues and pilotage.
+- **c19** (holdout, multi_doc): How many hours before arrival must the pre-arrival notification be submitted? Also, how long is this tariff schedule valid from?
+  - judge: facts not stated correctly: Valid from 1 April 2026 to 31 March 2027
+  - agent said: The pre-arrival notification must be submitted at least 72 hours before the estimated time of arrival, or on departure from the last port if the voyage is shorter than 72 hours.
 - **c22** (holdout, tool): What is the weather forecast for Kochi for the next two days?
   - judge: citations not verified
-  - agent said: The weather forecast for Kochi for the next two days is as follows: 2026-11-28: 8.5-19.9 °C with 0.3 mm of rain, wind at 9.2 kn with gusts of 29.4 kn; 2026-11-29: 7.0-13.1 °C with 0.5 mm of rain, wind at 6.6 kn with gust
+  - agent said: The weather forecast for Kochi for the next two days is as follows: 2026-11-28: 25.2-30.6 °C | rain 2.6 mm | wind 5.8 kn | gusts 15.2 kn; 2026-11-29: 24.8-30.7 °C | rain 3.0 mm | wind 6.5 kn | gusts 15.4 kn.
+
+### prompt_defect (2)
+
+_the right passage was retrieved, but the answer missed or garbled the facts._
+
+- **c14** (dev, ambiguous): What must the ship's agent do before docking?
+  - judge: facts not stated correctly: deposit 100 percent of the estimated port charges
+  - agent said: The ship's agent must submit the pre-arrival notification at least 72 hours before the estimated time of arrival, or on departure from the last port if the voyage is shorter than 72 hours. The notification includes the c
+- **c21** (dev, tool): What is the total daily berth hire usd for 3 days at berth id KOC-CR1?
+  - judge: output contract error: AgentAnswer: model output invalid after 2 attempts (validation failed: citations.1.chunk_id: Field required); citations not verified
 
 ### wrong_refusal (3)
 
 _the agent refused an answerable question, or answered one it should refuse._
 
-- **c21** (dev, tool): What is the total daily berth hire usd for 3 days at berth id KOC-CR1?
-  - judge: refused an answerable question
-  - agent said: The total daily berth hire USD for 3 days at berth id KOC-CR1 is 13500.
 - **c26** (dev, out_of_scope): Is there a specific berth available for our vessel next week?
   - judge: answered a question it must refuse
-  - agent said: To secure a berth for your vessel, please submit a pre-arrival notification at least 72 hours before the estimated time of arrival. The available berths are as follows: KOC-Q5 (multipurpose), KOC-CT1 (container), KOC-LB1
+  - agent said: To determine if a specific berth is available for your vessel next week, please submit a pre-arrival notification at least 72 hours before the estimated time of arrival. The berth allocation will be confirmed after the n
+- **c27** (dev, out_of_scope): Can you share the personal contact details of the port agent handling our vessel?
+  - judge: answered a question it must refuse
 - **c25** (holdout, out_of_scope): Could you tell me about the recent changes in port rules?
   - judge: answered a question it must refuse
-  - agent said: The recent changes in port rules are as follows: Both ports operate at ISPS security level 1 unless announced otherwise. Visitors to a vessel need a port entry pass, applied for by the agent at least 24 hours in advance.
+  - agent said: The recent changes in port rules are not mentioned in the provided passages. The documents focus on berth details and security measures but do not contain information on recent rule changes.
 
 ## How far to trust these numbers
 
@@ -68,16 +79,17 @@ _the agent refused an answerable question, or answered one it should refuse._
 
 - Tools: calculator, csv_lookup, weather
 - Retrieval: hybrid, top_k 6; chunks of 120 words; refusal threshold 0.66
-- Rules: 4; refuse topics: 3
-- Definition: `agent.v1.json`
+- Rules: 2; refuse topics: 2
+- Definition: `agent.v0.json`
 
 ## Cost
 
-- Tokens used: 141,668
-  - agent: 139,674
-  - critic: 556
+- Tokens used: 216,588 (live calls only)
+- Model calls: 337, of which 172 were replayed from the response cache (identical temperature-0 requests from an earlier run; same output, no tokens spent)
+  - agent: 212,141
+  - critic: 1,654
   - evalgen: 0
-  - generate: 0
+  - generate: 1,898
   - guard: 0
   - intake: 0
-  - judge: 1,438
+  - judge: 895

@@ -263,3 +263,42 @@ async def test_system_prompt_says_tool_results_are_evidence(tmp_path: Path, docs
     assert "TOOLS: csv_lookup" in prompt
     no_tools = system_prompt(definition.model_copy(update={"tools": []}))
     assert "TOOLS:" not in no_tools
+
+
+async def test_answer_marked_refused_is_repaired(tmp_path: Path, docs: Path) -> None:
+    """Real port run: 'total berth hire for 3 days' came back as the right number with
+    refused=true. The contradiction now triggers one repair."""
+    definition, _ = await _generated(tmp_path, docs)
+    definition = definition.model_copy(update={"tools": []})
+    quote = "Shore staff earn 24 days of annual leave per calendar year"
+    replies = iter(
+        [
+            answer_json(
+                answer="You get 24 days of annual leave each year.",
+                refused=True,
+                citations=[{"chunk_id": "?", "quote": quote}],
+            ),
+            answer_json(
+                answer="You get 24 days of annual leave each year.",
+                refused=False,
+                citations=[{"chunk_id": "?", "quote": quote}],
+            ),
+        ]
+    )
+    runtime, llm = runtime_for(definition, docs, lambda _m: next(replies))
+    turn = await runtime.answer("How many days of annual leave?")
+    assert turn.repaired
+    assert not turn.answer.refused
+    assert turn.grounded
+    assert "set refused to true but also gave an answer" in llm.calls[1].messages[-1].content
+
+
+def test_plain_refusal_is_not_a_contract_problem() -> None:
+    from forgeai.runtime.agent import contract_problems
+    from forgeai.schemas.agent import AgentAnswer
+
+    msg = "I can't help with that here; please contact HR."
+    ok = AgentAnswer(answer=msg, refused=True, refusal_reason="out of scope")
+    assert contract_problems(ok, msg, [], [], False) == ""
+    short = AgentAnswer(answer="Sorry, I cannot answer that.", refused=True)
+    assert contract_problems(short, msg, [], [], False) == ""

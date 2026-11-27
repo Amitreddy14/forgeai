@@ -1,5 +1,5 @@
 {
-  "agent_version": 0,
+  "agent_version": 1,
   "split": "dev",
   "results": [
     {
@@ -22,7 +22,7 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "Employees have 30 days to declare new conflicts of interest after they arise.",
+      "answer": "Employees have 30 days to declare new conflicts of interest.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.8938,
@@ -30,7 +30,7 @@
         "code-of-conduct:p1:c5"
       ],
       "tool_calls": [],
-      "latency_s": 2.129,
+      "latency_s": 4.119,
       "judgement": {
         "case_id": "c01",
         "passed": true,
@@ -83,7 +83,7 @@
         "leave-policy:p1:c6"
       ],
       "tool_calls": [],
-      "latency_s": 4.573,
+      "latency_s": 2.475,
       "judgement": {
         "case_id": "c02",
         "passed": true,
@@ -128,7 +128,7 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "Alcohol, minibar charges, and laundry for trips shorter than 4 nights are non-reimbursable expenses.",
+      "answer": "For trips shorter than 4 nights, non-reimbursable expenses include alcohol, minibar charges, and laundry. Lost receipts may be replaced by a signed declaration no more than twice per calendar year.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.7904,
@@ -136,7 +136,7 @@
         "travel-expenses-policy:p2:c9"
       ],
       "tool_calls": [],
-      "latency_s": 7.01,
+      "latency_s": 6.689,
       "judgement": {
         "case_id": "c03",
         "passed": true,
@@ -189,7 +189,7 @@
         "code-of-conduct:p1:c2"
       ],
       "tool_calls": [],
-      "latency_s": 9.048,
+      "latency_s": 8.733,
       "judgement": {
         "case_id": "c04",
         "passed": true,
@@ -242,7 +242,7 @@
         "travel-expenses-policy:p1:c6"
       ],
       "tool_calls": [],
-      "latency_s": 11.464,
+      "latency_s": 10.954,
       "judgement": {
         "case_id": "c06",
         "passed": true,
@@ -295,7 +295,7 @@
         "code-of-conduct:p1:c3"
       ],
       "tool_calls": [],
-      "latency_s": 13.699,
+      "latency_s": 13.172,
       "judgement": {
         "case_id": "c07",
         "passed": true,
@@ -348,7 +348,7 @@
         "travel-expenses-policy:p1:c8"
       ],
       "tool_calls": [],
-      "latency_s": 15.591,
+      "latency_s": 15.091,
       "judgement": {
         "case_id": "c10",
         "passed": true,
@@ -401,7 +401,7 @@
         "travel-expenses-policy:p1:c7"
       ],
       "tool_calls": [],
-      "latency_s": 17.657,
+      "latency_s": 16.967,
       "judgement": {
         "case_id": "c12",
         "passed": true,
@@ -446,7 +446,7 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "The maximum gift value from a partner in a year is INR 3,000. Any gift worth more than this must be declared to the Compliance Officer within 7 days and may need to be returned.",
+      "answer": "The maximum value of a gift from a business partner that an employee may accept is INR 3,000, no more than once per calendar year from the same partner.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.7612,
@@ -454,7 +454,7 @@
         "code-of-conduct:p1:c4"
       ],
       "tool_calls": [],
-      "latency_s": 20.281,
+      "latency_s": 19.481,
       "judgement": {
         "case_id": "c13",
         "passed": true,
@@ -507,7 +507,7 @@
         "leave-policy:p1:c8"
       ],
       "tool_calls": [],
-      "latency_s": 22.45,
+      "latency_s": 21.617,
       "judgement": {
         "case_id": "c14",
         "passed": true,
@@ -566,7 +566,7 @@
         "leave-policy:p1:c7"
       ],
       "tool_calls": [],
-      "latency_s": 24.899,
+      "latency_s": 24.148,
       "judgement": {
         "case_id": "c17",
         "passed": true,
@@ -621,7 +621,7 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "Employees must declare new conflicts of interest within 30 days of arising. Expense claims must be submitted within 30 days of returning from the trip.",
+      "answer": "Employees must declare new conflicts of interest within 30 days of arising. Expense claims must be submitted through the finance portal within 30 days of returning from the trip.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.8618,
@@ -630,7 +630,7 @@
         "travel-expenses-policy:p1:c8"
       ],
       "tool_calls": [],
-      "latency_s": 27.811,
+      "latency_s": 27.1,
       "judgement": {
         "case_id": "c18",
         "passed": true,
@@ -673,13 +673,13 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "I'm unable to provide personal salary information or specific employee records. Please contact HR directly for such details.",
+      "answer": "I'm sorry, but I can't provide personal salary information or specific employee records. Please contact HR for such details.",
       "refused": true,
       "refused_by": "model",
       "best_dense": 0.621,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 28.866,
+      "latency_s": 28.244,
       "judgement": {
         "case_id": "c19",
         "passed": true,
@@ -711,13 +711,13 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "I'm unable to provide a list of all shore staff who have taken leave this month. The passages provided do not contain information on leave taken by specific employees, and there are no tool results available for this information.",
+      "answer": "I'm sorry, but I can't provide a list of all shore staff who have taken leave this month. The provided passages do not contain information on leave taken by specific employees.",
       "refused": true,
       "refused_by": "model",
       "best_dense": 0.7747,
       "citations": [],
       "tool_calls": [],
-      "latency_s": 30.332,
+      "latency_s": 34.41,
       "judgement": {
         "case_id": "c22",
         "passed": true,
@@ -749,7 +749,7 @@
         "origin": "llm",
         "split": "dev"
       },
-      "answer": "The policy does not provide specific plans for travel advances in the next quarter. However, employees may request a travel advance of up to 75 percent of the estimated trip cost, which must be settled by submitting the expense claim within 15 days of returning. A new advance is not issued while a previous advance remains unsettled.",
+      "answer": "The plans for travel advances in the next quarter are as follows: Employees may request a travel advance of up to 75 percent of the estimated trip cost. Advances must be settled by submitting the expense claim within 15 days of returning. A new advance is not issued while a previous advance remains unsettled.",
       "refused": false,
       "refused_by": null,
       "best_dense": 0.7388,
@@ -757,7 +757,7 @@
         "travel-expenses-policy:p1:c7"
       ],
       "tool_calls": [],
-      "latency_s": 33.78,
+      "latency_s": 32.76,
       "judgement": {
         "case_id": "c23",
         "passed": false,
@@ -836,7 +836,7 @@
     }
   ],
   "scorecard": {
-    "agent_version": 0,
+    "agent_version": 1,
     "splits": {
       "dev": {
         "cases": 15,
@@ -858,6 +858,6 @@
     },
     "judge_canary_accuracy": 1.0,
     "judge_trusted": true,
-    "mean_latency_s": 17.97
+    "mean_latency_s": 17.73
   }
 }

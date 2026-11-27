@@ -1,0 +1,25 @@
+# Render Blueprint: one free Docker web service built from this repository.
+# Deploy: Render dashboard -> New -> Blueprint -> pick this repo. Set FORGE_LLM_API_KEY when asked.
+services:
+  - type: web
+    name: forgeai
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      - key: FORGE_LLM_API_KEY
+        sync: false            # secret: Render asks for it on first deploy
+      - key: FORGE_LLM_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: FORGE_GENERATOR_MODEL
+        value: llama-3.1-8b-instant
+      - key: FORGE_JUDGE_MODEL
+        value: openai/gpt-oss-20b   # a different model family from the generator
+      - key: FORGE_MAX_ITERATIONS
+        value: "1"
+      - key: FORGE_MAX_TOKENS_PER_RUN
+        value: "150000"
+      - key: FORGE_MAX_CONCURRENCY
+        value: "1"

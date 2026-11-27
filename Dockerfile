@@ -1,4 +1,4 @@
-# ForgeAI web app for Hugging Face Spaces (Docker SDK). Port 7860 is what Spaces expects.
+# ForgeAI web app. Render (free tier) builds this from the repository; it sets $PORT.
 FROM python:3.11-slim
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
@@ -9,7 +9,6 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     FASTEMBED_CACHE_PATH=/opt/fastembed \
     HF_HUB_DISABLE_TELEMETRY=1
 
-# Spaces runs containers as uid 1000.
 RUN useradd --create-home --uid 1000 forge
 WORKDIR /home/forge/app
 
@@ -28,4 +27,5 @@ RUN mkdir -p /home/forge/app/.forge_cache && chown -R forge:forge /home/forge/ap
 USER forge
 
 EXPOSE 7860
-CMD ["uvicorn", "forgeai.web.app:app", "--host", "0.0.0.0", "--port", "7860", "--proxy-headers", "--forwarded-allow-ips", "*"]
+# Shell form so $PORT (set by Render) is expanded; 7860 when run elsewhere.
+CMD uvicorn forgeai.web.app:app --host 0.0.0.0 --port ${PORT:-7860} --proxy-headers --forwarded-allow-ips "*"

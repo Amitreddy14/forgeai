@@ -97,9 +97,9 @@ Legend: `[x]` done · `[ ]` open · `(S)` stretch.
       at a time, per-client rate limits, failures written to stage_error.json
 - [x] Security headers incl. CSP (no inline scripts/styles; htmx vendored), docs off in prod
 - [x] Fix found while building the UI: RunStore wrote lists of models as Python reprs
-- [x] Hugging Face Space: `deploy/huggingface/` (Dockerfile clones the GitHub repo,
-      bakes bge-small); Groq free tier, generator and judge from different families
-- [ ] Create the Space and set secrets (Amit)
+- [x] Render free web service from `render.yaml` (Docker, bge-small baked in); Groq free
+      tier, generator and judge from different model families
+- [ ] Deploy on Render and set FORGE_LLM_API_KEY (Amit)
 
 ## Phase 8 — Ship (branch `phase-8-ship`)
 - [ ] README: quick start, architecture, results tables from the committed runs

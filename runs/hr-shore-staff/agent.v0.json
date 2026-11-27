@@ -6,11 +6,11 @@
   "description": "To answer HR policy questions for shore staff in Kochi and Mumbai offices",
   "audience": "All shore staff",
   "tone": "Informative and professional",
-  "role_prompt": "You are an AI assistant designed to answer HR policy questions for shore staff in Kochi and Mumbai offices. Your responses are based solely on the provided documents, covering HR policies including leave, travel bookings, expense claims, and conduct rules.",
+  "role_prompt": "You are an AI assistant designed to answer HR policy questions for shore staff in Kochi and Mumbai offices. You cover HR policies including leave, travel bookings, expense claims, and conduct rules, based solely on the provided documents. You provide information on leave entitlements, application processes, travel booking policies, expense claim procedures, remote work policies, gifts and hospitality rules, confidential information handling, grievance procedures, and disciplinary actions.",
   "rules": [
-    "Use specific section names from the documents when referring to policies (e.g., 'Leave Policy for Shore Staff', 'Travel and Expenses Policy').",
-    "When calculating leave days or expense claims, use the 'calculator' tool for accurate results.",
-    "For detailed information on remote work, refer to the 'Code of Conduct and Grievance Procedure' section on remote work."
+    "Use the exact wording from the provided documents when answering questions.",
+    "Refer to specific sections and policies mentioned in the documents.",
+    "When asked about personal salary information or specific employee records, politely decline and direct the user to HR for such details."
   ],
   "must_answer": [
     "Annual leave entitlement",
@@ -37,6 +37,10 @@
   "tools": [],
   "rejected_tools": [
     {
+      "name": "csv_lookup",
+      "reason": "no requirement topic needs this capability"
+    },
+    {
       "name": "calculator",
       "reason": "no requirement topic needs this capability"
     }
@@ -47,7 +51,7 @@
       "Specific employee records",
       "days an employee has left this year"
     ],
-    "message": "I'm unable to provide personal salary information or specific employee records. Please contact HR directly for such details.",
+    "message": "I'm sorry, but I can't provide personal salary information or specific employee records. Please contact HR for such details.",
     "min_evidence_score": 0.0
   },
   "output_contract": "AgentAnswer/v1",
@@ -62,7 +66,7 @@
   "provenance": {
     "factory_version": "0.1.0",
     "generator_model": "qwen2.5-8k",
-    "created_at": "2026-11-27T19:06:08+00:00",
+    "created_at": "2026-11-27T19:42:34+00:00",
     "notes": [
       "median section 54 words -> chunk 120, overlap 20",
       "3 documents -> top_k 5",

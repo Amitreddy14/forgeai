@@ -3,19 +3,19 @@
     {
       "name": "calculator",
       "capability": "arithmetic",
-      "justification": "To estimate total of berth hire, port dues, and pilotage for a vessel.",
+      "justification": "To estimate total of berth hire, port dues, and pilotage for a vessel",
       "evidence": "requester wrote \"estimate\""
     },
     {
       "name": "csv_lookup",
       "capability": "table_lookup",
-      "justification": "To identify berths that fit a vessel's length and draft.",
+      "justification": "To identify berths that fit a vessel's length and draft",
       "evidence": "CSV table(s) in the folder: berths"
     },
     {
       "name": "weather",
       "capability": "weather",
-      "justification": "To check the wind and weather forecast for the arrival window.",
+      "justification": "To check the wind and weather forecast for the arrival window",
       "evidence": "requester wrote \"weather\""
     }
   ],
