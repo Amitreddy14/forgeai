@@ -1,0 +1,358 @@
+from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
+
+from forgeai.errors import GroundingError
+from forgeai.ingest import load_folder
+from forgeai.llm import FakeLLM
+from forgeai.pipeline import build_agent, build_evals, build_requirements, evaluate_agent
+from forgeai.retrieval import HashEmbedder
+from forgeai.runtime.agent import AgentTurn, RetrievedRef, ToolCallRecord
+from forgeai.schemas.agent import AgentAnswer, Citation
+from forgeai.schemas.evals import Checks, EvalCase, EvalSet, ExpectedSource, FactCheck
+from forgeai.stages.context import ForgeContext, ModelRoles
+from forgeai.stages.evalgen import (
+    EvalTargets,
+    assign_splits,
+    generate_evals,
+    template_cases,
+    validate_candidate,
+)
+from forgeai.stages.intake import AutoAnswerer
+from forgeai.stages.judge import (
+    canary_answers,
+    classify,
+    layer_one,
+    run_canaries,
+    string_fact_check,
+    unsupported_numbers,
+)
+from forgeai.store import RunStore
+from tests import sim
+from tests.fixtures import build_docs_folder
+
+BRIEF = "I need an assistant that answers HR policy questions for shore staff."
+
+
+@pytest.fixture
+def ctx() -> ForgeContext:
+    llm = FakeLLM(responder=sim.respond)
+    return ForgeContext(llm=llm, models=ModelRoles("gen", "judge"), embedder=HashEmbedder())
+
+
+async def _setup(ctx: ForgeContext, tmp_path: Path):  # type: ignore[no-untyped-def]
+    docs = build_docs_folder(tmp_path)
+    store = RunStore(tmp_path / "runs", "eval-test")
+    outcome = await build_requirements(ctx, store, BRIEF, docs, AutoAnswerer(ctx))
+    definition = await build_agent(ctx, store, outcome, docs)
+    return docs, store, outcome.requirements, definition
+
+
+# ---------- Eval generation -----------------------------------------------------------
+
+
+async def test_generated_cases_are_all_verified(ctx: ForgeContext, tmp_path: Path) -> None:
+    docs, _store, req, _ = await _setup(ctx, tmp_path)
+    corpus = load_folder(docs)
+    evals = await generate_evals(ctx, req, corpus)
+
+    counts = evals.counts()
+    assert counts["answerable"] >= 5
+    assert counts["out_of_scope"] == 6
+    assert counts.get("multi_doc", 0) >= 1
+    assert counts.get("tool", 0) == 1  # one table lookup template (no arithmetic hint)
+
+    # The planted lie (a sick-leave fact not in the passage) was caught and logged.
+    reasons = [r.reason for r in evals.rejected]
+    assert any("not in the quoted source" in r for r in reasons)
+
+    for case in evals.cases:
+        assert case.id.startswith("c")
+        for source in case.sources:
+            assert corpus.get(source.doc_id) is not None
+        if not case.expect_refusal and case.origin == "llm":
+            joined = " ".join(s.quote for s in case.sources)
+            assert all(
+                f.lower().replace(",", "") in joined.lower().replace(",", "")
+                for f in case.key_facts
+            )
+
+    # Stratified split: every category with 2+ cases appears in both halves.
+    for category, n in counts.items():
+        if n >= 2:
+            splits = {c.split for c in evals.cases if c.category == category}
+            assert splits == {"dev", "holdout"}, category
+
+
+async def test_too_few_cases_stops_the_run(ctx: ForgeContext, tmp_path: Path) -> None:
+    docs, store, req, _ = await _setup(ctx, tmp_path)
+    import forgeai.pipeline as pipeline
+
+    original = pipeline.generate_evals
+
+    async def tiny(*args, **kwargs):  # type: ignore[no-untyped-def]
+        return await original(
+            *args,
+            targets=EvalTargets(answerable=1, ambiguous=0, multi_doc=0, out_of_scope=1, refill=0),
+        )
+
+    pipeline.generate_evals = tiny  # type: ignore[assignment]
+    try:
+        with pytest.raises(GroundingError, match="survived validation"):
+            await build_evals(ctx, store, req, docs)
+    finally:
+        pipeline.generate_evals = original  # type: ignore[assignment]
+    assert store.exists("evals.md")
+
+
+@pytest.mark.parametrize(
+    ("question", "facts", "quote", "reason"),
+    [
+        (
+            "How many leave days?",
+            ["24 days"],
+            "Staff earn 25 days of leave.",
+            "not in the quoted source",
+        ),
+        (
+            "Do staff earn 24 days?",
+            ["24 days"],
+            "Staff earn 24 days of leave.",
+            "contains its own answer",
+        ),
+        (
+            "How many leave days?",
+            ["24 days"],
+            "Staff earn 24 days of leave per year here.",
+            "verbatim span",
+        ),
+        ("Hm?", ["24 days"], "Staff earn 24 days of leave.", "too short"),
+    ],
+)
+def test_validate_candidate_rejections(
+    question: str, facts: list[str], quote: str, reason: str
+) -> None:
+    passage = "Staff earn 24 days of leave. Staff earn 25 days of leave."
+    if reason == "verbatim span":
+        passage = "Staff earn 24 days of leave."
+    got = validate_candidate("answerable", question, facts, [("doc", quote, passage)])
+    assert got is not None
+    assert reason in got
+
+
+def test_template_cases_compute_arithmetic(tmp_path: Path) -> None:
+    from forgeai.schemas.requirements import Requirements, Topic
+
+    req = Requirements(
+        agent_name="Port desk",
+        purpose="p",
+        scope="s",
+        audience="a",
+        tone="t",
+        must_answer=[
+            Topic(topic="berths", answered_from="tool", tool_hint="table_lookup"),
+            Topic(topic="dues", answered_from="tool", tool_hint="arithmetic"),
+            Topic(topic="weather", answered_from="tool", tool_hint="weather"),
+        ],
+        must_refuse=[{"topic": "legal"}],  # type: ignore[list-item]
+        brief="b",
+    )
+    corpus = load_folder(build_docs_folder(tmp_path))
+    cases = [c.case for c in template_cases(req, corpus)]
+    lookup, calc, weather = cases
+    assert lookup.expected_tool == "csv_lookup"
+    assert lookup.key_facts == ["180"]  # berth B2 (middle row), first numeric column max_loa_m
+    assert calc.key_facts == ["7800"]  # 3 x 2600, computed by code
+    assert "3 days" in calc.question
+    assert weather.expected_tool == "weather"
+    assert "Kochi" in weather.question
+
+
+def test_split_is_deterministic_and_stratified() -> None:
+    cases = [
+        EvalCase(id=f"c{i}", category="answerable", question=f"Question number {i}?")
+        for i in range(10)
+    ]
+    a, b = assign_splits(cases), assign_splits(list(reversed(cases)))
+    assert sorted((c.question, c.split) for c in a) == sorted((c.question, c.split) for c in b)
+    assert sum(c.split == "dev" for c in a) == 6
+
+
+# ---------- Judge: deterministic layer -------------------------------------------------
+
+
+def _turn(
+    answer: str,
+    *,
+    refused: bool = False,
+    citations: list[Citation] | None = None,
+    retrieved: list[str] | None = None,
+    tools: list[ToolCallRecord] | None = None,
+) -> AgentTurn:
+    return AgentTurn(
+        question="How many days of annual leave?",
+        answer=AgentAnswer(answer=answer, refused=refused, citations=citations or []),
+        retrieved=[RetrievedRef(chunk_id=c, score=1, bm25=1, dense=0.9) for c in retrieved or []],
+        valid_citations=citations or [],
+        tool_calls=tools or [],
+        grounded=True,
+    )
+
+
+CHUNKS = {
+    "leave:p1:c1": "Shore staff earn 24 days of annual leave per calendar year. Up to 5 unused days carry forward."
+}
+CASE = EvalCase(
+    id="c01",
+    category="answerable",
+    question="How many days of annual leave?",
+    sources=[
+        ExpectedSource(
+            doc_id="leave", quote="Shore staff earn 24 days of annual leave per calendar year."
+        )
+    ],
+    key_facts=["24 days"],
+)
+
+
+def test_layer_one_passes_a_correct_cited_answer() -> None:
+    turn = _turn(
+        "You get 24 days per year.",
+        citations=[Citation(chunk_id="leave:p1:c1", quote="x")],
+        retrieved=["leave:p1:c1"],
+    )
+    checks, confirmed, undecided = layer_one(CASE, turn, CHUNKS)
+    assert checks.refusal_ok
+    assert checks.source_retrieved
+    assert checks.source_cited
+    assert [f.status for f in confirmed] == ["present"]
+    assert undecided == []
+
+
+def test_unsupported_number_is_flagged_as_hallucination() -> None:
+    turn = _turn("You get 24 days, plus 12 bonus days after 3 years.", retrieved=["leave:p1:c1"])
+    assert unsupported_numbers(turn, CHUNKS) == ["12"]  # 3 is below 10 and ignored
+
+
+def test_classify_priorities() -> None:
+    base = Checks(refusal_ok=True, grounded=True, source_retrieved=True)
+    present = [FactCheck(fact="24 days", status="present", by="string")]
+    missing = [FactCheck(fact="24 days", status="missing", by="judge")]
+    wrong = [FactCheck(fact="24 days", status="contradicted", by="judge")]
+    assert classify(CASE, base.model_copy(update={"refusal_ok": False}), present) == "wrong_refusal"
+    assert (
+        classify(CASE, base.model_copy(update={"source_retrieved": False}), missing)
+        == "retrieval_miss"
+    )
+    assert classify(CASE, base, wrong) == "hallucination"
+    assert (
+        classify(CASE, base.model_copy(update={"unsupported_numbers": ["12"]}), present)
+        == "hallucination"
+    )
+    assert classify(CASE, base, missing) == "prompt_defect"
+    assert (
+        classify(CASE, base.model_copy(update={"contract_error": "bad json"}), missing)
+        == "prompt_defect"
+    )
+
+
+@pytest.mark.parametrize(
+    ("fact", "answer", "expected"),
+    [
+        ("24 days", "You get 24 days.", "present"),
+        ("INR 1,500", "The allowance is INR 1500 per day.", "present"),
+        (
+            "INR 1,500",
+            "The allowance is 1,500 rupees.",
+            None,
+        ),  # number matches, words don't: ask judge
+        ("24 days", "You get twenty-four days.", None),
+        ("26 weeks", "Mothers get 26 weeks of paid leave.", "present"),
+    ],
+)
+def test_string_fact_check(fact: str, answer: str, expected: str | None) -> None:
+    assert string_fact_check(fact, answer) == expected
+
+
+def test_tool_expectation_checked() -> None:
+    case = CASE.model_copy(update={"expected_tool": "csv_lookup", "category": "tool"})
+    ok = _turn(
+        "24 days", tools=[ToolCallRecord(name="csv_lookup", args={}, ok=True, output="24 days")]
+    )
+    bad = _turn("24 days")
+    assert layer_one(case, ok, CHUNKS)[0].tool_ok
+    assert layer_one(case, bad, CHUNKS)[0].tool_ok is False
+
+
+# ---------- Canaries ------------------------------------------------------------------
+
+
+def test_canary_answers_cover_the_bias_modes() -> None:
+    kinds = {k: should for k, _a, should in canary_answers(CASE)}
+    assert kinds == {
+        "correct_terse": True,
+        "correct_padded": True,
+        "confident_omission": False,
+        "wrong_number": False,
+    }
+    wrong = next(a for k, a, _ in canary_answers(CASE) if k == "wrong_number")
+    assert "55 days" in wrong  # 24 * 2 + 7
+
+
+async def test_good_judge_passes_canaries(ctx: ForgeContext) -> None:
+    results = await run_canaries(ctx, [CASE])
+    assert len(results) == 4
+    assert all(r.correct for r in results)
+
+
+async def test_lenient_judge_fails_canaries_and_is_distrusted(tmp_path: Path) -> None:
+    import json
+
+    lenient = FakeLLM(
+        responder=lambda m: json.dumps({"facts": [{"fact": "x", "status": "present"}]})
+    )
+    ctx = ForgeContext(llm=lenient, models=ModelRoles("gen", "judge"), embedder=HashEmbedder())
+    results = await run_canaries(ctx, [CASE])
+    accuracy = sum(r.correct for r in results) / len(results)
+    assert accuracy == 0.5  # it passes the two answers it should fail
+
+
+# ---------- End to end ----------------------------------------------------------------
+
+
+async def test_evaluate_end_to_end(ctx: ForgeContext, tmp_path: Path) -> None:
+    docs, store, req, definition = await _setup(ctx, tmp_path)
+    evals = await generate_evals(ctx, req, load_folder(docs))
+    store.write_json("evals.json", evals)
+    run = await evaluate_agent(ctx, store, definition, evals, docs, "all")
+
+    assert {r.case.split for r in run.results} == {"dev", "holdout"}
+    assert set(run.scorecard.splits) == {"dev", "holdout"}
+    assert run.scorecard.judge_trusted
+    dev = run.scorecard.splits["dev"]
+    assert 0 < dev.passed <= dev.cases
+    # Every failure is classified into one of the four categories.
+    for r in run.results:
+        if not r.judgement.passed:
+            assert r.judgement.failure in {
+                "retrieval_miss",
+                "prompt_defect",
+                "hallucination",
+                "wrong_refusal",
+            }
+            assert r.judgement.reason
+    assert store.exists("evals/v0-all.json")
+    md = store.read_text("evals/v0-all.md")
+    assert "Judge canary accuracy" in md
+    # Judge calls used the judge model; agent calls used the generator.
+    models = {c.model for c in ctx.llm.calls}  # type: ignore[attr-defined]
+    assert models == {"gen", "judge"}
+
+
+def test_evalset_helpers() -> None:
+    evals = EvalSet(cases=[CASE, CASE.model_copy(update={"id": "c02", "split": "holdout"})])
+    assert len(evals.split("dev")) == 1
+    assert len(evals.split("all")) == 2
+    assert evals.counts() == {"answerable": 2}

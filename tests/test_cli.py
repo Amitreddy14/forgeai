@@ -248,3 +248,36 @@ def test_generate_without_requirements_fails(tmp_path: Path) -> None:
     folder = build_docs_folder(tmp_path)
     result = runner.invoke(cli.app, ["generate", "--run-id", "no-such-run", "--docs", str(folder)])
     assert result.exit_code == 1
+
+
+def test_evalgen_and_evaluate(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    from tests import sim
+
+    monkeypatch.setattr(cli, "build_llm", lambda _s: _scripted_stack(sim.respond))
+    folder = build_docs_folder(tmp_path)
+    brief = tmp_path / "hr.md"
+    brief.write_text("I need an assistant that answers HR policy questions.", encoding="utf-8")
+    common = ["--run-id", "cli-eval", "--docs", str(folder)]
+    assert (
+        runner.invoke(
+            cli.app, ["intake", "--brief", str(brief), "--answers", "auto", *common]
+        ).exit_code
+        == 0
+    )
+    assert runner.invoke(cli.app, ["generate", *common]).exit_code == 0
+
+    too_strict = runner.invoke(cli.app, ["evalgen", *common])
+    assert too_strict.exit_code == 1
+    assert "survived validation" in too_strict.stdout
+
+    result = runner.invoke(cli.app, ["evalgen", *common, "--min-cases", "5"])
+    assert result.exit_code == 0, result.stdout
+    assert "eval cases" in result.stdout
+
+    result = runner.invoke(cli.app, ["evaluate", *common, "--split", "all"])
+    assert result.exit_code == 0, result.stdout
+    assert "dev:" in result.stdout
+    assert "judge canary accuracy 100%" in result.stdout
+
+    bad = runner.invoke(cli.app, ["evaluate", *common, "--split", "train"])
+    assert bad.exit_code != 0
