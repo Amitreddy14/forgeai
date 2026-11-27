@@ -52,6 +52,11 @@ src = ["src", "tests"]
 select = ["E", "F", "W", "I", "B", "UP", "SIM", "RUF", "S", "ASYNC", "PT"]
 ignore = ["B008"]  # Typer/FastAPI use function calls in defaults by design
 
+[tool.ruff.lint.pycodestyle]
+# The formatter wraps at 100; lint tolerates up to 120 for lines it cannot split
+# (long f-strings and generator expressions).
+max-line-length = 120
+
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "S105", "S106"]
 

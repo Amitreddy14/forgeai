@@ -9,10 +9,13 @@ from pathlib import Path
 from forgeai.errors import GroundingError
 from forgeai.ingest import chunk_corpus, load_folder
 from forgeai.retrieval import HybridIndex
-from forgeai.runtime.agent import system_prompt
+from forgeai.runtime.agent import AgentRuntime, system_prompt
 from forgeai.schemas.agent import AgentDefinition
+from forgeai.schemas.evals import CanaryResult, EvalRun, EvalSet
 from forgeai.schemas.requirements import GroundabilityReport, IntakeRecord, Requirements
 from forgeai.stages.context import ForgeContext
+from forgeai.stages.evalgen import MIN_CASES, evals_markdown, generate_evals
+from forgeai.stages.evaluate import SplitName, evaluate, scorecard_markdown
 from forgeai.stages.generate import GeneratedAgent, generate_agent
 from forgeai.stages.guard import apply_guard, check_groundability, groundability_markdown
 from forgeai.stages.intake import Answerer, requirements_markdown, run_intake
@@ -125,3 +128,43 @@ def load_requirements_outcome(store: RunStore) -> RequirementsOutcome:
         requirements=store.read_json("requirements.json", Requirements),
         groundability=store.read_json("groundability.json", GroundabilityReport),
     )
+
+
+async def build_evals(
+    ctx: ForgeContext,
+    store: RunStore,
+    requirements: Requirements,
+    docs_dir: Path,
+    *,
+    min_cases: int = MIN_CASES,
+) -> EvalSet:
+    """Generate, validate and split the eval set; write evals.json + evals.md."""
+    corpus = load_folder(docs_dir)
+    evals = await generate_evals(ctx, requirements, corpus)
+    store.write_json("evals.json", evals)
+    store.write_text("evals.md", evals_markdown(evals))
+    if len(evals.cases) < min_cases:
+        raise GroundingError(
+            f"only {len(evals.cases)} eval cases survived validation (need {min_cases}); "
+            "see evals.md for the rejected candidates"
+        )
+    return evals
+
+
+async def evaluate_agent(
+    ctx: ForgeContext,
+    store: RunStore,
+    definition: AgentDefinition,
+    evals: EvalSet,
+    docs_dir: Path,
+    split: SplitName,
+    *,
+    canaries: list[CanaryResult] | None = None,
+) -> EvalRun:
+    corpus = load_folder(docs_dir)
+    runtime = AgentRuntime(definition, corpus, ctx.embedder, ctx.llm, ctx.models.generator)
+    run = await evaluate(ctx, runtime, evals, split, canaries=canaries)
+    tag = f"v{definition.version}-{split}"
+    store.write_json(f"evals/{tag}.json", run)
+    store.write_text(f"evals/{tag}.md", scorecard_markdown(run))
+    return run

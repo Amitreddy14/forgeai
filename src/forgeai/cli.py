@@ -13,6 +13,7 @@ import typer
 from pydantic import BaseModel, Field, ValidationError
 from rich.console import Console
 from rich.markdown import Markdown
+from rich.markup import escape
 from rich.table import Table
 
 from forgeai import __version__
@@ -23,13 +24,16 @@ from forgeai.llm.factory import build_llm
 from forgeai.pipeline import (
     RequirementsOutcome,
     build_agent,
+    build_evals,
     build_requirements,
+    evaluate_agent,
     load_requirements_outcome,
 )
 from forgeai.retrieval import HybridIndex, RetrievalConfig, make_embedder
 from forgeai.runtime import AgentTurn, load_definition, load_runtime
 from forgeai.schemas import ChunkingConfig
 from forgeai.schemas.agent import AgentDefinition
+from forgeai.schemas.evals import EvalRun, EvalSet
 from forgeai.schemas.requirements import Requirements
 from forgeai.stages.context import ForgeContext, ModelRoles
 from forgeai.stages.intake import (
@@ -326,16 +330,16 @@ def print_turn(turn: AgentTurn) -> None:
         console.print(f"[red]Agent error:[/red] {turn.error}")
         return
     label = "[yellow]Refused[/yellow]" if turn.answer.refused else "[bold]Answer[/bold]"
-    console.print(f"{label}: {turn.answer.answer}")
+    console.print(f"{label}: {escape(turn.answer.answer)}")
     if turn.answer.refused and turn.answer.refusal_reason:
-        console.print(f"  reason: {turn.answer.refusal_reason}")
+        console.print(f"  reason: {escape(turn.answer.refusal_reason)}")
     for c in turn.valid_citations:
-        console.print(f'  [green]verified[/green] [{c.chunk_id}] "{c.quote}"')
+        console.print(f'  [green]verified[/green] {escape(f"[{c.chunk_id}]")} "{escape(c.quote)}"')
     for c in turn.invalid_citations:
-        console.print(f'  [red]not in source[/red] [{c.chunk_id}] "{c.quote}"')
+        console.print(f'  [red]not in source[/red] {escape(f"[{c.chunk_id}]")} "{escape(c.quote)}"')
     for call in turn.tool_calls:
         status = "[green]ok[/green]" if call.ok else "[red]failed[/red]"
-        console.print(f"  tool {call.name} {status}: {call.output[:200]}")
+        console.print(f"  tool {call.name} {status}: {escape(call.output[:200])}")
     console.print(
         f"  [dim]{turn.latency_s:.1f}s, best passage similarity {turn.best_dense:.2f}[/dim]"
     )
@@ -376,6 +380,79 @@ def chat(
     except (ForgeError, FileNotFoundError, ValidationError) as exc:
         console.print(f"[red]Stopped:[/red] {exc}")
         raise typer.Exit(code=1) from exc
+
+
+async def _evalgen(run_id: str, docs: Path, min_cases: int) -> EvalSet:
+    settings = get_settings()
+    ctx, stack = _context(settings)
+    store = RunStore(settings.runs_dir, run_id)
+    try:
+        requirements = store.read_json("requirements.json", Requirements)
+        return await build_evals(ctx, store, requirements, docs, min_cases=min_cases)
+    finally:
+        store.write_json("budget.evalgen.json", stack.budget.report())
+        await stack.aclose()
+
+
+@app.command()
+def evalgen(
+    run_id: str = typer.Option(..., help="Run folder with requirements.json."),
+    docs: Path = typer.Option(..., exists=True, file_okay=False, help="Documents folder."),
+    min_cases: int = typer.Option(20, min=1, help="Stop if fewer cases survive validation."),
+) -> None:
+    """Generate and validate the eval set from the documents (evals.json, evals.md)."""
+    rid = validate_run_id(run_id)
+    try:
+        evals = asyncio.run(_evalgen(rid, docs, min_cases))
+    except (ForgeError, FileNotFoundError, ValidationError) as exc:
+        console.print(f"[red]Stopped:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    counts = ", ".join(f"{k} {v}" for k, v in sorted(evals.counts().items()))
+    console.print(
+        f"[green]{len(evals.cases)} eval cases[/green] ({counts}); "
+        f"{len(evals.rejected)} candidates rejected by validation; "
+        f"dev {len(evals.split('dev'))} / holdout {len(evals.split('holdout'))}"
+    )
+
+
+async def _evaluate(run_id: str, docs: Path, agent: Path | None, split: str) -> EvalRun:
+    settings = get_settings()
+    ctx, stack = _context(settings)
+    store = RunStore(settings.runs_dir, run_id)
+    try:
+        definition = load_definition(agent or store.path("agent.v0.json"))
+        evals = store.read_json("evals.json", EvalSet)
+        return await evaluate_agent(ctx, store, definition, evals, docs, split)  # type: ignore[arg-type]
+    finally:
+        store.write_json("budget.evaluate.json", stack.budget.report())
+        await stack.aclose()
+
+
+@app.command()
+def evaluate(
+    run_id: str = typer.Option(..., help="Run folder with evals.json."),
+    docs: Path = typer.Option(..., exists=True, file_okay=False, help="Documents folder."),
+    agent: Path | None = typer.Option(
+        None, exists=True, dir_okay=False, help="Default agent.v0.json."
+    ),
+    split: str = typer.Option("dev", help="dev, holdout or all."),
+) -> None:
+    """Run the agent over the eval set and judge every answer."""
+    if split not in ("dev", "holdout", "all"):
+        raise typer.BadParameter("split must be dev, holdout or all")
+    rid = validate_run_id(run_id)
+    try:
+        run = asyncio.run(_evaluate(rid, docs, agent, split))
+    except (ForgeError, FileNotFoundError, ValidationError) as exc:
+        console.print(f"[red]Stopped:[/red] {exc}")
+        raise typer.Exit(code=1) from exc
+    for name, score in run.scorecard.splits.items():
+        console.print(
+            f"[bold]{name}[/bold]: {score.passed}/{score.cases} passed ({score.pass_rate:.0%}); "
+            f"failures: {score.failures or 'none'}"
+        )
+    if run.scorecard.judge_canary_accuracy is not None:
+        console.print(f"judge canary accuracy {run.scorecard.judge_canary_accuracy:.0%}")
 
 
 if __name__ == "__main__":  # pragma: no cover

@@ -2,6 +2,21 @@
 
 Newest first. Decisions, bugs, changes, and anything the next session must know.
 
+## 2026-11-27 — Phase 4
+
+- Real run of Phase 3 on hr-mini: generator proposed csv_lookup + calculator for an HR
+  agent; both rejected by contract (no tools attached). Chat answers verified; salary and
+  weather questions refused by the calibrated threshold (0.65) without a model call.
+  Hotel question scored 0.70, close to the threshold: a likely wrong-refusal risk.
+- Rich markup swallowed `[chunk-id]` in chat output; fixed with `rich.markup.escape`.
+- Expected sources are anchored by quote text, not chunk id, because the optimizer may
+  re-chunk; "source retrieved" = some retrieved chunk contains the quote's first 10 words.
+- Unsupported-number check ignores integers below 10 (list numbering, small counts).
+- Canary judge test: a judge that always says "present" scores 50% and is distrusted.
+- Evals use a fixed reference chunking (default config), independent of the agent.
+- Ruff: formatter wraps at 100; lint tolerates 120 for lines it cannot split.
+- Small corpora may yield < 20 cases: `forge evalgen --min-cases N` for examples.
+
 ## 2026-11-27 — Phase 3
 
 - Real-model check (hr-mini, qwen2.5:7b): intake + guard ran end to end and flagged the

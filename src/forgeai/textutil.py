@@ -84,3 +84,19 @@ def extract_numbers(text: str) -> set[str]:
         value = float(match)
         out.add(str(int(value)) if value.is_integer() else f"{value:g}")
     return out
+
+
+def contains_fact(haystack: str, fact: str) -> bool:
+    """True if a short fact ("24 days", "INR 1,500") appears in `haystack` on word
+    boundaries, after normalisation. Unlike quotes, one or two words are allowed."""
+    target = normalize(fact)
+    if not target:
+        return False
+    return f" {target} " in f" {normalize(haystack)} "
+
+
+def word_jaccard(a: str, b: str) -> float:
+    wa, wb = set(normalize(a).split()), set(normalize(b).split())
+    if not wa or not wb:
+        return 0.0
+    return len(wa & wb) / len(wa | wb)

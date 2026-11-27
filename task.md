@@ -46,10 +46,18 @@ Legend: `[x]` done · `[ ]` open · `(S)` stretch.
 - [x] Ollama Modelfiles pinning an 8k context (`ollama/`)
 
 ## Phase 4 — Evals + judge (branch `phase-4-evals`)
-- [ ] Eval generator: answerable / out-of-scope / ambiguous / two-document, ≥ 20, quotas
-- [ ] Eval validation (quote verified, facts ⊂ quote, dedupe) + dev/holdout split
-- [ ] Deterministic checks (refusal, citations, facts, numbers)
-- [ ] LLM judge (different family, length-blind rubric, shuffle) + canaries
+- [x] Eval generator: answerable, ambiguous, multi-doc (LLM, from selected passages),
+      out-of-scope incl. near misses (LLM), table/arithmetic/weather/date cases (code templates)
+- [x] Validation: quote is a verbatim span, every key fact inside the quote, no answer leak,
+      near-duplicate removal; rejected candidates logged with reasons; ≥ 20 enforced
+- [x] Stratified, deterministic dev/holdout split (60/40)
+- [x] Layer 1 deterministic judge: refusal, verified citations, expected source retrieved/cited,
+      string/number fact match, numbers absent from all evidence, required tool called
+- [x] Layer 2 LLM fact judge: other model family, facts not reference essays, length-blind
+- [x] Layer 3 canaries: wrong number, confident omission, padded correct, terse correct;
+      judge distrusted below 75% canary accuracy
+- [x] Failure classifier (wrong refusal > retrieval miss > hallucination > prompt defect)
+- [x] `forge evalgen`, `forge evaluate`; agent calls first, judge calls after (one model swap)
 
 ## Phase 5 — Optimizer + report (branch `phase-5-optimizer`)
 - [ ] Failure classifier (signals first, LLM tiebreak)

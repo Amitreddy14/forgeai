@@ -5,7 +5,7 @@ documents. It interviews you, checks that the documents can support the brief, b
 grounded agent, writes its own test set, judges the results, fixes what failed (up to 3
 times), and hands back the agent with an honest report of what still fails and why.
 
-> Status: Phase 3 (agent generator + runtime). See [task.md](task.md) for progress.
+> Status: Phase 4 (eval generator + layered judge). See [task.md](task.md) for progress.
 
 ## Why it can be trusted
 
