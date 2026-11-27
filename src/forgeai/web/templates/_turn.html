@@ -5,7 +5,7 @@
       <p class="status fail">The agent's reply was not valid output: {{ turn.error[:200] }}</p>
     {% else %}
       {% if turn.answer.refused %}<p class="status hold">Refused</p>{% endif %}
-      <p>{{ turn.answer.answer }}</p>
+      <p class="answer">{{ turn.answer.answer }}</p>
       {% if turn.answer.refused and turn.answer.refusal_reason %}<small>Reason: {{ turn.answer.refusal_reason }}</small>{% endif %}
       {% if turn.valid_citations or turn.invalid_citations or turn.tool_calls %}
       <ul class="evidence">

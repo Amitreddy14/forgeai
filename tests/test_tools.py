@@ -211,6 +211,10 @@ async def test_weather_falls_back_to_met_norway_when_open_meteo_refuses() -> Non
     metno = {
         "properties": {
             "timeseries": [
+                {  # 03:30 on the 28th in Kochi: must not become a "27 Nov" line
+                    "time": "2026-11-27T22:00:00Z",
+                    "data": {"instant": {"details": {"air_temperature": 24.0, "wind_speed": 2.0}}},
+                },
                 {
                     "time": "2026-11-28T06:00:00Z",
                     "data": {
@@ -249,7 +253,8 @@ async def test_weather_falls_back_to_met_norway_when_open_meteo_refuses() -> Non
         )
     assert result.ok, result.output
     assert "Kochi, India (9.93, 76.26), source MET Norway" in result.output
-    assert "2026-11-28: 25.0-30.5 °C | rain 1.5 mm | wind 11.7 kn" in result.output
+    assert "2026-11-28: 24.0-30.5 °C | rain 1.5 mm | wind 11.7 kn" in result.output
+    assert "2026-11-27" not in result.output
     assert "HTTP 429" in result.output  # the note says why the fallback was used
     assert "api.met.no" in seen
 

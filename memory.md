@@ -2,6 +2,16 @@
 
 Newest first. Decisions, bugs, changes, and anything the next session must know.
 
+## 2026-11-28 — Phase 8 (README)
+
+README rewritten for reviewers: results table from the committed runs, the 4.1 "factory
+lying to itself" story, R1–R9 map, stretch goals stated honestly (regression mode partial,
+human baseline not done), hosted-app caveats. Checked while writing: the port c21/c22
+failures were NOT the Japan geocoding bug: both had correct tool content plus an invalid
+document quote, and `grounded` is false whenever any citation fails verification.
+Chat: answers keep line breaks (pre-line); MET Norway days use the longitude's solar
+offset so a late-UTC hour is not shown as yesterday.
+
 ## 2026-11-28 — Phase 7.1 (first hosted run on Render)
 
 Live at https://forgeai-524s.onrender.com. Pages served; the first chat returned 503 and
