@@ -5,7 +5,7 @@ documents. It interviews you, checks that the documents can support the brief, b
 grounded agent, writes its own test set, judges the results, fixes what failed (up to 3
 times), and hands back the agent with an honest report of what still fails and why.
 
-> Status: Phase 1 (foundations). See [task.md](task.md) for progress.
+> Status: Phase 2 (requirements). See [task.md](task.md) for progress.
 
 ## Why it can be trusted
 
@@ -33,7 +33,14 @@ forge doctor                       # checks settings and the model endpoint
 forge smoke                        # one structured-JSON call per model, timed
 forge ingest path/to/docs          # what was extracted and how it chunks
 forge search path/to/docs "how many days of annual leave?"
+
+# Intake + groundability guard on the small example (about 8 model calls)
+forge intake --brief data/examples/hr-mini/brief.md --docs data/examples/hr-mini/docs \
+  --answers auto --run-id scratch-hr-mini
 ```
+
+For Ollama, set `OLLAMA_CONTEXT_LENGTH=8192` before `ollama serve` so long prompts are
+not silently truncated.
 
 Run the web app: `uvicorn forgeai.web.app:app --reload`, then open
 http://localhost:8000/healthz.

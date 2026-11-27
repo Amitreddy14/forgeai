@@ -24,11 +24,14 @@ Legend: `[x]` done · `[ ]` open · `(S)` stretch.
 - [x] CLI: `forge ingest`, `forge search`, `forge smoke`; CI matrix adds Python 3.13
 
 ## Phase 2 — Requirements (branch `phase-2-requirements`)
-- [ ] Corpus summary for the interviewer (titles, headings, CSV columns, sizes)
-- [ ] Intake: ≤ 5 questions, CLI dialogue, `--answers auto` requester proxy (marked assumed)
-- [ ] Requirements schema + Markdown render
-- [ ] Groundability guard: retrieve → quote → verify → flag/move to must-refuse
-- [ ] (S) Human checkpoint `--approve` (edit in $EDITOR / web form)
+- [x] Corpus summary for the interviewer (titles, sections, CSV columns + sample rows, skips)
+- [x] Intake: ≤ 5 questions (cap enforced in code), interactive / `--answers auto` / answers file
+- [x] Auto answers labelled by source: requester, inferred from brief, interviewer default
+- [x] Requirements schema + Markdown render (must-answer with source, must-refuse, gaps, assumptions)
+- [x] Groundability guard: retrieve → model claims → quote verified in code → flag + move to must-refuse
+- [x] Table-lookup topics need a CSV in the folder; nothing grounded → stop, no agent generated
+- [x] (S) Human checkpoint `--approve` (approve, or edit JSON and re-validate)
+- [x] Prompts as versioned `.md` templates; `data/examples/hr-mini` for quick real-model runs
 
 ## Phase 3 — Agent (branch `phase-3-agent`)
 - [ ] Tool registry: `csv_lookup`, `calculator` (AST), `weather` (open-meteo), `current_date`
